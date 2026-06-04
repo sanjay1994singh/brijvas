@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.conf import settings
 
 class BlogCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -11,27 +11,49 @@ class BlogCategory(models.Model):
 
 
 class Blog(models.Model):
+
+    title = models.CharField(
+        max_length=255
+    )
+
+    slug = models.SlugField(
+        unique=True
+    )
+
     category = models.ForeignKey(
         BlogCategory,
         on_delete=models.CASCADE
     )
 
-    title = models.CharField(max_length=255)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
 
-    slug = models.SlugField(unique=True)
+    featured_image = models.ImageField(
+        upload_to="blogs/"
+    )
 
-    image = models.ImageField(
-        upload_to='blogs/'
+    excerpt = models.TextField(
+        blank=True
     )
 
     content = models.TextField()
 
-    meta_title = models.CharField(
+    views = models.PositiveIntegerField(
+        default=0
+    )
+
+    is_published = models.BooleanField(
+        default=True
+    )
+
+    seo_title = models.CharField(
         max_length=255,
         blank=True
     )
 
-    meta_description = models.TextField(
+    seo_description = models.TextField(
         blank=True
     )
 
@@ -41,3 +63,26 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class BlogComment(models.Model):
+    blog = models.ForeignKey(
+        Blog,
+        on_delete=models.CASCADE,
+        related_name="comments"
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    comment = models.TextField()
+
+    is_approved = models.BooleanField(
+        default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
