@@ -1,0 +1,99 @@
+<div class="col-lg-4 col-md-6 mb-4">
+
+    <div class="property-card h-100">
+
+        <div class="property-image position-relative">
+
+            <a href="{% url 'property_detail' property.slug %}">
+
+                <img src="{{ property.featured_image.url }}"
+                     class="img-fluid"
+                     alt="{{ property.title }}"
+                     loading="lazy">
+
+            </a>
+
+            {% if property.is_featured %}
+            <span class="badge bg-danger featured-badge">
+                Featured
+            </span>
+            {% endif %}
+
+            <span class="badge bg-primary purpose-badge">
+                {{ property.get_purpose_display }}
+            </span>
+
+        </div>
+
+        <div class="property-content p-3">
+
+            <h5 class="property-title">
+
+                <a href="{% url 'property_detail' property.slug %}"
+                   class="text-dark">
+
+                    {{ property.title|truncatechars:50 }}
+
+                </a>
+
+            </h5>
+
+            <p class="text-muted mb-2">
+
+                <i class="fa-solid fa-location-dot"></i>
+
+                {{ property.city.name }}
+
+            </p>
+
+            <h4 class="text-primary fw-bold mb-3">
+
+                ₹ {{ property.price }}
+
+            </h4>
+
+            <div class="property-info d-flex justify-content-between">
+
+                <span>
+                    <i class="fa-solid fa-expand"></i>
+                    {{ property.area }}
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-bed"></i>
+                    {{ property.bedrooms }}
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-bath"></i>
+                    {{ property.bathrooms }}
+                </span>
+
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between">
+
+                <a href="{% url 'property_detail' property.slug %}"
+                   class="btn btn-primary btn-sm">
+
+                    View Details
+
+                </a>
+
+                <a href="https://wa.me/91XXXXXXXXXX"
+                   target="_blank"
+                   class="btn btn-success btn-sm">
+
+                    WhatsApp
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

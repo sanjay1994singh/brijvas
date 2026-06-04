@@ -3,6 +3,7 @@ from django.utils.text import slugify
 
 from accounts.models import User
 from locations.models import State, City
+from django.conf import settings
 
 
 class PropertyType(models.Model):
@@ -18,6 +19,7 @@ class PropertyType(models.Model):
 
     def __str__(self):
         return self.name
+
 
 # Example Data
 # Plot
@@ -184,6 +186,7 @@ class Amenity(models.Model):
     def __str__(self):
         return self.name
 
+
 # Examples:
 #
 # Swimming Pool
@@ -219,3 +222,89 @@ class PropertyVideo(models.Model):
 
     def __str__(self):
         return self.property.title
+
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    property = models.ForeignKey(
+        Property,
+        on_delete=models.CASCADE,
+        related_name='wishlists'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        unique_together = (
+            'user',
+            'property'
+        )
+
+    def __str__(self):
+        return f"{self.user} - {self.property}"
+
+
+class CompareProperty(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    property = models.ForeignKey(
+        Property,
+        on_delete=models.CASCADE
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return self.property.title
+
+
+class PropertyReview(models.Model):
+    property = models.ForeignKey(
+        Property,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    rating = models.PositiveSmallIntegerField()
+
+    review = models.TextField()
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.property.title} - {self.rating}"
+
+
+@property
+def average_rating(self):
+    reviews = self.reviews.all()
+
+    if reviews.exists():
+        return round(
+            sum(r.rating for r in reviews) /
+            reviews.count(),
+            1
+        )
+
+    return 0

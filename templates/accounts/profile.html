@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}
+My Profile
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5">
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-lg-4">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body text-center">
+
+                        {% if request.user.profile_image %}
+
+                        <img src="{{ request.user.profile_image.url }}"
+                             class="rounded-circle mb-3"
+                             width="120">
+
+                        {% endif %}
+
+                        <h4>
+
+                            {{ request.user.get_full_name }}
+
+                        </h4>
+
+                        <p>
+
+                            {{ request.user.email }}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-8">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body">
+
+                        <form method="POST"
+                              enctype="multipart/form-data">
+
+                            {% csrf_token %}
+
+                            {{ form.as_p }}
+
+                            <button class="btn btn-primary">
+
+                                Update Profile
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

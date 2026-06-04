@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Wishlist
+{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-section">
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-lg-3">
+
+                {% include 'dashboard/sidebar.html' %}
+
+            </div>
+
+            <div class="col-lg-9">
+
+                <h3 class="mb-4">
+
+                    My Wishlist
+
+                </h3>
+
+                <div class="row">
+
+                    {% for property in wishlist %}
+
+                    {% include 'properties/includes/property_card.html' %}
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

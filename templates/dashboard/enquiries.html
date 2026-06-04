@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Enquiries
+{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-section">
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-lg-3">
+
+                {% include 'dashboard/sidebar.html' %}
+
+            </div>
+
+            <div class="col-lg-9">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-header">
+
+                        Property Enquiries
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <table class="table">
+
+                            <thead>
+
+                            <tr>
+
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Property</th>
+                                <th>Date</th>
+
+                            </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                            {% for enquiry in enquiries %}
+
+                            <tr>
+
+                                <td>{{ enquiry.name }}</td>
+
+                                <td>{{ enquiry.phone }}</td>
+
+                                <td>{{ enquiry.property.title }}</td>
+
+                                <td>{{ enquiry.created_at }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

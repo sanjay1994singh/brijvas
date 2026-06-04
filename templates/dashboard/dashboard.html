@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="dashboard-section">
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-lg-3">
+
+                {% include 'dashboard/sidebar.html' %}
+
+            </div>
+
+            <div class="col-lg-9">
+
+                <h2 class="mb-4">
+
+                    Dashboard
+
+                </h2>
+
+                <div class="row">
+
+                    <div class="col-md-3">
+
+                        <div class="dashboard-card">
+
+                            <h3>{{ total_properties }}</h3>
+
+                            <p>Total Properties</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <div class="dashboard-card">
+
+                            <h3>{{ total_views }}</h3>
+
+                            <p>Total Views</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <div class="dashboard-card">
+
+                            <h3>{{ total_enquiries }}</h3>
+
+                            <p>Enquiries</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <div class="dashboard-card">
+
+                            <h3>{{ featured_count }}</h3>
+
+                            <p>Featured</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="card border-0 shadow-sm mt-4">
+
+                    <div class="card-header">
+
+                        Recent Properties
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <table class="table">
+
+                            <thead>
+
+                            <tr>
+
+                                <th>Title</th>
+                                <th>Price</th>
+                                <th>Status</th>
+
+                            </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                            {% for property in recent_properties %}
+
+                            <tr>
+
+                                <td>{{ property.title }}</td>
+
+                                <td>₹ {{ property.price }}</td>
+
+                                <td>
+
+                                    {% if property.is_active %}
+
+                                    <span class="badge bg-success">
+                                            Active
+                                        </span>
+
+                                    {% else %}
+
+                                    <span class="badge bg-danger">
+                                            Inactive
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

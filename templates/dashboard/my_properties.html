@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}
+My Properties
+{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-section">
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-lg-3">
+
+                {% include 'dashboard/sidebar.html' %}
+
+            </div>
+
+            <div class="col-lg-9">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header">
+
+                        My Properties
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <table class="table">
+
+                            <thead>
+
+                            <tr>
+
+                                <th>Property</th>
+                                <th>Price</th>
+                                <th>Views</th>
+                                <th>Action</th>
+
+                            </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                            {% for property in properties %}
+
+                            <tr>
+
+                                <td>{{ property.title }}</td>
+
+                                <td>₹ {{ property.price }}</td>
+
+                                <td>{{ property.views }}</td>
+
+                                <td>
+
+                                    <a href="{% url 'edit_property' property.id %}"
+                                       class="btn btn-sm btn-primary">
+
+                                        Edit
+
+                                    </a>
+
+                                    <a href="{% url 'delete_property' property.id %}"
+                                       class="btn btn-sm btn-danger">
+
+                                        Delete
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
