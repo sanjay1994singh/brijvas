@@ -1,0 +1,296 @@
+/*---------------base ----------------------*/
+:root{
+    --primary:#0D6EFD;
+    --secondary:#0B1C39;
+    --light:#F8F9FA;
+    --border:#EAEAEA;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    overflow-x:hidden;
+}
+
+a{
+    text-decoration:none;
+}
+
+#loader{
+    position:fixed;
+    inset:0;
+    background:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.whatsapp-btn{
+    position:fixed;
+    right:25px;
+    bottom:25px;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:#25D366;
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:28px;
+    z-index:999;
+}
+
+#backToTop{
+    position:fixed;
+    bottom:100px;
+    right:25px;
+    width:50px;
+    height:50px;
+    border:none;
+    border-radius:50%;
+    display:none;
+    z-index:999;
+}
+
+/*---------------navbar ----------------------*/
+.navbar-brand{
+    font-weight:700;
+}
+
+.nav-link{
+    font-weight:500;
+}
+
+.nav-link:hover{
+    color:#0d6efd !important;
+}
+
+.dropdown-menu{
+    border:none;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.footer-section a{
+    text-decoration:none;
+}
+
+.footer-section a:hover{
+    color:#0d6efd !important;
+}
+
+/*-------------------home--------------------*/
+.hero-section{
+    min-height:90vh;
+    background:url('/static/images/hero.jpg');
+    background-size:cover;
+    background-position:center;
+    position:relative;
+    display:flex;
+    align-items:center;
+}
+
+.hero-overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.55);
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+    color:white;
+}
+
+.hero-content h1{
+    font-size:65px;
+    font-weight:700;
+}
+
+.search-card{
+    margin-top:30px;
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 20px 50px rgba(0,0,0,.1);
+}
+
+.category-card{
+    text-align:center;
+    background:#fff;
+    border-radius:15px;
+    padding:20px;
+    transition:.3s;
+}
+
+.category-card:hover{
+    transform:translateY(-8px);
+}
+
+.category-card img{
+    width:70px;
+    height:70px;
+    object-fit:cover;
+}
+
+.property-card{
+    background:white;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.property-image img{
+    width:100%;
+    height:250px;
+    object-fit:cover;
+}
+
+.property-content{
+    padding:20px;
+}
+
+.price{
+    color:#0d6efd;
+}
+
+.stats-section{
+    background:#0B1C39;
+    color:white;
+    padding:80px 0;
+}
+
+.cta-section{
+    padding:100px 0;
+    background:#0d6efd;
+    color:white;
+}
+
+
+/*--------------property card---------------*/
+.property-card{
+    border-radius:20px;
+    overflow:hidden;
+    background:#fff;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.property-card:hover{
+    transform:translateY(-8px);
+}
+
+.property-image img{
+    width:100%;
+    height:250px;
+    object-fit:cover;
+}
+
+.featured-badge{
+    position:absolute;
+    top:15px;
+    left:15px;
+}
+
+.purpose-badge{
+    position:absolute;
+    top:15px;
+    right:15px;
+}
+
+.property-title a{
+    text-decoration:none;
+}
+
+.carousel-item img{
+    height:500px;
+    object-fit:cover;
+    border-radius:20px;
+}
+
+.sticky-top{
+    top:100px;
+}
+
+/*--------------accounts---------------*/
+.auth-section{
+    min-height:90vh;
+    display:flex;
+    align-items:center;
+    padding:60px 0;
+    background:#f8f9fa;
+}
+
+.auth-card{
+    background:#fff;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+}
+
+.auth-card .form-control,
+.auth-card .form-select{
+    height:50px;
+    border-radius:10px;
+}
+
+.auth-card .btn{
+    height:50px;
+    border-radius:10px;
+}
+
+.auth-card a{
+    text-decoration:none;
+}
+
+/*---------Dashboard CSS--------------*/
+.dashboard-section{
+    padding:50px 0;
+    background:#f8f9fa;
+}
+
+.dashboard-sidebar{
+    background:#0B1C39;
+    min-height:100vh;
+    padding:30px;
+    border-radius:15px;
+}
+
+.dashboard-sidebar h4{
+    color:#fff;
+    margin-bottom:30px;
+}
+
+.dashboard-sidebar ul{
+    list-style:none;
+    padding:0;
+}
+
+.dashboard-sidebar li{
+    margin-bottom:10px;
+}
+
+.dashboard-sidebar a{
+    color:#fff;
+    display:block;
+    padding:12px;
+    border-radius:10px;
+    text-decoration:none;
+}
+
+.dashboard-sidebar a:hover{
+    background:#0d6efd;
+}
+
+.dashboard-card{
+    background:#fff;
+    padding:25px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+}
+
+.dashboard-card h3{
+    color:#0d6efd;
+    font-weight:700;
+}
