@@ -1,42 +1,107 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}
 My Profile
 {% endblock %}
 
 {% block content %}
 
-<section class="py-5">
+<!-- Profile Header -->
 
+<section class="profile-wrapper">
     <div class="container">
 
-        <div class="row">
+        <div class="profile-banner">
 
-            <div class="col-lg-4">
+            <div class="row align-items-center">
 
-                <div class="card border-0 shadow-sm">
+                <div class="col-lg-8">
 
-                    <div class="card-body text-center">
+                    <div class="d-flex align-items-center gap-4">
 
                         {% if request.user.profile_image %}
 
                         <img src="{{ request.user.profile_image.url }}"
-                             class="rounded-circle mb-3"
-                             width="120">
+                             class="profile-avatar"
+                             alt="{{ request.user.username }}">
+
+                        {% else %}
+
+                        <img src="{% static 'images/default-user.png' %}"
+                             class="profile-avatar"
+                             alt="User">
 
                         {% endif %}
 
-                        <h4>
+                        <div>
 
-                            {{ request.user.get_full_name }}
+                            <h2 class="profile-title">
 
-                        </h4>
+                                {{ request.user.get_full_name|default:request.user.username }}
 
-                        <p>
+                            </h2>
 
-                            {{ request.user.email }}
+                            <p class="profile-subtitle">
 
-                        </p>
+                                {{ request.user.email }}
+
+                            </p>
+
+                            <span class="profile-role">
+
+                            {{ request.user.user_type|title }}
+
+                        </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4">
+
+                    <div class="row g-3">
+
+                        <div class="col-6">
+
+                            <div class="stat-card">
+
+                                <h3>
+
+                                    {{ property_count|default:"0" }}
+
+                                </h3>
+
+                                <span>
+
+                                Properties
+
+                            </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-6">
+
+                            <div class="stat-card">
+
+                                <h3>
+
+                                    {{ enquiry_count|default:"0" }}
+
+                                </h3>
+
+                                <span>
+
+                                Enquiries
+
+                            </span>
+
+                            </div>
+
+                        </div>
 
                     </div>
 
@@ -44,28 +109,169 @@ My Profile
 
             </div>
 
+        </div>
+
+
+        <div class="row mt-4">
+
+            <!-- Left Card -->
+
+            <div class="col-lg-4">
+
+                <div class="profile-side-card">
+
+                    <h5>
+
+                        Account Information
+
+                    </h5>
+
+                    <hr>
+
+                    <ul class="profile-info-list">
+
+                        <li>
+
+                            <strong>Username</strong>
+
+                            <span>{{ request.user.username }}</span>
+
+                        </li>
+
+                        <li>
+
+                            <strong>Email</strong>
+
+                            <span>{{ request.user.email }}</span>
+
+                        </li>
+
+                        <li>
+
+                            <strong>Phone</strong>
+
+                            <span>{{ request.user.phone }}</span>
+
+                        </li>
+
+                        <li>
+
+                            <strong>Role</strong>
+
+                            <span>{{ request.user.user_type|title }}</span>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+
+            <!-- Right Card -->
+
             <div class="col-lg-8">
 
-                <div class="card border-0 shadow-sm">
+                <div class="profile-edit-card">
 
-                    <div class="card-body">
+                    <div class="card-title-area">
 
-                        <form method="POST"
-                              enctype="multipart/form-data">
+                        <h4>
 
-                            {% csrf_token %}
+                            Edit Profile
 
-                            {{ form.as_p }}
+                        </h4>
 
-                            <button class="btn btn-primary">
+                        <p>
 
-                                Update Profile
+                            Update your personal information
 
-                            </button>
-
-                        </form>
+                        </p>
 
                     </div>
+
+                    <form method="POST"
+                          enctype="multipart/form-data">
+
+                        {% csrf_token %}
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label">
+
+                                    First Name
+
+                                </label>
+
+                                {{ form.first_name }}
+
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label">
+
+                                    Last Name
+
+                                </label>
+
+                                {{ form.last_name }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label">
+
+                                    Email Address
+
+                                </label>
+
+                                {{ form.email }}
+
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label">
+
+                                    Mobile Number
+
+                                </label>
+
+                                {{ form.phone }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
+                                Profile Photo
+
+                            </label>
+
+                            {{ form.profile_image }}
+
+                        </div>
+
+                        <button type="submit"
+                                class="btn-save-profile">
+
+                            Save Changes
+
+                        </button>
+
+                    </form>
 
                 </div>
 
@@ -76,5 +282,6 @@ My Profile
     </div>
 
 </section>
+
 
 {% endblock %}

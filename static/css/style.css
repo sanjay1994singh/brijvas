@@ -243,6 +243,113 @@ a{
     text-decoration:none;
 }
 
+
+/*---------------profile ----------------------*/
+.profile-wrapper{
+    background:#f5f7fb;
+    padding:60px 0;
+}
+
+.profile-banner{
+    background:linear-gradient(135deg,#0d6efd,#1d4ed8);
+    border-radius:25px;
+    padding:35px;
+    color:#fff;
+}
+
+.profile-avatar{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+    border:5px solid rgba(255,255,255,.3);
+}
+
+.profile-title{
+    font-size:30px;
+    font-weight:700;
+    margin-bottom:5px;
+}
+
+.profile-subtitle{
+    opacity:.9;
+}
+
+.profile-role{
+    background:#fff;
+    color:#0d6efd;
+    padding:6px 15px;
+    border-radius:50px;
+    font-weight:600;
+    display:inline-block;
+}
+
+.stat-card{
+    background:rgba(255,255,255,.15);
+    backdrop-filter:blur(10px);
+    border-radius:18px;
+    padding:20px;
+    text-align:center;
+}
+
+.stat-card h3{
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:5px;
+}
+
+.profile-side-card,
+.profile-edit-card{
+    background:#fff;
+    border-radius:25px;
+    padding:30px;
+    box-shadow:0 10px 40px rgba(0,0,0,.08);
+}
+
+.profile-info-list{
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+
+.profile-info-list li{
+    display:flex;
+    justify-content:space-between;
+    padding:15px 0;
+    border-bottom:1px solid #eee;
+}
+
+.profile-info-list li:last-child{
+    border-bottom:none;
+}
+
+.card-title-area h4{
+    font-weight:700;
+    margin-bottom:5px;
+}
+
+.card-title-area p{
+    color:#6c757d;
+}
+
+.profile-edit-card .form-control{
+    height:55px;
+    border-radius:12px;
+}
+
+.btn-save-profile{
+    background:#0d6efd;
+    color:#fff;
+    border:none;
+    padding:14px 30px;
+    border-radius:12px;
+    font-weight:600;
+}
+
+.btn-save-profile:hover{
+    opacity:.9;
+}
+
 /*---------Dashboard CSS--------------*/
 .dashboard-section{
     padding:50px 0;

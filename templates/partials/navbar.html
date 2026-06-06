@@ -99,31 +99,46 @@
             <div class="d-flex gap-2">
 
                 {% if request.user.is_authenticated %}
+                    {% if request.user.is_superuser or request.user.user_type == 'owner' or request.user.user_type == 'agent' %}
+                    <a href="{% url 'dashboard' %}"
+                       class="btn btn-outline-primary">
 
-                <a href="{% url 'dashboard' %}"
-                   class="btn btn-outline-primary">
+                        Dashboard
 
-                    Dashboard
+                    </a>
 
-                </a>
+                    <a href="{% url 'add_property' %}"
+                       class="btn btn-primary">
+
+                        Post Property
+
+                    </a>
+                    {% endif %}
+
+                    <a href="{% url 'profile' %}"
+                       class="btn btn-outline-primary">
+
+                        Profile
+
+                    </a>
+                    <a href="{% url 'logout' %}"
+                       class="btn btn-outline-primary">
+
+                        Logout
+
+                    </a>
+
 
                 {% else %}
 
-                <a href="{% url 'login' %}"
-                   class="btn btn-outline-primary">
+                    <a href="{% url 'login' %}"
+                       class="btn btn-outline-primary">
 
-                    Login
+                        Login
 
-                </a>
+                    </a>
 
                 {% endif %}
-
-                <a href="{% url 'add_property' %}"
-                   class="btn btn-primary">
-
-                    Post Property
-
-                </a>
 
             </div>
 
