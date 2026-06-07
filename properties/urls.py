@@ -51,7 +51,11 @@ urlpatterns = [
         name="add_review"
     ),
 
-
+    path(
+        'type/<slug:slug>/',
+        views.property_type,
+        name='property_type'
+    ),
 
     path(
         "<slug:slug>/",

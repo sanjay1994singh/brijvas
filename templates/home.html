@@ -122,16 +122,21 @@ Buy, Sell & Rent Properties | PropertyHub
 
             <div class="col-lg-2 col-md-4 col-6 mb-4">
 
-                <div class="category-card">
+                <a href="{% url 'property_type' category.slug %}"
+                   class="text-decoration-none">
 
-                    <img src="{{ category.image.url }}"
-                         alt="{{ category.name }}">
+                    <div class="category-card">
 
-                    <h6>
-                        {{ category.name }}
-                    </h6>
+                        <img src="{{ category.image.url }}"
+                             alt="{{ category.name }}">
 
-                </div>
+                        <h6>
+                            {{ category.name }}
+                        </h6>
+
+                    </div>
+
+                </a>
 
             </div>
 
