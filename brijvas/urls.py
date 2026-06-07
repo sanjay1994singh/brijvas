@@ -7,6 +7,7 @@ from django.contrib.sitemaps.views import sitemap
 from properties.sitemap import PropertySitemap
 from blog.sitemap import BlogSitemap
 from core.sitemaps import StaticViewSitemap
+from core import views
 
 sitemaps = {
     'static': StaticViewSitemap,
@@ -17,6 +18,12 @@ sitemaps = {
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('auth/', include('social_django.urls', namespace='social')),
+
+    path(
+        "google90e7d13ae9f2d42d.html",
+        views.google_verify,
+        name="google_verify"
+    ),
 
     path("", include("core.urls")),
 

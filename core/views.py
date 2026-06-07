@@ -57,6 +57,11 @@ def home(request):
         context
     )
 
+def google_verify(request):
+    return render(
+        request,
+        "google90e7d13ae9f2d42d.html"
+    )
 
 def robots_txt(request):
     lines = [
