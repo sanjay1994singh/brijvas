@@ -4,6 +4,17 @@
 {{ property.title }}
 {% endblock %}
 
+{% block seo %}
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"Residence",
+ "name":"{{ property.title }}",
+ "address":"{{ property.address }}"
+}
+</script>
+{% endblock %}
+
 {% block content %}
 
 <section class="py-5">

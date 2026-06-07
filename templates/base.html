@@ -57,6 +57,10 @@
 
     <!-- Website Schema -->
 
+
+
+    {% block seo %}
+
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
@@ -65,8 +69,6 @@
             "url": "{{ request.scheme }}://{{ request.get_host }}"
         }
     </script>
-
-    {% block seo %}
     {% endblock %}
 
     <!-- Favicon -->
