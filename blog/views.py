@@ -18,101 +18,47 @@ from .models import (
 
 
 def blog_list(request):
-    blogs = Blog.objects.filter(
-        is_published=True
-    ).select_related(
-        "category",
-        "author"
-    )
+    posts = Blog.objects.filter().order_by('-created_at')
 
-    categories = BlogCategory.objects.all()
+    paginator = Paginator(posts, 9)
 
-    paginator = Paginator(
-        blogs,
-        9
-    )
+    page = request.GET.get('page')
 
-    page = request.GET.get("page")
-
-    blogs = paginator.get_page(page)
-
-    context = {
-
-        "blogs": blogs,
-
-        "categories": categories,
-
-    }
+    posts = paginator.get_page(page)
 
     return render(
         request,
-        "blog/blog_list.html",
-        context
+        'blog/blog_list.html',
+        {
+            'posts': posts
+        }
     )
 
 
-def blog_detail(
-        request,
-        slug
-):
-    blog = get_object_or_404(
-
+def blog_detail(request, slug):
+    post = get_object_or_404(
         Blog,
-
         slug=slug,
-
         is_published=True
-
     )
 
-    blog.views += 1
+    post.views += 1
+    post.save()
 
-    blog.save(
-        update_fields=["views"]
-    )
-
-    related_blogs = Blog.objects.filter(
-
-        category=blog.category,
-
+    related_posts = Blog.objects.filter(
+        category=post.category,
         is_published=True
-
     ).exclude(
-
-        id=blog.id
-
-    )[:6]
-
-    comments = BlogComment.objects.filter(
-
-        blog=blog,
-
-        is_approved=True
-
-    ).order_by(
-
-        "-created_at"
-
-    )
-
-    context = {
-
-        "blog": blog,
-
-        "related_blogs": related_blogs,
-
-        "comments": comments,
-
-    }
+        id=post.id
+    )[:3]
 
     return render(
-
         request,
-
         "blog/blog_detail.html",
-
-        context
-
+        {
+            "post": post,
+            "related_posts": related_posts
+        }
     )
 
 

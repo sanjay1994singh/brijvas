@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+{{ category.name }} Properties
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h1>
+
+                {{ category.name }} For Sale
+
+            </h1>
+
+            <p>
+
+                Explore premium {{ category.name|lower }}
+                properties across India.
+
+            </p>
+
+        </div>
+
+        <div class="row">
+
+            {% for property in properties %}
+
+                <div class="col-lg-4 col-md-6 mb-4">
+
+                    {% include 'properties/includes/property_card.html' %}
+
+                </div>
+
+            {% empty %}
+
+                <div class="col-12">
+
+                    <div class="alert alert-warning">
+
+                        No properties found.
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% if properties.has_other_pages %}
+
+        <nav>
+
+            <ul class="pagination justify-content-center">
+
+                {% if properties.has_previous %}
+
+                <li class="page-item">
+
+                    <a class="page-link"
+                       href="?page={{ properties.previous_page_number }}">
+
+                        Previous
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+                {% for num in properties.paginator.page_range %}
+
+                <li class="page-item {% if properties.number == num %}active{% endif %}">
+
+                    <a class="page-link"
+                       href="?page={{ num }}">
+
+                        {{ num }}
+
+                    </a>
+
+                </li>
+
+                {% endfor %}
+
+                {% if properties.has_next %}
+
+                <li class="page-item">
+
+                    <a class="page-link"
+                       href="?page={{ properties.next_page_number }}">
+
+                        Next
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+            </ul>
+
+        </nav>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

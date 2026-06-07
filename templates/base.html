@@ -4,23 +4,33 @@
 
 <head>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Basic SEO -->
 
-    <!-- SEO -->
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
     <title>
         {% block title %}
-        Property Hub
+        Brij Vas | Property in Vrindavan
         {% endblock %}
     </title>
 
     <meta name="description"
-          content="{% block meta_description %}Buy, Sell & Rent Properties{% endblock %}">
+          content="{% block meta_description %}Buy plots, villas, flats, farm houses and agricultural land in Vrindavan, Mathura and nearby areas.{% endblock %}">
 
     <meta name="keywords"
-          content="{% block meta_keywords %}real estate, plot, villa, flat{% endblock %}">
+          content="{% block meta_keywords %}Vrindavan Property, Plot in Vrindavan, Villa in Vrindavan, Farm House, Real Estate{% endblock %}">
 
-    <meta name="author" content="Property Hub">
+    <meta name="robots"
+          content="index,follow">
+
+    <meta name="author"
+          content="Brij Vas">
+
+    <meta name="theme-color"
+          content="#0d6efd">
 
     <link rel="canonical"
           href="{{ request.build_absolute_uri }}">
@@ -28,20 +38,41 @@
     <!-- Open Graph -->
 
     <meta property="og:title"
-          content="{% block og_title %}Property Hub{% endblock %}">
+          content="{% block og_title %}Brij Vas{% endblock %}">
 
     <meta property="og:description"
-          content="{% block og_description %}Find Your Dream Property{% endblock %}">
+          content="{% block og_description %}Find Your Dream Property in Vrindavan{% endblock %}">
 
     <meta property="og:image"
-          content="{% block og_image %}{% static 'images/og-image.jpg' %}{% endblock %}">
+          content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-image.jpg' %}{% endblock %}">
+
+    <meta property="og:url"
+          content="{{ request.build_absolute_uri }}">
 
     <meta property="og:type"
           content="website">
 
+    <meta property="og:site_name"
+          content="Brij Vas">
+
+    <!-- Website Schema -->
+
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Brij Vas",
+            "url": "{{ request.scheme }}://{{ request.get_host }}"
+        }
+    </script>
+
+    {% block seo %}
+    {% endblock %}
+
     <!-- Favicon -->
 
     <link rel="icon"
+          type="image/png"
           href="{% static 'images/favicon.png' %}">
 
     <!-- Bootstrap -->
@@ -90,13 +121,40 @@
 
 <!-- Loader -->
 
-<div id="loader">
+<div id="loader"
+     aria-label="Loading">
+
     <div class="spinner-border text-primary"></div>
+
 </div>
 
 <!-- Navbar -->
 
 {% include 'partials/navbar.html' %}
+
+<!-- Messages -->
+
+{% if messages %}
+
+<div class="container mt-3">
+
+    {% for message in messages %}
+
+    <div class="alert alert-{{ message.tags|default:'success' }} alert-dismissible fade show">
+
+        {{ message }}
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"></button>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}
 
 <!-- Main Content -->
 
@@ -113,7 +171,7 @@
 
 <!-- WhatsApp -->
 
-<a href="https://wa.me/919999999999"
+<a href="https://wa.me/91XXXXXXXXXX?text=Hi%20I%20am%20interested%20in%20your%20property"
    target="_blank"
    class="whatsapp-btn">
 
@@ -152,27 +210,39 @@
         once: true
     });
 
-    window.addEventListener("load", () => {
-        document.getElementById("loader").style.display = "none";
-    });
+    window.addEventListener('load', function () {
 
-    const topBtn = document.getElementById("backToTop");
+        const loader = document.getElementById('loader');
 
-    window.addEventListener("scroll", () => {
-
-        if(window.scrollY > 300){
-            topBtn.style.display = "block";
-        }else{
-            topBtn.style.display = "none";
+        if(loader){
+            loader.style.display = 'none';
         }
 
     });
 
-    topBtn.addEventListener("click", () => {
+    const topBtn = document.getElementById("backToTop");
+
+    window.addEventListener("scroll", function () {
+
+        if(window.scrollY > 300){
+
+            topBtn.style.display = "flex";
+
+        }else{
+
+            topBtn.style.display = "none";
+
+        }
+
+    });
+
+    topBtn.addEventListener("click", function () {
 
         window.scrollTo({
-            top:0,
-            behavior:'smooth'
+
+            top: 0,
+            behavior: "smooth"
+
         });
 
     });
@@ -182,23 +252,8 @@
 {% block extra_js %}
 {% endblock %}
 
-{% if messages %}
-
-<div class="toast-container position-fixed top-0 end-0 p-3">
-
-    {% for message in messages %}
-
-    <div class="alert alert-success">
-
-        {{ message }}
-
-    </div>
-
-    {% endfor %}
-
-</div>
-
-{% endif %}
+{% block js %}
+{% endblock %}
 
 </body>
 </html>

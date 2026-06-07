@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{{ post.seo_title|default:post.title }}
+{% endblock %}
+
+{% block meta_description %}
+{{ post.seo_description|default:post.excerpt }}
+{% endblock %}
+
+{% block meta_keywords %}
+{{ post.category.name }}, Vrindavan Property, Real Estate Blog, Property Investment
+{% endblock %}
+
+{% block og_title %}
+{{ post.seo_title|default:post.title }}
+{% endblock %}
+
+{% block og_description %}
+{{ post.seo_description|default:post.excerpt }}
+{% endblock %}
+
+{% block og_image %}
+{% if post.featured_image %}
+{{ request.scheme }}://{{ request.get_host }}{{ post.featured_image.url }}
+{% else %}
+{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-image.jpg' %}
+{% endif %}
+{% endblock %}
+
+{% block seo %}
+
+<meta property="og:type"
+      content="article">
+
+<meta property="article:published_time"
+      content="{{ post.created_at|date:'c' }}">
+
+<meta property="article:modified_time"
+      content="{{ post.updated_at|date:'c' }}">
+
+<meta property="article:author"
+      content="{{ post.author }}">
+
+<script type="application/ld+json">
+{
+     "@context":"https://schema.org",
+     "@type":"BlogPosting",
+     "headline":"{{ post.title|escapejs }}",
+     "description":"{{ post.seo_description|default:post.excerpt|escapejs }}",
+     "url":"{{ request.build_absolute_uri }}",
+     "datePublished":"{{ post.created_at|date:'c' }}",
+     "dateModified":"{{ post.updated_at|date:'c' }}",
+     {% if post.featured_image %}
+     "image":"{{ request.scheme }}://{{ request.get_host }}{{ post.featured_image.url }}",
+     {% endif %}
+     "author":{
+       "@type":"Person",
+       "name":"{{ post.author|escapejs }}"
+     },
+     "publisher":{
+       "@type":"Organization",
+       "name":"BrijVas"
+     }
+}
+</script>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="blog-detail-section py-5">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-9">
+
+                <!-- Breadcrumb -->
+
+                <nav class="mb-4">
+
+                    <ol class="breadcrumb">
+
+                        <li class="breadcrumb-item">
+
+                            <a href="/">
+                                Home
+                            </a>
+
+                        </li>
+
+                        <li class="breadcrumb-item">
+
+                            <a href="{% url 'blog_list' %}">
+                                Blog
+                            </a>
+
+                        </li>
+
+                        <li class="breadcrumb-item active">
+
+                            {{ post.title|truncatechars:40 }}
+
+                        </li>
+
+                    </ol>
+
+                </nav>
+
+                <!-- Blog Header -->
+
+                <article class="blog-post">
+
+                    <div class="blog-header">
+
+                        <span class="badge bg-primary mb-3">
+
+                            {{ post.category.name }}
+
+                        </span>
+
+                        <h1 class="blog-title">
+
+                            {{ post.title }}
+
+                        </h1>
+
+                        <div class="blog-meta">
+
+                            <span>
+
+                                <i class="fas fa-user"></i>
+
+                                {{ post.author }}
+
+                            </span>
+
+                            <span>
+
+                                <i class="fas fa-calendar"></i>
+
+                                {{ post.created_at|date:"d M Y" }}
+
+                            </span>
+
+                            <span>
+
+                                <i class="fas fa-eye"></i>
+
+                                {{ post.views }}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Featured Image -->
+
+                    {% if post.featured_image %}
+
+                    <div class="blog-image mt-4 mb-4">
+
+                        <img src="{{ post.featured_image.url }}"
+                             alt="{{ post.title }}"
+                             class="img-fluid rounded shadow-sm w-100">
+
+                    </div>
+
+                    {% endif %}
+
+                    <!-- Excerpt -->
+
+                    {% if post.excerpt %}
+
+                    <div class="blog-excerpt">
+
+                        <p>
+
+                            {{ post.excerpt }}
+
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+                    <!-- Content -->
+
+                    <div class="blog-content">
+
+                        {{ post.content|safe }}
+
+                    </div>
+
+                </article>
+
+                <!-- Share -->
+
+                <div class="share-box mt-5">
+
+                    <h5>
+
+                        Share This Article
+
+                    </h5>
+
+                    <div class="d-flex gap-2 mt-3">
+
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+                           target="_blank"
+                           class="btn btn-primary">
+
+                            Facebook
+
+                        </a>
+
+                        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}"
+                           target="_blank"
+                           class="btn btn-dark">
+
+                            X
+
+                        </a>
+
+                        <a href="https://wa.me/?text={{ request.build_absolute_uri }}"
+                           target="_blank"
+                           class="btn btn-success">
+
+                            WhatsApp
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <!-- Related Posts -->
+
+                {% if related_posts %}
+
+                <div class="related-posts mt-5">
+
+                    <h3 class="mb-4">
+
+                        Related Articles
+
+                    </h3>
+
+                    <div class="row">
+
+                        {% for related in related_posts %}
+
+                        <div class="col-md-4 mb-4">
+
+                            <div class="card border-0 shadow-sm h-100">
+
+                                {% if related.featured_image %}
+
+                                <img src="{{ related.featured_image.url }}"
+                                     class="card-img-top"
+                                     style="height:220px;object-fit:cover;"
+                                     alt="{{ related.title }}">
+
+                                {% endif %}
+
+                                <div class="card-body">
+
+                                    <h6>
+
+                                        <a href="{% url 'blog_detail' related.slug %}"
+                                           class="text-decoration-none text-dark">
+
+                                            {{ related.title|truncatechars:60 }}
+
+                                        </a>
+
+                                    </h6>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

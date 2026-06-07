@@ -41,33 +41,20 @@
 
                     <ul class="dropdown-menu">
 
-                        <li>
-                            <a class="dropdown-item"
-                               href="/category/plot/">
-                                Plot
-                            </a>
-                        </li>
+                        {% for type in property_types %}
 
                         <li>
+
                             <a class="dropdown-item"
-                               href="/category/villa/">
-                                Villa
+                               href="{% url 'category_properties' type.slug %}">
+
+                                {{ type.name }}
+
                             </a>
+
                         </li>
 
-                        <li>
-                            <a class="dropdown-item"
-                               href="/category/flat/">
-                                Flat
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item"
-                               href="/category/agriculture-land/">
-                                Agriculture Land
-                            </a>
-                        </li>
+                        {% endfor %}
 
                     </ul>
 
@@ -115,12 +102,7 @@
                     </a>
                     {% endif %}
 
-                    <a href="{% url 'profile' %}"
-                       class="btn btn-outline-primary">
 
-                        Profile
-
-                    </a>
                     <a href="{% url 'logout' %}"
                        class="btn btn-outline-primary">
 

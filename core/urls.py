@@ -8,6 +8,11 @@ urlpatterns = [
         views.home,
         name="home"
     ),
+    path(
+        "buy/<slug:slug>/",
+        views.category_properties,
+        name="category_properties"
+    ),
 
     path(
         "about/",

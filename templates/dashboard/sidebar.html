@@ -15,12 +15,14 @@
             </a>
         </li>
 
+        {% if request.user.is_superuser or request.user.user_type == 'owner' or request.user.user_type == 'agent' %}
         <li>
             <a href="{% url 'add_property' %}">
                 <i class="fa-solid fa-plus"></i>
                 Add Property
             </a>
         </li>
+        {% endif %}
 
         <li>
             <a href="{% url 'my_properties' %}">

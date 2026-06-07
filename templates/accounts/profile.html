@@ -1,57 +1,109 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}
 My Profile
 {% endblock %}
 
 {% block content %}
 
-<!-- Profile Header -->
+<section class="dashboard-section">
 
-<section class="profile-wrapper">
-    <div class="container">
+    <div class="container-fluid">
 
-        <div class="profile-banner">
+        <div class="row">
 
-            <div class="row align-items-center">
+            <!-- Sidebar -->
 
-                <div class="col-lg-8">
+            <div class="col-lg-3">
 
-                    <div class="d-flex align-items-center gap-4">
+                {% include 'dashboard/sidebar.html' %}
 
-                        {% if request.user.profile_image %}
+            </div>
 
-                        <img src="{{ request.user.profile_image.url }}"
-                             class="profile-avatar"
-                             alt="{{ request.user.username }}">
+            <!-- Main Content -->
 
-                        {% else %}
+            <div class="col-lg-9">
 
-                        <img src="{% static 'images/default-user.png' %}"
-                             class="profile-avatar"
-                             alt="User">
+                <!-- Profile Banner -->
 
-                        {% endif %}
+                <div class="profile-banner mb-4">
 
-                        <div>
+                    <div class="row align-items-center">
 
-                            <h2 class="profile-title">
+                        <div class="col-lg-8">
 
-                                {{ request.user.get_full_name|default:request.user.username }}
+                            <div class="d-flex align-items-center gap-4">
 
-                            </h2>
+                                {% if request.user.profile_image %}
 
-                            <p class="profile-subtitle">
+                                <img src="{{ request.user.profile_image.url }}"
+                                     class="profile-avatar"
+                                     alt="{{ request.user.username }}">
 
-                                {{ request.user.email }}
+                                {% else %}
 
-                            </p>
+                                <img src="{% static 'images/default-user.png' %}"
+                                     class="profile-avatar"
+                                     alt="User">
 
-                            <span class="profile-role">
+                                {% endif %}
 
-                            {{ request.user.user_type|title }}
+                                <div>
 
-                        </span>
+                                    <h2 class="profile-title">
+
+                                        {{ request.user.get_full_name|default:request.user.username }}
+
+                                    </h2>
+
+                                    <p class="profile-subtitle">
+
+                                        {{ request.user.email }}
+
+                                    </p>
+
+                                    <span class="profile-role">
+
+                                        {{ request.user.user_type|title }}
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-lg-4">
+
+                            <div class="row g-3">
+
+                                <div class="col-6">
+
+                                    <div class="stat-card">
+
+                                        <h3>{{ property_count }}</h3>
+
+                                        <span>Properties</span>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-6">
+
+                                    <div class="stat-card">
+
+                                        <h3>{{ enquiry_count }}</h3>
+
+                                        <span>Enquiries</span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
@@ -59,135 +111,27 @@ My Profile
 
                 </div>
 
-                <div class="col-lg-4">
-
-                    <div class="row g-3">
-
-                        <div class="col-6">
-
-                            <div class="stat-card">
-
-                                <h3>
-
-                                    {{ property_count|default:"0" }}
-
-                                </h3>
-
-                                <span>
-
-                                Properties
-
-                            </span>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-6">
-
-                            <div class="stat-card">
-
-                                <h3>
-
-                                    {{ enquiry_count|default:"0" }}
-
-                                </h3>
-
-                                <span>
-
-                                Enquiries
-
-                            </span>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="row mt-4">
-
-            <!-- Left Card -->
-
-            <div class="col-lg-4">
-
-                <div class="profile-side-card">
-
-                    <h5>
-
-                        Account Information
-
-                    </h5>
-
-                    <hr>
-
-                    <ul class="profile-info-list">
-
-                        <li>
-
-                            <strong>Username</strong>
-
-                            <span>{{ request.user.username }}</span>
-
-                        </li>
-
-                        <li>
-
-                            <strong>Email</strong>
-
-                            <span>{{ request.user.email }}</span>
-
-                        </li>
-
-                        <li>
-
-                            <strong>Phone</strong>
-
-                            <span>{{ request.user.phone }}</span>
-
-                        </li>
-
-                        <li>
-
-                            <strong>Role</strong>
-
-                            <span>{{ request.user.user_type|title }}</span>
-
-                        </li>
-
-                    </ul>
-
-                </div>
-
-            </div>
-
-
-            <!-- Right Card -->
-
-            <div class="col-lg-8">
+                <!-- Profile Form Card -->
 
                 <div class="profile-edit-card">
 
-                    <div class="card-title-area">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
 
-                        <h4>
+                        <div>
 
-                            Edit Profile
+                            <h4 class="mb-1">
 
-                        </h4>
+                                Edit Profile
 
-                        <p>
+                            </h4>
 
-                            Update your personal information
+                            <p class="text-muted mb-0">
 
-                        </p>
+                                Update your account information
+
+                            </p>
+
+                        </div>
 
                     </div>
 
@@ -242,7 +186,7 @@ My Profile
 
                                 <label class="form-label">
 
-                                    Mobile Number
+                                    Phone Number
 
                                 </label>
 
@@ -265,7 +209,7 @@ My Profile
                         </div>
 
                         <button type="submit"
-                                class="btn-save-profile">
+                                class="btn btn-primary px-5">
 
                             Save Changes
 
@@ -282,6 +226,5 @@ My Profile
     </div>
 
 </section>
-
 
 {% endblock %}

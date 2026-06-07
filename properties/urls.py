@@ -51,6 +51,8 @@ urlpatterns = [
         name="add_review"
     ),
 
+
+
     path(
         "<slug:slug>/",
         views.property_detail,

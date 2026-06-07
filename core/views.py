@@ -1,12 +1,15 @@
-from django.shortcuts import render
-
+from django.shortcuts import (
+    render,
+    get_object_or_404,
+    redirect
+)
 from properties.models import (
     Property,
     PropertyType,
 )
 
 from blog.models import Blog
-
+from django.core.paginator import Paginator
 
 def home(request):
     featured_properties = Property.objects.filter(
@@ -43,6 +46,38 @@ def home(request):
         "home.html",
         context
     )
+
+
+def category_properties(request, slug):
+    category = get_object_or_404(
+        PropertyType,
+        slug=slug
+    )
+
+    properties = Property.objects.filter(
+        property_type=category,
+        is_active=True
+    )
+
+    paginator = Paginator(
+        properties,
+        12
+    )
+
+    page = request.GET.get("page")
+
+    properties = paginator.get_page(page)
+
+    context = {
+
+        "category": category,
+
+        "properties": properties
+
+    }
+    print(context, '===========context===============')
+
+    return render(request, "properties/category_properties.html", context)
 
 
 def about(request):
