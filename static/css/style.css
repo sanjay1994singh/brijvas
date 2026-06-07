@@ -503,3 +503,29 @@ a{
     justify-content:center;
     z-index:999;
 }
+
+/*------------category-------------*/
+.category-card{
+    background:#fff;
+    border-radius:16px;
+    overflow:hidden;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.category-card:hover{
+    transform:translateY(-5px);
+}
+
+.category-card img{
+    width:100%;
+    height:140px;
+    object-fit:cover;
+}
+
+.category-card h6{
+    padding:15px;
+    margin:0;
+    font-weight:600;
+}

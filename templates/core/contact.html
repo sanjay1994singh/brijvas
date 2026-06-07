@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Contact Us
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5">
+
+    <div class="container">
+
+        <h1 class="mb-4">
+            Contact Us
+        </h1>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="mb-3">
+
+                <label>Name</label>
+
+                <input type="text"
+                       name="name"
+                       class="form-control">
+
+            </div>
+
+            <div class="mb-3">
+
+                <label>Email</label>
+
+                <input type="email"
+                       name="email"
+                       class="form-control">
+
+            </div>
+
+            <div class="mb-3">
+
+                <label>Message</label>
+
+                <textarea name="message"
+                          rows="5"
+                          class="form-control"></textarea>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary">
+
+                Send Message
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}
