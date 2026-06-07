@@ -11,6 +11,11 @@ from properties.models import (
 from blog.models import Blog
 from django.core.paginator import Paginator
 
+from django.contrib import messages
+
+from .models import Contact
+
+
 def home(request):
     featured_properties = Property.objects.filter(
         is_active=True,
@@ -75,7 +80,6 @@ def category_properties(request, slug):
         "properties": properties
 
     }
-    print(context, '===========context===============')
 
     return render(request, "properties/category_properties.html", context)
 
@@ -88,6 +92,28 @@ def about(request):
 
 
 def contact(request):
+    if request.method == "POST":
+        Contact.objects.create(
+
+            name=request.POST.get("name"),
+
+            email=request.POST.get("email"),
+
+            phone=request.POST.get("phone"),
+
+            subject=request.POST.get("subject"),
+
+            message=request.POST.get("message")
+
+        )
+
+        messages.success(
+            request,
+            "Thank you! We will contact you soon."
+        )
+
+        return redirect("contact")
+
     return render(
         request,
         "core/contact.html"
