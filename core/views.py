@@ -7,6 +7,7 @@ from properties.models import (
     Property,
     PropertyType,
 )
+from django.http import HttpResponse
 
 from blog.models import Blog
 from django.core.paginator import Paginator
@@ -54,6 +55,20 @@ def home(request):
         request,
         "home.html",
         context
+    )
+
+
+def robots_txt(request):
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        "",
+        "Sitemap: https://brijvas.com/sitemap.xml",
+    ]
+
+    return HttpResponse(
+        "\n".join(lines),
+        content_type="text/plain"
     )
 
 

@@ -44,4 +44,10 @@ urlpatterns = [
         name="terms_conditions"
     ),
 
+    path(
+        "robots.txt",
+        views.robots_txt,
+        name="robots_txt"
+    ),
+
 ]
