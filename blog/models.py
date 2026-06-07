@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
+
 
 class BlogCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -11,7 +13,6 @@ class BlogCategory(models.Model):
 
 
 class Blog(models.Model):
-
     title = models.CharField(
         max_length=255
     )
@@ -60,6 +61,19 @@ class Blog(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True
     )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def get_absolute_url(self):
+        return reverse(
+
+            "blog_detail",
+
+            kwargs={"slug": self.slug}
+
+        )
 
     def __str__(self):
         return self.title

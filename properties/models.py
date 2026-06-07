@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
-
+from django.urls import reverse
 from accounts.models import User
 from locations.models import State, City
 from django.conf import settings
@@ -155,6 +155,15 @@ class Property(models.Model):
             self.slug = slugify(self.title)
 
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse(
+
+            "property_detail",
+
+            kwargs={"slug": self.slug}
+
+        )
 
     def __str__(self):
         return self.title
