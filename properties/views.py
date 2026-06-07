@@ -124,6 +124,39 @@ def property_detail(request, slug):
         is_active=True
     )
 
+    # Inquiry Submit
+
+    if request.method == "POST":
+
+        form = EnquiryForm(request.POST)
+
+        if form.is_valid():
+
+            enquiry = form.save(commit=False)
+
+            enquiry.property = property
+
+            if request.user.is_authenticated:
+                enquiry.user = request.user
+
+            enquiry.save()
+
+            messages.success(
+                request,
+                "Your enquiry has been submitted successfully."
+            )
+
+            return redirect(
+                "property_detail",
+                slug=property.slug
+            )
+
+    else:
+
+        form = EnquiryForm()
+
+    # Views Counter
+
     property.views += 1
 
     property.save(
@@ -141,8 +174,6 @@ def property_detail(request, slug):
         property=property
     )
 
-    form = EnquiryForm()
-
     context = {
 
         "property": property,
@@ -156,13 +187,9 @@ def property_detail(request, slug):
     }
 
     return render(
-
         request,
-
         "properties/property_detail.html",
-
         context
-
     )
 
 

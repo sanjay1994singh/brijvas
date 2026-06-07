@@ -14,6 +14,7 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 
 from .models import Contact
+from locations.models import City
 
 
 def home(request):
@@ -26,6 +27,7 @@ def home(request):
         is_active=True
     ).order_by("-created_at")[:12]
 
+    cities = City.objects.all()
     property_types = PropertyType.objects.all()
 
     latest_blogs = Blog.objects.filter(
@@ -37,6 +39,8 @@ def home(request):
         "featured_properties": featured_properties,
 
         "latest_properties": latest_properties,
+
+        "cities": cities,
 
         "property_types": property_types,
 
