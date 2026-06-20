@@ -19,6 +19,7 @@ from .models import (
 )
 
 from enquiries.forms import EnquiryForm
+from core.seo import absolute_url, clean_excerpt
 
 
 def property_list(request):
@@ -174,6 +175,29 @@ def property_detail(request, slug):
         property=property
     )
 
+    location_text = ", ".join(
+        part for part in [
+            property.city.name,
+            property.state.name,
+        ] if part
+    )
+    property_seo_title = (
+        f"{property.title} | {property.get_purpose_display()} "
+        f"{property.property_type.name} in {location_text}"
+    )
+    property_seo_description = clean_excerpt(
+        property.description,
+        words=24
+    ) or (
+        f"{property.property_type.name} for {property.get_purpose_display().lower()} "
+        f"in {location_text}. Area {property.area} {property.area_unit}, "
+        f"price Rs {property.price}."
+    )
+    property_image_url = absolute_url(
+        property.featured_image.url if property.featured_image else "",
+        request=request
+    )
+
     context = {
 
         "property": property,
@@ -183,6 +207,19 @@ def property_detail(request, slug):
         "reviews": reviews,
 
         "form": form,
+
+        "property_seo_title": property_seo_title,
+
+        "property_seo_description": property_seo_description,
+
+        "property_image_url": property_image_url,
+
+        "property_canonical_url": absolute_url(
+            property.get_absolute_url(),
+            request=request
+        ),
+
+        "property_location_text": location_text,
 
     }
 

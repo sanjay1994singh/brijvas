@@ -1,16 +1,80 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}
-{{ property.title }}
+{{ property_seo_title }}
+{% endblock %}
+
+{% block meta_description %}
+{{ property_seo_description }}
+{% endblock %}
+
+{% block meta_keywords %}
+{{ property.property_type.name }} in {{ property.city.name }}, {{ property.city.name }} property, {{ property.get_purpose_display }} property, Brij Vas property
+{% endblock %}
+
+{% block canonical_url %}
+{{ property_canonical_url }}
+{% endblock %}
+
+{% block og_title %}
+{{ property_seo_title }}
+{% endblock %}
+
+{% block og_description %}
+{{ property_seo_description }}
+{% endblock %}
+
+{% block og_image %}
+{{ property_image_url }}
+{% endblock %}
+
+{% block og_url %}
+{{ property_canonical_url }}
+{% endblock %}
+
+{% block og_type %}
+product
 {% endblock %}
 
 {% block seo %}
 <script type="application/ld+json">
 {
- "@context":"https://schema.org",
- "@type":"Residence",
- "name":"{{ property.title }}",
- "address":"{{ property.address }}"
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    "name": "{{ property.title|escapejs }}",
+    "description": "{{ property_seo_description|escapejs }}",
+    "url": "{{ property_canonical_url }}",
+    {% if property_image_url %}
+    "image": "{{ property_image_url }}",
+    {% endif %}
+    "datePosted": "{{ property.created_at|date:'c' }}",
+    "dateModified": "{{ property.updated_at|date:'c' }}",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "{{ property.address|escapejs }}",
+        "addressLocality": "{{ property.city.name|escapejs }}",
+        "addressRegion": "{{ property.state.name|escapejs }}",
+        "addressCountry": "IN"
+    },
+    {% if property.latitude and property.longitude %}
+    "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "{{ property.latitude }}",
+        "longitude": "{{ property.longitude }}"
+    },
+    {% endif %}
+    "offers": {
+        "@type": "Offer",
+        "price": "{{ property.price }}",
+        "priceCurrency": "INR",
+        "availability": "https://schema.org/InStock",
+        "url": "{{ property_canonical_url }}"
+    },
+    "floorSize": {
+        "@type": "QuantitativeValue",
+        "value": "{{ property.area }}",
+        "unitText": "{{ property.area_unit|escapejs }}"
+    }
 }
 </script>
 {% endblock %}

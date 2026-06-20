@@ -13,6 +13,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 SITE_ID = 1
+SITE_URL = os.getenv("SITE_URL", "https://brijvas.com").rstrip("/")
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv("GOOGLE_CLIENT_ID")
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 
@@ -100,11 +101,11 @@ WSGI_APPLICATION = 'brijvas.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'brijvas',
-        'USER': 'brijvas',
-        'PASSWORD': 'Hello12345678#$@',
-        'HOST': '103.168.19.9',
-        'PORT': '3306',
+        'NAME': os.getenv("DB_NAME", "brijvas"),
+        'USER': os.getenv("DB_USER", "brijvas"),
+        'PASSWORD': os.getenv("DB_PASSWORD", ""),
+        'HOST': os.getenv("DB_HOST", "127.0.0.1"),
+        'PORT': os.getenv("DB_PORT", "3306"),
     }
 }
 

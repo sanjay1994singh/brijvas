@@ -18,7 +18,9 @@ from .models import (
 
 
 def blog_list(request):
-    posts = Blog.objects.filter().order_by('-created_at')
+    posts = Blog.objects.filter(
+        is_published=True
+    ).order_by('-created_at')
 
     paginator = Paginator(posts, 9)
 

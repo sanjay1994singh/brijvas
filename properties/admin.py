@@ -45,16 +45,31 @@ class PropertyAdmin(admin.ModelAdmin):
         "description",
     )
 
-    prepopulated_fields = {
-        "slug": ("title",)
-    }
+    readonly_fields = (
+        "slug",
+    )
 
     inlines = [
         PropertyGalleryInline
     ]
 
 
-admin.site.register(PropertyType)
+@admin.register(PropertyType)
+class PropertyTypeAdmin(admin.ModelAdmin):
+    readonly_fields = (
+        "slug",
+    )
+
+    list_display = (
+        "name",
+        "slug",
+    )
+
+    search_fields = (
+        "name",
+    )
+
+
 admin.site.register(Amenity)
 admin.site.register(Wishlist)
 admin.site.register(CompareProperty)

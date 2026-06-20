@@ -1,21 +1,40 @@
 from django.db import models
-from django.utils.text import slugify
 from django.urls import reverse
 from accounts.models import User
 from locations.models import State, City
 from django.conf import settings
+from core.seo import unique_slug
 
 
 class PropertyType(models.Model):
     name = models.CharField(max_length=100)
 
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(
+        unique=True,
+        blank=True
+    )
 
     icon = models.CharField(max_length=100, blank=True)
 
     image = models.ImageField(
         upload_to='property-types/'
     )
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slug(
+                self,
+                self.name,
+                fallback="property-type"
+            )
+
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse(
+            "category_properties",
+            kwargs={"slug": self.slug}
+        )
 
     def __str__(self):
         return self.name
@@ -152,7 +171,18 @@ class Property(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            parts = [
+                self.title,
+                getattr(self.property_type, "name", ""),
+                "in",
+                getattr(self.city, "name", ""),
+                getattr(self.state, "name", ""),
+            ]
+            self.slug = unique_slug(
+                self,
+                " ".join(str(part) for part in parts if part),
+                fallback="property"
+            )
 
         super().save(*args, **kwargs)
 

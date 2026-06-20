@@ -5,15 +5,30 @@ from .models import (
     BlogComment
 )
 
-admin.site.register(BlogCategory)
+@admin.register(BlogCategory)
+class BlogCategoryAdmin(admin.ModelAdmin):
+    readonly_fields = (
+        "slug",
+    )
+
+    list_display = (
+        "name",
+        "slug",
+    )
+
+    search_fields = (
+        "name",
+    )
+
+
 admin.site.register(BlogComment)
 
 
 @admin.register(Blog)
 class BlogAdmin(admin.ModelAdmin):
-    prepopulated_fields = {
-        "slug": ("title",)
-    }
+    readonly_fields = (
+        "slug",
+    )
 
     list_display = (
         "title",

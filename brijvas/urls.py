@@ -4,15 +4,17 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from django.contrib.sitemaps.views import sitemap
-from properties.sitemap import PropertySitemap
-from blog.sitemap import BlogSitemap
+from properties.sitemap import PropertySitemap, PropertyTypeSitemap
+from blog.sitemap import BlogSitemap, BlogCategorySitemap
 from core.sitemaps import StaticViewSitemap
 from core import views
 
 sitemaps = {
     'static': StaticViewSitemap,
     "properties": PropertySitemap,
+    "property_types": PropertyTypeSitemap,
     "blogs": BlogSitemap,
+    "blog_categories": BlogCategorySitemap,
 }
 
 urlpatterns = [

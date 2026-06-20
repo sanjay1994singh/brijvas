@@ -1,5 +1,5 @@
 from django.contrib.sitemaps import Sitemap
-from .models import Property
+from .models import Property, PropertyType
 
 
 class PropertySitemap(Sitemap):
@@ -14,3 +14,12 @@ class PropertySitemap(Sitemap):
 
     def lastmod(self, obj):
         return obj.updated_at
+
+
+class PropertyTypeSitemap(Sitemap):
+    changefreq = "weekly"
+
+    priority = 0.7
+
+    def items(self):
+        return PropertyType.objects.all()

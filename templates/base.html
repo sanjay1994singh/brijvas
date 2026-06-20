@@ -33,7 +33,7 @@
           content="#0d6efd">
 
     <link rel="canonical"
-          href="{{ request.build_absolute_uri }}">
+          href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
 
     <!-- Open Graph -->
 
@@ -47,10 +47,10 @@
           content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-image.jpg' %}{% endblock %}">
 
     <meta property="og:url"
-          content="{{ request.build_absolute_uri }}">
+          content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
 
     <meta property="og:type"
-          content="website">
+          content="{% block og_type %}website{% endblock %}">
 
     <meta property="og:site_name"
           content="Brij Vas">

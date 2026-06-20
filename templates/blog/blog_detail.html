@@ -29,10 +29,11 @@
 {% endif %}
 {% endblock %}
 
-{% block seo %}
+{% block og_type %}
+article
+{% endblock %}
 
-<meta property="og:type"
-      content="article">
+{% block seo %}
 
 <meta property="article:published_time"
       content="{{ post.created_at|date:'c' }}">
