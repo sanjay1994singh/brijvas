@@ -16,14 +16,10 @@ from django.contrib import messages
 
 from .models import Contact
 from locations.models import City
+from accounts.models import User
 
 
 def home(request):
-    featured_properties = Property.objects.filter(
-        is_active=True,
-        is_featured=True
-    )[:8]
-
     latest_properties = Property.objects.filter(
         is_active=True
     ).order_by("-created_at")[:12]
@@ -37,8 +33,6 @@ def home(request):
 
     context = {
 
-        "featured_properties": featured_properties,
-
         "latest_properties": latest_properties,
 
         "cities": cities,
@@ -48,6 +42,14 @@ def home(request):
         "latest_blogs": latest_blogs,
 
         "total_properties": Property.objects.count(),
+
+        "total_agents": User.objects.filter(
+            user_type="agent"
+        ).count(),
+
+        "total_cities": cities.count(),
+
+        "total_users": User.objects.count(),
 
     }
 

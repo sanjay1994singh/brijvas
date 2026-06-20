@@ -9,6 +9,12 @@ Property in Vrindavan and Mathura | Brij Vas
 Find verified plots, flats, villas, farm houses, hotels and commercial properties for sale, resale and rent in Vrindavan, Mathura and nearby areas with Brij Vas.
 {% endblock %}
 
+{% block og_title %}Property in Vrindavan and Mathura | Brij Vas{% endblock %}
+
+{% block og_description %}Find verified plots, flats, villas, farm houses, hotels and commercial properties in Vrindavan and Mathura.{% endblock %}
+
+{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/home-vrindavan-hero.webp' %}{% endblock %}
+
 {% block content %}
 
 <!-- HERO SECTION -->
@@ -19,15 +25,19 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
     <div class="container">
 
-        <div class="hero-content text-center">
+        <div class="hero-content">
+
+            <span class="hero-kicker">
+                Vrindavan & Mathura Real Estate
+            </span>
 
             <h1>
-                Find Property in Vrindavan
+                Find Verified Property in Brij Bhoomi
             </h1>
 
             <p>
-                Buy, sell and rent plots, villas,
-                flats, farm houses and hotels in Brij Bhoomi
+                Buy, sell and rent plots, villas, flats, farm houses and
+                commercial spaces with trusted local guidance.
             </p>
 
             <!-- SEARCH BOX -->
@@ -41,14 +51,22 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
                         <div class="col-lg-4">
 
+                            <label class="form-label">
+                                Search
+                            </label>
+
                             <input type="text"
                                    name="keyword"
                                    class="form-control"
-                                   placeholder="Search Property">
+                                   placeholder="Plot, villa, flat...">
 
                         </div>
 
                         <div class="col-lg-3">
+
+                            <label class="form-label">
+                                City
+                            </label>
 
                             <select class="form-select"
                                     name="city">
@@ -69,6 +87,10 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
                         <div class="col-lg-3">
 
+                            <label class="form-label">
+                                Type
+                            </label>
+
                             <select class="form-select"
                                     name="type">
 
@@ -88,7 +110,7 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
                         <div class="col-lg-2">
 
-                            <button class="btn btn-primary w-100">
+                            <button class="btn btn-primary w-100 hero-search-btn">
 
                                 Search
 
@@ -99,6 +121,25 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
                     </div>
 
                 </form>
+
+            </div>
+
+            <div class="hero-trust-row">
+
+                <div>
+                    <strong>{{ total_properties|default:"0" }}+</strong>
+                    <span>Listed Properties</span>
+                </div>
+
+                <div>
+                    <strong>Local</strong>
+                    <span>Vrindavan Guidance</span>
+                </div>
+
+                <div>
+                    <strong>Verified</strong>
+                    <span>Property Details</span>
+                </div>
 
             </div>
 
@@ -116,7 +157,13 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
         <div class="section-title text-center mb-5">
 
+            <span>Property Options</span>
+
             <h2>Browse By Category</h2>
+
+            <p>
+                Choose the property type that fits your plan in Vrindavan and Mathura.
+            </p>
 
         </div>
 
@@ -155,88 +202,25 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
 </section>
 
-<!-- FEATURED PROPERTIES -->
-
-<section class="featured-section">
-
-    <div class="container">
-
-        <div class="section-title mb-5">
-
-            <h2>
-                Featured Properties
-            </h2>
-
-        </div>
-
-        <div class="row">
-
-            {% for property in featured_properties %}
-
-            <div class="col-lg-4 mb-4">
-
-                <div class="property-card">
-
-                    <div class="property-image">
-
-                        <a href="{% url 'property_detail' property.slug %}">
-                            <img src="{{ property.featured_image.url }}"
-                                 width="600"
-                                 height="420"
-                                 loading="lazy"
-                                 alt="{{ property.title }}">
-                        </a>
-
-                    </div>
-
-                    <div class="property-content">
-
-                        <h5>
-                            {{ property.title }}
-                        </h5>
-
-                        <h4 class="price">
-
-                            Rs {{ property.price }}
-
-                        </h4>
-
-                        <p>
-
-                            {{ property.city.name }}
-
-                        </p>
-
-                        <a href="{% url 'property_detail' property.slug %}"
-                           class="btn btn-primary">
-
-                            View Details
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            {% endfor %}
-
-        </div>
-
-    </div>
-
-</section>
-
 <!-- WHY CHOOSE US -->
 
 <section class="py-5 bg-light">
 
     <div class="container">
 
-        <div class="row text-center">
+        <div class="section-title text-center mb-5">
+
+            <span>Why Brij Vas</span>
+
+            <h2>Property Search With Local Trust</h2>
+
+        </div>
+
+        <div class="row text-center g-4">
 
             <div class="col-lg-3">
+
+                <div class="why-card">
 
                 <i class="fa-solid fa-shield fs-1"></i>
 
@@ -244,9 +228,13 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
                     Verified Properties
                 </h5>
 
+                </div>
+
             </div>
 
             <div class="col-lg-3">
+
+                <div class="why-card">
 
                 <i class="fa-solid fa-users fs-1"></i>
 
@@ -254,9 +242,13 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
                     Trusted Agents
                 </h5>
 
+                </div>
+
             </div>
 
             <div class="col-lg-3">
+
+                <div class="why-card">
 
                 <i class="fa-solid fa-file-signature fs-1"></i>
 
@@ -264,15 +256,21 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
                     Easy Documentation
                 </h5>
 
+                </div>
+
             </div>
 
             <div class="col-lg-3">
+
+                <div class="why-card">
 
                 <i class="fa-solid fa-headset fs-1"></i>
 
                 <h5 class="mt-3">
                     24x7 Support
                 </h5>
+
+                </div>
 
             </div>
 
@@ -289,6 +287,8 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
     <div class="container">
 
         <div class="section-title mb-5">
+
+            <span>Fresh Listings</span>
 
             <h2>
                 Latest Properties
