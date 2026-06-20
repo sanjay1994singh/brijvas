@@ -2,7 +2,11 @@
 {% load static %}
 
 {% block title %}
-Buy, Sell & Rent Properties | PropertyHub
+Property in Vrindavan and Mathura | Brij Vas
+{% endblock %}
+
+{% block meta_description %}
+Find verified plots, flats, villas, farm houses, hotels and commercial properties for sale, resale and rent in Vrindavan, Mathura and nearby areas with Brij Vas.
 {% endblock %}
 
 {% block content %}
@@ -18,12 +22,12 @@ Buy, Sell & Rent Properties | PropertyHub
         <div class="hero-content text-center">
 
             <h1>
-                Find Your Dream Property
+                Find Property in Vrindavan
             </h1>
 
             <p>
-                Buy, Sell & Rent Plots, Villas,
-                Flats, Farm Houses & Hotels
+                Buy, sell and rent plots, villas,
+                flats, farm houses and hotels in Brij Bhoomi
             </p>
 
             <!-- SEARCH BOX -->
@@ -128,6 +132,9 @@ Buy, Sell & Rent Properties | PropertyHub
                     <div class="category-card">
 
                         <img src="{{ category.image.url }}"
+                             width="300"
+                             height="180"
+                             loading="lazy"
                              alt="{{ category.name }}">
 
                         <h6>
@@ -172,8 +179,13 @@ Buy, Sell & Rent Properties | PropertyHub
 
                     <div class="property-image">
 
-                        <img src="{{ property.featured_image.url }}"
-                             alt="{{ property.title }}">
+                        <a href="{% url 'property_detail' property.slug %}">
+                            <img src="{{ property.featured_image.url }}"
+                                 width="600"
+                                 height="420"
+                                 loading="lazy"
+                                 alt="{{ property.title }}">
+                        </a>
 
                     </div>
 
@@ -185,7 +197,7 @@ Buy, Sell & Rent Properties | PropertyHub
 
                         <h4 class="price">
 
-                            ₹ {{ property.price }}
+                            Rs {{ property.price }}
 
                         </h4>
 

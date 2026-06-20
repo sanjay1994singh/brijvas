@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}
-Properties
+Properties in Vrindavan and Mathura | Brij Vas
+{% endblock %}
+
+{% block meta_description %}
+Browse verified plots, villas, flats, farm houses and commercial properties for sale, resale and rent in Vrindavan, Mathura and nearby areas.
 {% endblock %}
 
 {% block content %}
@@ -40,7 +44,8 @@ Properties
                             Filters
                         </h5>
 
-                        <form method="GET">
+                        <form method="GET"
+                              action="{% url 'search_property' %}">
 
                             <div class="mb-3">
 
@@ -56,7 +61,8 @@ Properties
                                     </option>
 
                                     {% for city in cities %}
-                                    <option value="{{ city.slug }}">
+                                    <option value="{{ city.slug }}"
+                                            {% if request.GET.city == city.slug %}selected{% endif %}>
                                         {{ city.name }}
                                     </option>
                                     {% endfor %}
@@ -79,7 +85,8 @@ Properties
                                     </option>
 
                                     {% for type in property_types %}
-                                    <option value="{{ type.slug }}">
+                                    <option value="{{ type.slug }}"
+                                            {% if request.GET.type == type.slug %}selected{% endif %}>
                                         {{ type.name }}
                                     </option>
                                     {% endfor %}
@@ -101,15 +108,18 @@ Properties
                                         All
                                     </option>
 
-                                    <option value="sale">
+                                    <option value="sale"
+                                            {% if request.GET.purpose == "sale" %}selected{% endif %}>
                                         Sale
                                     </option>
 
-                                    <option value="resale">
+                                    <option value="resale"
+                                            {% if request.GET.purpose == "resale" %}selected{% endif %}>
                                         Resale
                                     </option>
 
-                                    <option value="rent">
+                                    <option value="rent"
+                                            {% if request.GET.purpose == "rent" %}selected{% endif %}>
                                         Rent
                                     </option>
 

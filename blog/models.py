@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+from core.images import optimize_uploaded_image
 from core.seo import unique_slug
 
 
@@ -96,6 +97,11 @@ class Blog(models.Model):
             )
 
         super().save(*args, **kwargs)
+        optimize_uploaded_image(
+            self.featured_image,
+            max_size=(1400, 900),
+            target_kb=380
+        )
 
     def get_absolute_url(self):
         return reverse(

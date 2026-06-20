@@ -1,6 +1,6 @@
-<div class="col-lg-12 col-md-6 mb-4">
+<div class="col-lg-4 col-md-6 mb-4">
 
-    <div class="property-card h-100">
+    <article class="property-card h-100">
 
         <div class="property-image position-relative">
 
@@ -8,6 +8,8 @@
 
                 <img src="{{ property.featured_image.url }}"
                      class="img-fluid"
+                     width="600"
+                     height="420"
                      alt="{{ property.title }}"
                      loading="lazy">
 
@@ -32,7 +34,7 @@
                 <a href="{% url 'property_detail' property.slug %}"
                    class="text-dark">
 
-                    {{ property.title|truncatechars:50 }}
+                    {{ property.title|truncatechars:58 }}
 
                 </a>
 
@@ -48,7 +50,7 @@
 
             <h4 class="text-primary fw-bold mb-3">
 
-                ₹ {{ property.price }}
+                Rs {{ property.price }}
 
             </h4>
 
@@ -56,7 +58,7 @@
 
                 <span>
                     <i class="fa-solid fa-expand"></i>
-                    {{ property.area }}
+                    {{ property.area }} {{ property.area_unit }}
                 </span>
 
                 <span>
@@ -73,7 +75,7 @@
 
             <hr>
 
-            <div class="d-flex justify-content-between">
+            <div class="property-actions d-flex justify-content-between gap-2">
 
                 <a href="{% url 'property_detail' property.slug %}"
                    class="btn btn-primary btn-sm">
@@ -82,7 +84,7 @@
 
                 </a>
 
-                <a href="https://wa.me/91XXXXXXXXXX"
+                <a href="https://wa.me/918279408396?text=Hi%20I%20am%20interested%20in%20{{ property.title|urlencode }}"
                    target="_blank"
                    class="btn btn-success btn-sm">
 
@@ -94,6 +96,6 @@
 
         </div>
 
-    </div>
+    </article>
 
 </div>

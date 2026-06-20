@@ -20,6 +20,7 @@ from .models import (
 
 from enquiries.forms import EnquiryForm
 from core.seo import absolute_url, clean_excerpt
+from locations.models import City
 
 
 def property_list(request):
@@ -30,9 +31,8 @@ def property_list(request):
         "property_type"
     )
 
-    cities = Property.objects.values_list(
-        "city__name",
-        flat=True
+    cities = City.objects.filter(
+        property__is_active=True
     ).distinct()
 
     property_types = PropertyType.objects.all()
@@ -62,6 +62,9 @@ def property_list(request):
 def property_search(request):
     properties = Property.objects.filter(
         is_active=True
+    ).select_related(
+        "city",
+        "property_type"
     )
 
     keyword = request.GET.get("keyword")
@@ -105,9 +108,18 @@ def property_search(request):
 
     properties = paginator.get_page(page)
 
-    context = {
+    cities = City.objects.filter(
+        property__is_active=True
+    ).distinct()
 
+    property_types = PropertyType.objects.all()
+
+    context = {
         "properties": properties,
+
+        "cities": cities,
+
+        "property_types": property_types,
 
     }
 

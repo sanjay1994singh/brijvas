@@ -4,60 +4,49 @@
 
         <div class="row">
 
-            <!-- About -->
-
             <div class="col-lg-4 mb-4">
 
                 <h4 class="mb-3">
-
-                    Vrindavan Property
-
+                    Brij Vas
                 </h4>
 
                 <p>
-
-                    Buy, Sell and Rent plots, villas,
-                    flats, farm houses, hotels and
-                    agriculture land across India.
-
+                    Buy, sell and rent verified plots, villas, flats, farm
+                    houses, hotels and agricultural land in Vrindavan and Mathura.
                 </p>
 
             </div>
 
-            <!-- Quick Links -->
-
             <div class="col-lg-2 mb-4">
 
                 <h5 class="mb-3">
-
                     Quick Links
-
                 </h5>
 
                 <ul class="list-unstyled">
 
                     <li>
-                        <a href="/" class="text-white">
+                        <a href="{% url 'home' %}" class="text-white">
                             Home
                         </a>
                     </li>
 
                     <li>
-                        <a href="/properties/"
+                        <a href="{% url 'property_list' %}"
                            class="text-white">
                             Properties
                         </a>
                     </li>
 
                     <li>
-                        <a href="/blog/"
+                        <a href="{% url 'blog_list' %}"
                            class="text-white">
                             Blog
                         </a>
                     </li>
 
                     <li>
-                        <a href="/contact/"
+                        <a href="{% url 'contact' %}"
                            class="text-white">
                             Contact
                         </a>
@@ -67,14 +56,10 @@
 
             </div>
 
-            <!-- Categories -->
-
             <div class="col-lg-3 mb-4">
 
                 <h5 class="mb-3">
-
                     Categories
-
                 </h5>
 
                 <ul class="list-unstyled">
@@ -82,7 +67,7 @@
 
                     <li>
 
-                        <a class="dropdown-item"
+                        <a class="text-white"
                            href="{% url 'category_properties' type.slug %}">
 
                             {{ type.name }}
@@ -97,56 +82,26 @@
 
             </div>
 
-            <!-- Contact -->
-
             <div class="col-lg-3">
 
                 <h5 class="mb-3">
-
                     Contact
-
                 </h5>
 
                 <p>
-
                     <i class="fas fa-phone"></i>
-
-                    +91 8445336966
-
+                    <a href="tel:+918279408396" class="text-white">+91 8279408396</a>
                 </p>
 
                 <p>
-
                     <i class="fas fa-envelope"></i>
-
-                    info@propertyhub.com
-
+                    <a href="mailto:srbc500@gmail.com" class="text-white">srbc500@gmail.com</a>
                 </p>
 
-                <div class="d-flex gap-3 fs-4">
-
-                    <a href="#"
-                       class="text-white">
-
-                        <i class="fab fa-facebook"></i>
-
-                    </a>
-
-                    <a href="#"
-                       class="text-white">
-
-                        <i class="fab fa-instagram"></i>
-
-                    </a>
-
-                    <a href="#"
-                       class="text-white">
-
-                        <i class="fab fa-youtube"></i>
-
-                    </a>
-
-                </div>
+                <p>
+                    <i class="fas fa-map-marker-alt"></i>
+                    Radha Nivas, Vrindavan, Mathura, Uttar Pradesh
+                </p>
 
             </div>
 
@@ -155,10 +110,7 @@
         <hr>
 
         <div class="text-center">
-
-            © {% now "Y" %} PropertyHub.
-            All Rights Reserved.
-
+            Copyright {% now "Y" %} Brij Vas. All Rights Reserved.
         </div>
 
     </div>

@@ -3,6 +3,7 @@ from django.urls import reverse
 from accounts.models import User
 from locations.models import State, City
 from django.conf import settings
+from core.images import optimize_uploaded_image
 from core.seo import unique_slug
 
 
@@ -29,6 +30,11 @@ class PropertyType(models.Model):
             )
 
         super().save(*args, **kwargs)
+        optimize_uploaded_image(
+            self.image,
+            max_size=(700, 500),
+            target_kb=180
+        )
 
     def get_absolute_url(self):
         return reverse(
@@ -185,6 +191,11 @@ class Property(models.Model):
             )
 
         super().save(*args, **kwargs)
+        optimize_uploaded_image(
+            self.featured_image,
+            max_size=(1600, 1200),
+            target_kb=450
+        )
 
     def get_absolute_url(self):
         return reverse(
@@ -212,6 +223,14 @@ class PropertyGallery(models.Model):
 
     def __str__(self):
         return self.property.title
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        optimize_uploaded_image(
+            self.image,
+            max_size=(1600, 1200),
+            target_kb=450
+        )
 
 
 class Amenity(models.Model):

@@ -101,7 +101,10 @@ product
                         <div class="carousel-item active">
 
                             <img src="{{ property.featured_image.url }}"
-                                 class="d-block w-100">
+                                 class="d-block w-100"
+                                 width="900"
+                                 height="580"
+                                 alt="{{ property.title }}">
 
                         </div>
 
@@ -110,7 +113,11 @@ product
                         <div class="carousel-item">
 
                             <img src="{{ image.image.url }}"
-                                 class="d-block w-100">
+                                 class="d-block w-100"
+                                 width="900"
+                                 height="580"
+                                 loading="lazy"
+                                 alt="{{ property.title }} image">
 
                         </div>
 
@@ -277,7 +284,7 @@ product
 
                         <h2 class="text-primary">
 
-                            ₹ {{ property.price }}
+                            Rs {{ property.price }}
 
                         </h2>
 
