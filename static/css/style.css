@@ -664,6 +664,74 @@ a{
     overflow-wrap:anywhere;
 }
 
+/*--------------about page---------------*/
+.about-hero{
+    position:relative;
+    min-height:520px;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    background:#0b1c39;
+}
+
+.about-hero img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.about-hero-overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg, rgba(7,18,35,.82), rgba(7,18,35,.44), rgba(7,18,35,.14));
+}
+
+.about-hero-content{
+    position:relative;
+    z-index:2;
+    max-width:680px;
+    color:#fff;
+    padding:80px 0;
+}
+
+.about-hero-content span{
+    display:inline-block;
+    margin-bottom:16px;
+    padding:7px 14px;
+    border-radius:50px;
+    background:rgba(255,255,255,.16);
+    color:#fff;
+    font-weight:600;
+    letter-spacing:.02em;
+}
+
+.about-hero-content h1{
+    font-size:58px;
+    line-height:1.08;
+    font-weight:700;
+    margin-bottom:18px;
+}
+
+.about-hero-content p{
+    max-width:580px;
+    font-size:20px;
+    line-height:1.65;
+    margin-bottom:0;
+    color:rgba(255,255,255,.92);
+}
+
+.about-content-section{
+    background:#f8fafc;
+}
+
+.about-poster{
+    border-radius:8px;
+    aspect-ratio:16 / 10;
+    object-fit:cover;
+}
+
 @media (max-width:991.98px){
     .navbar{
         padding-top:10px !important;
@@ -712,6 +780,18 @@ a{
 
     .carousel-item img{
         height:420px;
+    }
+
+    .about-hero{
+        min-height:460px;
+    }
+
+    .about-hero-content h1{
+        font-size:44px;
+    }
+
+    .about-hero-content p{
+        font-size:18px;
     }
 }
 
@@ -768,6 +848,26 @@ a{
     .carousel-item img{
         height:300px;
         border-radius:8px;
+    }
+
+    .about-hero{
+        min-height:430px;
+    }
+
+    .about-hero-overlay{
+        background:linear-gradient(180deg, rgba(7,18,35,.72), rgba(7,18,35,.58));
+    }
+
+    .about-hero-content{
+        padding:64px 0;
+    }
+
+    .about-hero-content h1{
+        font-size:36px;
+    }
+
+    .about-hero-content p{
+        font-size:16px;
     }
 
     .whatsapp-btn{

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
 About Brij Vas | Property in Vrindavan
@@ -8,31 +9,52 @@ About Brij Vas | Property in Vrindavan
 Learn about Brij Vas, founded by Mr. Sanjay, a trusted real estate platform for plots, villas, flats, farm houses, hotels and agricultural land in Vrindavan and Mathura.
 {% endblock %}
 
+{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/about-vrindavan-banner.webp' %}{% endblock %}
+
 {% block content %}
 
-<section class="py-5">
+<section class="about-hero">
+
+    <img src="{% static 'images/about-vrindavan-banner.webp' %}"
+         width="1672"
+         height="941"
+         alt="Vrindavan temple and Yamuna ghats banner for Brij Vas">
+
+    <div class="about-hero-overlay"></div>
 
     <div class="container">
 
-        <div class="text-center mb-5">
+        <div class="about-hero-content">
+
+            <span>Brij Bhoomi Real Estate</span>
 
             <h1>About Brij Vas</h1>
 
-            <p class="lead">
-
-                Your Trusted Real Estate Partner in Vrindavan
-
+            <p>
+                Trusted property guidance for plots, villas, flats, farm houses
+                and commercial spaces in Vrindavan and Mathura.
             </p>
 
         </div>
+
+    </div>
+
+</section>
+
+<section class="py-5 about-content-section">
+
+    <div class="container">
 
         <div class="row align-items-center">
 
             <div class="col-lg-6">
 
-                <img src="/static/images/about.jpg"
-                     class="img-fluid rounded shadow"
-                     alt="About Brij Vas">
+                <img src="{% static 'images/about-vrindavan-banner.webp' %}"
+                     class="img-fluid about-poster shadow"
+                     width="836"
+                     height="470"
+                     loading="lazy"
+                     alt="Beautiful Vrindavan banner for Brij Vas">
 
             </div>
 
