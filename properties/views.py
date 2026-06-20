@@ -285,23 +285,9 @@ def add_review(request, property_id):
 
 
 def property_type(request, slug):
-    property_type = get_object_or_404(
-        PropertyType,
+    return redirect(
+        "category_properties",
         slug=slug
-    )
-
-    properties = Property.objects.filter(
-        property_type=property_type,
-        is_active=True
-    )
-
-    return render(
-        request,
-        'properties/property_list.html',
-        {
-            'properties': properties,
-            'selected_type': property_type
-        }
     )
 
 
