@@ -131,7 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -146,6 +146,6 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 
-MEDIA_URL = '/media/'
+MEDIA_URL = os.getenv("MEDIA_URL", "https://theupmedia.in/media/")
 MEDIA_ROOT = BASE_DIR / 'media'
 AUTH_USER_MODEL = "accounts.User"
