@@ -4,8 +4,11 @@ from django.shortcuts import (
     redirect
 )
 
+from difflib import SequenceMatcher
+
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.http import Http404
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -19,8 +22,81 @@ from .models import (
 )
 
 from enquiries.forms import EnquiryForm
-from core.seo import absolute_url, clean_excerpt
+from core.seo import absolute_url, clean_excerpt, seo_slugify
 from locations.models import City
+
+
+def _slug_similarity(left, right):
+    left = str(left or "").strip("-")
+    right = str(right or "").strip("-")
+
+    if not left or not right:
+        return 0
+
+    ratio = SequenceMatcher(None, left, right).ratio()
+    left_tokens = {token for token in left.split("-") if len(token) > 2}
+    right_tokens = {token for token in right.split("-") if len(token) > 2}
+
+    if not left_tokens or not right_tokens:
+        return ratio
+
+    overlap = len(left_tokens & right_tokens) / len(left_tokens | right_tokens)
+    return (ratio * 0.65) + (overlap * 0.35)
+
+
+def _find_similar_property_by_slug(slug):
+    requested_slug = seo_slugify(
+        slug,
+        fallback="property",
+        max_length=120
+    )
+
+    best_property = None
+    best_score = 0
+
+    properties = Property.objects.filter(
+        is_active=True
+    ).select_related(
+        "property_type",
+        "city",
+        "state"
+    ).only(
+        "id",
+        "title",
+        "slug",
+        "property_type__name",
+        "city__name",
+        "state__name"
+    )
+
+    for property_obj in properties:
+        parts = [
+            property_obj.title,
+            getattr(property_obj.property_type, "name", ""),
+            "in",
+            getattr(property_obj.city, "name", ""),
+            getattr(property_obj.state, "name", ""),
+        ]
+        candidate_text = " ".join(str(part) for part in parts if part)
+        candidate_slug = seo_slugify(
+            candidate_text,
+            fallback=property_obj.slug,
+            max_length=120
+        )
+
+        score = max(
+            _slug_similarity(requested_slug, property_obj.slug),
+            _slug_similarity(requested_slug, candidate_slug)
+        )
+
+        if score > best_score:
+            best_score = score
+            best_property = property_obj
+
+    if best_property and best_score >= 0.52:
+        return best_property
+
+    return None
 
 
 def property_list(request):
@@ -131,11 +207,22 @@ def property_search(request):
 
 
 def property_detail(request, slug):
-    property = get_object_or_404(
-        Property,
-        slug=slug,
-        is_active=True
-    )
+    try:
+        property = Property.objects.get(
+            slug=slug,
+            is_active=True
+        )
+    except Property.DoesNotExist:
+        similar_property = _find_similar_property_by_slug(slug)
+
+        if similar_property:
+            return redirect(
+                "property_detail",
+                slug=similar_property.slug,
+                permanent=True
+            )
+
+        raise Http404("No Property matches the given query.")
 
     # Inquiry Submit
 
