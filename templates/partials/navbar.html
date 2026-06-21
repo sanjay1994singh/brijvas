@@ -92,29 +92,70 @@
             <div class="navbar-actions d-flex gap-2">
 
                 {% if request.user.is_authenticated %}
-                    {% if request.user.is_superuser or request.user.user_type == 'owner' or request.user.user_type == 'agent' %}
-                    <a href="{% url 'dashboard' %}"
-                       class="btn btn-outline-primary btn-navbar">
 
-                        Dashboard
+                    <div class="dropdown user-menu">
 
-                    </a>
+                        <button class="btn user-menu-toggle dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
 
-                    <a href="{% url 'add_property' %}"
-                       class="btn btn-primary btn-navbar">
+                            {% if request.user.profile_image %}
+                                <img src="{{ request.user.profile_image.url }}"
+                                     alt="{{ request.user.get_full_name|default:request.user.username }}">
+                            {% else %}
+                                <span>
+                                    <i class="fa-solid fa-user"></i>
+                                </span>
+                            {% endif %}
 
-                        Post Property
+                            <strong>
+                                {{ request.user.get_full_name|default:request.user.username|truncatechars:18 }}
+                            </strong>
 
-                    </a>
-                    {% endif %}
+                        </button>
 
+                        <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu">
 
-                    <a href="{% url 'logout' %}"
-                       class="btn btn-outline-primary btn-navbar">
+                            <li>
+                                <a class="dropdown-item"
+                                   href="{% url 'profile' %}">
+                                    <i class="fa-solid fa-user"></i>
+                                    Profile
+                                </a>
+                            </li>
 
-                        Logout
+                            <li>
+                                <a class="dropdown-item"
+                                   href="{% url 'dashboard' %}">
+                                    <i class="fa-solid fa-gauge"></i>
+                                    Dashboard
+                                </a>
+                            </li>
 
-                    </a>
+                            {% if request.user.is_superuser or request.user.is_staff or request.user.user_type == 'owner' and request.user.is_verified or request.user.user_type == 'agent' and request.user.is_verified %}
+                            <li>
+                                <a class="dropdown-item"
+                                   href="{% url 'add_property' %}">
+                                    <i class="fa-solid fa-plus"></i>
+                                    Post Property
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                   href="{% url 'logout' %}">
+                                    <i class="fa-solid fa-right-from-bracket"></i>
+                                    Logout
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </div>
 
 
                 {% else %}

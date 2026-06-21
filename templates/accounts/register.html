@@ -32,7 +32,36 @@ Register | PropertyHub
 
                     </div>
 
-                    <form method="POST">
+                    {% if form.errors %}
+                    <div class="profile-alert-backdrop" id="registerErrorAlert">
+                        <div class="profile-alert-card">
+                            <button type="button" class="profile-alert-close" aria-label="Close">&times;</button>
+                            <div class="profile-alert-icon">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                            </div>
+                            <h3>Please Check Required Details</h3>
+                            <p>Some important details need correction before we can create your account.</p>
+                            <ul>
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                    <li>
+                                        <strong>{{ field.label }}:</strong> {{ error }}
+                                    </li>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button" class="btn btn-primary profile-alert-action">Fix Details</button>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <form method="POST"
+                          id="registerForm"
+                          data-username-url="{% url 'check_username' %}"
+                          novalidate>
 
                         {% csrf_token %}
 
@@ -49,6 +78,7 @@ Register | PropertyHub
                                 <input type="text"
                                        name="first_name"
                                        class="form-control"
+                                       value="{{ form.first_name.value|default:'' }}"
                                        required>
 
                             </div>
@@ -63,7 +93,8 @@ Register | PropertyHub
 
                                 <input type="text"
                                        name="last_name"
-                                       class="form-control">
+                                       class="form-control"
+                                       value="{{ form.last_name.value|default:'' }}">
 
                             </div>
 
@@ -77,10 +108,24 @@ Register | PropertyHub
 
                             </label>
 
-                            <input type="text"
-                                   name="username"
-                                   class="form-control"
-                                   required>
+                            <div class="username-check-wrap">
+                                <input type="text"
+                                       name="username"
+                                       id="id_username"
+                                       class="form-control"
+                                       value="{{ form.username.value|default:'' }}"
+                                       autocomplete="username"
+                                       required>
+                                <span class="username-status"
+                                      id="usernameStatus"
+                                      aria-live="polite"></span>
+                            </div>
+
+                            <div class="username-feedback"
+                                 id="usernameFeedback"></div>
+
+                            <div class="username-suggestions"
+                                 id="usernameSuggestions"></div>
 
                         </div>
 
@@ -95,6 +140,7 @@ Register | PropertyHub
                             <input type="email"
                                    name="email"
                                    class="form-control"
+                                   value="{{ form.email.value|default:'' }}"
                                    required>
 
                         </div>
@@ -109,7 +155,8 @@ Register | PropertyHub
 
                             <input type="text"
                                    name="phone"
-                                   class="form-control">
+                                   class="form-control"
+                                   value="{{ form.phone.value|default:'' }}">
 
                         </div>
 
@@ -122,21 +169,22 @@ Register | PropertyHub
                             </label>
 
                             <select class="form-select"
-                                    name="user_type">
+                                    name="user_type"
+                                    required>
 
-                                <option value="buyer">
+                                <option value="buyer" {% if form.user_type.value == 'buyer' or not form.user_type.value %}selected{% endif %}>
 
                                     Buyer
 
                                 </option>
 
-                                <option value="owner">
+                                <option value="owner" {% if form.user_type.value == 'owner' %}selected{% endif %}>
 
                                     Seller / Owner
 
                                 </option>
 
-                                <option value="agent">
+                                <option value="agent" {% if form.user_type.value == 'agent' %}selected{% endif %}>
 
                                     Agent
 
@@ -210,4 +258,175 @@ Register | PropertyHub
 
 </section>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("registerForm");
+        const usernameInput = document.getElementById("id_username");
+        const usernameStatus = document.getElementById("usernameStatus");
+        const usernameFeedback = document.getElementById("usernameFeedback");
+        const usernameSuggestions = document.getElementById("usernameSuggestions");
+        let usernameAvailable = false;
+        let usernameTimer = null;
+
+        function showAlert(title, message, items) {
+            let alertBox = document.getElementById("registerErrorAlert");
+
+            if (!alertBox) {
+                alertBox = document.createElement("div");
+                alertBox.className = "profile-alert-backdrop";
+                alertBox.id = "registerErrorAlert";
+                alertBox.innerHTML = `
+                    <div class="profile-alert-card">
+                        <button type="button" class="profile-alert-close" aria-label="Close">&times;</button>
+                        <div class="profile-alert-icon">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                        </div>
+                        <h3></h3>
+                        <p></p>
+                        <ul></ul>
+                        <button type="button" class="btn btn-primary profile-alert-action">Fix Details</button>
+                    </div>`;
+                document.body.appendChild(alertBox);
+            }
+
+            alertBox.querySelector("h3").textContent = title;
+            alertBox.querySelector("p").textContent = message;
+            alertBox.querySelector("ul").innerHTML = items.map(function (item) {
+                return `<li>${item}</li>`;
+            }).join("");
+            alertBox.classList.remove("is-hidden");
+        }
+
+        document.addEventListener("click", function (event) {
+            if (
+                event.target.classList.contains("profile-alert-close") ||
+                event.target.classList.contains("profile-alert-action") ||
+                event.target.id === "registerErrorAlert"
+            ) {
+                const alertBox = document.getElementById("registerErrorAlert");
+
+                if (alertBox) {
+                    alertBox.classList.add("is-hidden");
+                }
+            }
+        });
+
+        function setUsernameState(state, message, suggestions) {
+            usernameStatus.className = `username-status ${state}`;
+            usernameStatus.innerHTML = "";
+            usernameFeedback.className = `username-feedback ${state}`;
+            usernameFeedback.textContent = message || "";
+            usernameSuggestions.innerHTML = "";
+
+            if (state === "available") {
+                usernameStatus.innerHTML = '<i class="fa-solid fa-check"></i>';
+            }
+
+            if (state === "taken" || state === "invalid") {
+                usernameStatus.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            }
+
+            if (suggestions && suggestions.length) {
+                usernameSuggestions.innerHTML = suggestions.map(function (name) {
+                    return `<button type="button" class="username-suggestion">${name}</button>`;
+                }).join("");
+            }
+        }
+
+        function checkUsername() {
+            const username = usernameInput.value.trim();
+
+            usernameAvailable = false;
+
+            if (!username) {
+                setUsernameState("", "", []);
+                return;
+            }
+
+            setUsernameState("checking", "Checking username...", []);
+
+            fetch(`${form.dataset.usernameUrl}?username=${encodeURIComponent(username)}`)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    usernameAvailable = Boolean(data.available);
+                    setUsernameState(
+                        data.available ? "available" : "taken",
+                        data.message,
+                        data.suggestions || []
+                    );
+                })
+                .catch(function () {
+                    setUsernameState(
+                        "invalid",
+                        "Username check failed. Please try again.",
+                        []
+                    );
+                });
+        }
+
+        if (usernameInput) {
+            usernameInput.addEventListener("input", function () {
+                clearTimeout(usernameTimer);
+                usernameTimer = setTimeout(checkUsername, 350);
+            });
+
+            usernameSuggestions.addEventListener("click", function (event) {
+                if (!event.target.classList.contains("username-suggestion")) {
+                    return;
+                }
+
+                usernameInput.value = event.target.textContent;
+                checkUsername();
+            });
+
+            if (usernameInput.value.trim()) {
+                checkUsername();
+            }
+        }
+
+        if (form) {
+            form.addEventListener("submit", function (event) {
+                const requiredFields = form.querySelectorAll("[required]");
+                const missing = [];
+
+                requiredFields.forEach(function (field) {
+                    if (!field.value.trim()) {
+                        const label = field.closest(".mb-3, .col-md-6")?.querySelector("label");
+                        missing.push(label ? label.textContent.trim() : field.name);
+                        field.classList.add("is-invalid");
+                    } else {
+                        field.classList.remove("is-invalid");
+                    }
+                });
+
+                if (missing.length) {
+                    event.preventDefault();
+                    showAlert(
+                        "Required Details Missing",
+                        "Please fill all important fields before creating your account.",
+                        missing.map(function (name) {
+                            return `<strong>${name}</strong> is required.`;
+                        })
+                    );
+                    return;
+                }
+
+                if (!usernameAvailable) {
+                    event.preventDefault();
+                    usernameInput.classList.add("is-invalid");
+                    showAlert(
+                        "Username Not Available",
+                        "Please use an available username before creating your account.",
+                        ["Select one suggestion or type a username that shows a green tick."]
+                    );
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

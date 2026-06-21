@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 from .forms import RegisterForm, ProfileForm
+from .username_utils import suggest_usernames, username_exists, validate_username
 from properties.models import Property
 from enquiries.models import Enquiry
 
@@ -19,7 +21,11 @@ def register(request):
         if form.is_valid():
             user = form.save()
 
-            login(request, user)
+            login(
+                request,
+                user,
+                backend="django.contrib.auth.backends.ModelBackend"
+            )
 
             messages.success(
                 request,
@@ -40,6 +46,42 @@ def register(request):
         request,
         "accounts/register.html",
         context
+    )
+
+
+def check_username(request):
+    username = (request.GET.get("username") or "").strip()
+
+    if not username:
+        return JsonResponse(
+            {
+                "available": False,
+                "message": "Please enter a username.",
+                "suggestions": [],
+            }
+        )
+
+    if not validate_username(username):
+        return JsonResponse(
+            {
+                "available": False,
+                "message": "Use only letters, numbers and @/./+/-/_.",
+                "suggestions": suggest_usernames(username),
+            }
+        )
+
+    available = not username_exists(username)
+
+    return JsonResponse(
+        {
+            "available": available,
+            "message": (
+                "Username is available."
+                if available
+                else "Username is already taken."
+            ),
+            "suggestions": [] if available else suggest_usernames(username),
+        }
     )
 
 

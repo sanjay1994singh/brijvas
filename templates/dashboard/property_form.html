@@ -1,0 +1,207 @@
+{% if form.non_field_errors %}
+<div class="alert alert-danger">
+    {{ form.non_field_errors }}
+</div>
+{% endif %}
+
+<form method="POST"
+      enctype="multipart/form-data"
+      class="property-manage-form">
+
+    {% csrf_token %}
+
+    <div class="property-form-section">
+        <div class="property-form-section__head">
+            <span><i class="fa-solid fa-house-chimney"></i></span>
+            <div>
+                <h5>Basic Details</h5>
+                <p>Title, purpose and property type for search visibility.</p>
+            </div>
+        </div>
+
+        <div class="property-form-grid">
+            <div class="property-field property-field--wide">
+                <label for="{{ form.title.id_for_label }}">Property Title</label>
+                {{ form.title }}
+                {{ form.title.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.property_type.id_for_label }}">Property Type</label>
+                {{ form.property_type }}
+                {{ form.property_type.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.purpose.id_for_label }}">Purpose</label>
+                {{ form.purpose }}
+                {{ form.purpose.errors }}
+            </div>
+        </div>
+    </div>
+
+    <div class="property-form-section">
+        <div class="property-form-section__head">
+            <span><i class="fa-solid fa-location-dot"></i></span>
+            <div>
+                <h5>Location</h5>
+                <p>Choose exact city and add a clear address.</p>
+            </div>
+        </div>
+
+        <div class="property-form-grid">
+            <div class="property-field">
+                <label for="{{ form.state.id_for_label }}">State</label>
+                {{ form.state }}
+                {{ form.state.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.city.id_for_label }}">City</label>
+                {{ form.city }}
+                {{ form.city.errors }}
+            </div>
+
+            <div class="property-field property-field--wide">
+                <label for="{{ form.address.id_for_label }}">Address</label>
+                {{ form.address }}
+                {{ form.address.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.latitude.id_for_label }}">Latitude</label>
+                {{ form.latitude }}
+                {{ form.latitude.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.longitude.id_for_label }}">Longitude</label>
+                {{ form.longitude }}
+                {{ form.longitude.errors }}
+            </div>
+        </div>
+    </div>
+
+    <div class="property-form-section">
+        <div class="property-form-section__head">
+            <span><i class="fa-solid fa-indian-rupee-sign"></i></span>
+            <div>
+                <h5>Price & Size</h5>
+                <p>Add honest price and area details for better leads.</p>
+            </div>
+        </div>
+
+        <div class="property-form-grid property-form-grid--three">
+            <div class="property-field">
+                <label for="{{ form.price.id_for_label }}">Price</label>
+                {{ form.price }}
+                {{ form.price.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.area.id_for_label }}">Area</label>
+                {{ form.area }}
+                {{ form.area.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.area_unit.id_for_label }}">Area Unit</label>
+                {{ form.area_unit }}
+                {{ form.area_unit.errors }}
+            </div>
+        </div>
+    </div>
+
+    <div class="property-form-section">
+        <div class="property-form-section__head">
+            <span><i class="fa-solid fa-bed"></i></span>
+            <div>
+                <h5>Features</h5>
+                <p>Rooms, parking and furnishing information.</p>
+            </div>
+        </div>
+
+        <div class="property-form-grid property-form-grid--four">
+            <div class="property-field">
+                <label for="{{ form.bedrooms.id_for_label }}">Bedrooms</label>
+                {{ form.bedrooms }}
+                {{ form.bedrooms.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.bathrooms.id_for_label }}">Bathrooms</label>
+                {{ form.bathrooms }}
+                {{ form.bathrooms.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.parking.id_for_label }}">Parking</label>
+                {{ form.parking }}
+                {{ form.parking.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.furnishing.id_for_label }}">Furnishing</label>
+                {{ form.furnishing }}
+                {{ form.furnishing.errors }}
+            </div>
+        </div>
+    </div>
+
+    <div class="property-form-section">
+        <div class="property-form-section__head">
+            <span><i class="fa-solid fa-align-left"></i></span>
+            <div>
+                <h5>Description & Image</h5>
+                <p>Write SEO-friendly details and upload the main property image.</p>
+            </div>
+        </div>
+
+        <div class="property-field">
+            <label for="{{ form.description.id_for_label }}">Description</label>
+            <div class="property-editor-wrap">
+                {{ form.description }}
+            </div>
+            {{ form.description.errors }}
+        </div>
+
+        <div class="property-form-grid mt-4">
+            <div class="property-field">
+                <label for="{{ form.featured_image.id_for_label }}">Featured Image</label>
+                {{ form.featured_image }}
+                {% if form.featured_image.help_text %}
+                <small>{{ form.featured_image.help_text }}</small>
+                {% endif %}
+                {{ form.featured_image.errors }}
+            </div>
+
+            <div class="property-status-box">
+                <div class="property-review-note">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div>
+                        <strong>Admin Review Required</strong>
+                        <span>Your listing will stay pending until Brij Vas admin approves it.</span>
+                    </div>
+                </div>
+                <div class="property-review-note">
+                    <i class="fa-solid fa-image"></i>
+                    <div>
+                        <strong>Auto Image Compression</strong>
+                        <span>Uploaded image will be optimized after save.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="property-submit-bar">
+        <a href="{% url 'my_properties' %}" class="btn btn-light">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back
+        </a>
+        <button class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i>
+            {{ submit_label }}
+        </button>
+    </div>
+</form>

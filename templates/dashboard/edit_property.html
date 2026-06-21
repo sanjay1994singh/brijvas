@@ -22,33 +22,19 @@ Edit Property
 
             <div class="col-lg-9">
 
-                <div class="card border-0 shadow">
-
-                    <div class="card-header">
-
-                        <h4>Edit Property</h4>
-
+                <div class="property-manage-shell">
+                    <div class="property-manage-hero">
+                        <div>
+                            <span class="property-manage-kicker">Brij Vas Property</span>
+                            <h1>Edit Property</h1>
+                            <p>Update the listing carefully. Changes should stay accurate for users and SEO.</p>
+                        </div>
+                        <div class="property-manage-icon">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </div>
                     </div>
 
-                    <div class="card-body">
-
-                        <form method="POST"
-                              enctype="multipart/form-data">
-
-                            {% csrf_token %}
-
-                            {{ form.as_p }}
-
-                            <button class="btn btn-success">
-
-                                Update Property
-
-                            </button>
-
-                        </form>
-
-                    </div>
-
+                    {% include 'dashboard/property_form.html' with submit_label='Update Property' %}
                 </div>
 
             </div>

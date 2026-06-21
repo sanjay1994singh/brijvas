@@ -12,6 +12,12 @@ urlpatterns = [
     ),
 
     path(
+        "check-username/",
+        views.check_username,
+        name="check_username"
+    ),
+
+    path(
         "login/",
         views.user_login,
         name="login"

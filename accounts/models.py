@@ -11,6 +11,18 @@ class User(AbstractUser):
 
     phone = models.CharField(max_length=20, blank=True)
 
+    address = models.TextField(blank=True)
+
+    city = models.CharField(max_length=100, blank=True)
+
+    state = models.CharField(max_length=100, blank=True)
+
+    country = models.CharField(
+        max_length=100,
+        default="India",
+        blank=True
+    )
+
     profile_image = models.ImageField(
         upload_to='users/',
         blank=True,

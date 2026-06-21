@@ -7,6 +7,47 @@ My Profile
 
 {% block content %}
 
+{% if form.errors %}
+<div class="profile-alert-backdrop" id="profileErrorAlert">
+    <div class="profile-alert-card">
+        <button type="button"
+                class="profile-alert-close"
+                aria-label="Close">
+            &times;
+        </button>
+
+        <div class="profile-alert-icon">
+            <i class="fa-solid fa-circle-exclamation"></i>
+        </div>
+
+        <h3>Please Check Your Profile Details</h3>
+
+        <p>
+            Some information needs correction before we can save your profile.
+        </p>
+
+        <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                <li>
+                    <strong>{{ field.label }}:</strong> {{ error }}
+                </li>
+                {% endfor %}
+            {% endfor %}
+
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+
+        <button type="button"
+                class="btn btn-primary profile-alert-action">
+            Fix Details
+        </button>
+    </div>
+</div>
+{% endif %}
+
 <section class="dashboard-section">
 
     <div class="container-fluid">
@@ -200,6 +241,72 @@ My Profile
 
                             <label class="form-label">
 
+                                Account Type
+
+                            </label>
+
+                            {{ form.user_type }}
+
+                            <small class="text-muted d-block mt-2">
+                                Seller / Owner and Agent accounts need admin approval before posting properties.
+                            </small>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
+                                Address
+
+                            </label>
+
+                            {{ form.address }}
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label">
+
+                                    City
+
+                                </label>
+
+                                {{ form.city }}
+
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label">
+
+                                    State
+
+                                </label>
+
+                                {{ form.state }}
+
+                                <datalist id="state-list">
+                                    {% for state in form.state_options %}
+                                    <option value="{{ state }}"></option>
+                                    {% endfor %}
+                                </datalist>
+
+                                <small class="text-muted d-block mt-2">
+                                    Country is fixed as India.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
                                 Profile Photo
 
                             </label>
@@ -227,4 +334,30 @@ My Profile
 
 </section>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const alertBox = document.getElementById("profileErrorAlert");
+
+        if (!alertBox) {
+            return;
+        }
+
+        const closeButtons = alertBox.querySelectorAll(".profile-alert-close, .profile-alert-action");
+
+        closeButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                alertBox.classList.add("is-hidden");
+            });
+        });
+
+        alertBox.addEventListener("click", function (event) {
+            if (event.target === alertBox) {
+                alertBox.classList.add("is-hidden");
+            }
+        });
+    });
+</script>
 {% endblock %}

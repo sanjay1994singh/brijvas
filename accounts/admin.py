@@ -9,6 +9,9 @@ class UserAdmin(DjangoUserAdmin):
         "username",
         "email",
         "phone",
+        "city",
+        "state",
+        "country",
         "user_type",
         "is_verified",
         "is_staff",
@@ -24,6 +27,9 @@ class UserAdmin(DjangoUserAdmin):
         "username",
         "email",
         "phone",
+        "city",
+        "state",
+        "country",
         "first_name",
         "last_name",
     )
@@ -39,6 +45,9 @@ class UserAdmin(DjangoUserAdmin):
             {
                 "fields": (
                     "phone",
+                    "address",
+                    "city",
+                    "state",
                     "profile_image",
                     "user_type",
                     "is_verified",
