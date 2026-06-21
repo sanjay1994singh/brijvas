@@ -17,6 +17,10 @@ sitemaps = {
     "blog_categories": BlogCategorySitemap,
 }
 
+admin.site.site_header = "Brij Vas"
+admin.site.site_title = "Brij Vas"
+admin.site.index_title = "Brij Vas Administration"
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('auth/', include('social_django.urls', namespace='social')),
