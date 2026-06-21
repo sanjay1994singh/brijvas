@@ -4,7 +4,7 @@ from django.db import models
 
 class User(AbstractUser):
     USER_TYPE = (
-        ('owner', 'Owner'),
+        ('owner', 'Seller / Owner'),
         ('agent', 'Agent'),
         ('buyer', 'Buyer'),
     )

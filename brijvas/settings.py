@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_filters',
 
-    'core',
+    'core.apps.CoreConfig',
     'accounts',
     'properties',
     'locations',

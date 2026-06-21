@@ -17,9 +17,9 @@ from enquiries.models import Enquiry
 from properties.forms import PropertyForm
 
 
-def _needs_agent_approval(user):
+def _needs_seller_agent_approval(user):
     return (
-        getattr(user, "user_type", "") == "agent"
+        getattr(user, "user_type", "") in ("owner", "agent")
         and not user.is_superuser
         and not user.is_staff
         and not user.is_verified
@@ -30,13 +30,16 @@ def _can_manage_properties(user):
     return (
         user.is_superuser
         or user.is_staff
-        or getattr(user, "user_type", "") in ("owner", "agent")
+        or (
+            getattr(user, "user_type", "") in ("owner", "agent")
+            and user.is_verified
+        )
     )
 
 
 def _approved_dashboard_required(view_func):
     def wrapper(request, *args, **kwargs):
-        if _needs_agent_approval(request.user):
+        if _needs_seller_agent_approval(request.user):
             return render(
                 request,
                 "dashboard/pending_approval.html"
