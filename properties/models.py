@@ -236,6 +236,68 @@ class PropertyGallery(models.Model):
         )
 
 
+class PropertyView(models.Model):
+    property = models.ForeignKey(
+        Property,
+        on_delete=models.CASCADE,
+        related_name="view_logs"
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
+
+    session_key = models.CharField(
+        max_length=40,
+        blank=True,
+        db_index=True
+    )
+
+    ip_address = models.GenericIPAddressField(
+        blank=True,
+        null=True
+    )
+
+    user_agent_hash = models.CharField(
+        max_length=64,
+        blank=True,
+        db_index=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=[
+                    "property",
+                    "user",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "property",
+                    "session_key",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "property",
+                    "ip_address",
+                    "user_agent_hash",
+                ]
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.property_id} view"
+
+
 class Amenity(models.Model):
     name = models.CharField(max_length=100)
 

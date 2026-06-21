@@ -8,14 +8,8 @@ from .models import (
     Wishlist,
     CompareProperty,
     PropertyReview,
+    PropertyView,
 )
-
-from .models import (
-    Wishlist,
-    CompareProperty,
-    PropertyReview
-)
-
 
 class PropertyGalleryInline(
     admin.TabularInline
@@ -74,3 +68,35 @@ admin.site.register(Amenity)
 admin.site.register(Wishlist)
 admin.site.register(CompareProperty)
 admin.site.register(PropertyReview)
+
+
+@admin.register(PropertyView)
+class PropertyViewAdmin(admin.ModelAdmin):
+    list_display = (
+        "property",
+        "user",
+        "ip_address",
+        "created_at",
+    )
+
+    list_filter = (
+        "created_at",
+    )
+
+    search_fields = (
+        "property__title",
+        "session_key",
+        "ip_address",
+    )
+
+    readonly_fields = (
+        "property",
+        "user",
+        "session_key",
+        "ip_address",
+        "user_agent_hash",
+        "created_at",
+    )
+
+    def has_add_permission(self, request):
+        return False

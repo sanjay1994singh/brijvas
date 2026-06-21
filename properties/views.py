@@ -5,8 +5,10 @@ from django.shortcuts import (
 )
 
 from difflib import SequenceMatcher
+import hashlib
 
 from django.db.models import Q
+from django.db.models import F
 from django.core.paginator import Paginator
 from django.http import Http404
 
@@ -18,7 +20,8 @@ from .models import (
     PropertyType,
     Wishlist,
     CompareProperty,
-    PropertyReview
+    PropertyReview,
+    PropertyView
 )
 
 from enquiries.forms import EnquiryForm
@@ -97,6 +100,75 @@ def _find_similar_property_by_slug(slug):
         return best_property
 
     return None
+
+
+def _client_ip(request):
+    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
+
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+
+    return request.META.get("REMOTE_ADDR")
+
+
+def _user_agent_hash(request):
+    user_agent = request.META.get("HTTP_USER_AGENT", "")[:500]
+
+    if not user_agent:
+        return ""
+
+    return hashlib.sha256(
+        user_agent.encode("utf-8", errors="ignore")
+    ).hexdigest()
+
+
+def _record_unique_property_view(request, property_obj):
+    if request.method != "GET":
+        return
+
+    if not request.session.session_key:
+        request.session.save()
+
+    session_key = request.session.session_key or ""
+    ip_address = _client_ip(request)
+    user_agent_hash = _user_agent_hash(request)
+
+    existing_views = PropertyView.objects.filter(
+        property=property_obj
+    )
+
+    duplicate_filters = Q()
+
+    if request.user.is_authenticated:
+        duplicate_filters |= Q(user=request.user)
+
+    if session_key:
+        duplicate_filters |= Q(session_key=session_key)
+
+    if ip_address and user_agent_hash:
+        duplicate_filters |= Q(
+            ip_address=ip_address,
+            user_agent_hash=user_agent_hash
+        )
+
+    if duplicate_filters and existing_views.filter(duplicate_filters).exists():
+        return
+
+    PropertyView.objects.create(
+        property=property_obj,
+        user=request.user if request.user.is_authenticated else None,
+        session_key=session_key,
+        ip_address=ip_address,
+        user_agent_hash=user_agent_hash
+    )
+
+    Property.objects.filter(
+        pk=property_obj.pk
+    ).update(
+        views=F("views") + 1
+    )
+
+    property_obj.views += 1
 
 
 def property_list(request):
@@ -255,13 +327,7 @@ def property_detail(request, slug):
 
         form = EnquiryForm()
 
-    # Views Counter
-
-    property.views += 1
-
-    property.save(
-        update_fields=["views"]
-    )
+    _record_unique_property_view(request, property)
 
     related_properties = Property.objects.filter(
         property_type=property.property_type,
