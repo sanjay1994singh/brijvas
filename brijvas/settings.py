@@ -16,6 +16,11 @@ SITE_ID = 1
 SITE_URL = os.getenv("SITE_URL", "https://brijvas.com").rstrip("/")
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv("GOOGLE_CLIENT_ID")
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+SOCIAL_AUTH_IMMUTABLE_USER_FIELDS = (
+    "first_name",
+    "last_name",
+    "email",
+)
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"

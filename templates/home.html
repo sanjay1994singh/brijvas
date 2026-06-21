@@ -202,6 +202,36 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
 </section>
 
+<!-- LATEST PROPERTIES -->
+
+<section class="py-5">
+
+    <div class="container">
+
+        <div class="section-title mb-5">
+
+            <span>Fresh Listings</span>
+
+            <h2>
+                Latest Properties
+            </h2>
+
+        </div>
+
+        <div class="row">
+
+            {% for property in latest_properties %}
+
+            {% include "properties/includes/property_card.html" %}
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
 <!-- WHY CHOOSE US -->
 
 <section class="py-5 bg-light">
@@ -280,35 +310,7 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
 </section>
 
-<!-- LATEST PROPERTIES -->
 
-<section class="py-5">
-
-    <div class="container">
-
-        <div class="section-title mb-5">
-
-            <span>Fresh Listings</span>
-
-            <h2>
-                Latest Properties
-            </h2>
-
-        </div>
-
-        <div class="row">
-
-            {% for property in latest_properties %}
-
-            {% include "properties/includes/property_card.html" %}
-
-            {% endfor %}
-
-        </div>
-
-    </div>
-
-</section>
 
 <!-- PROPERTY STATS -->
 
