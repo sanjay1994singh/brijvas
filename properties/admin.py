@@ -95,6 +95,7 @@ class PropertyViewAdmin(admin.ModelAdmin):
         "session_key",
         "ip_address",
         "user_agent_hash",
+        "visitor_key",
         "created_at",
     )
 

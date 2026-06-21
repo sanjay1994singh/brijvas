@@ -5,6 +5,7 @@ from django.shortcuts import (
 )
 
 from difflib import SequenceMatcher
+import hashlib
 
 from django.core.paginator import Paginator
 from django.db.models import F, Q
@@ -16,7 +17,8 @@ from django.contrib.auth.decorators import login_required
 from .models import (
     Blog,
     BlogCategory,
-    BlogComment
+    BlogComment,
+    BlogView
 )
 from core.seo import seo_slugify
 
@@ -88,6 +90,79 @@ def _find_similar_blog_by_slug(slug):
     return None
 
 
+def _client_ip(request):
+    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
+
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+
+    return request.META.get("REMOTE_ADDR")
+
+
+def _user_agent_hash(request):
+    user_agent = request.META.get("HTTP_USER_AGENT", "")[:500]
+
+    if not user_agent:
+        return ""
+
+    return hashlib.sha256(
+        user_agent.encode("utf-8", errors="ignore")
+    ).hexdigest()
+
+
+def _visitor_key(request, session_key, ip_address, user_agent_hash):
+    if request.user.is_authenticated:
+        return f"user:{request.user.pk}"
+
+    if session_key:
+        return f"session:{session_key}"
+
+    fingerprint = f"{ip_address or ''}:{user_agent_hash or ''}"
+    return "anon:" + hashlib.sha256(
+        fingerprint.encode("utf-8", errors="ignore")
+    ).hexdigest()
+
+
+def _record_unique_blog_view(request, post):
+    if request.method != "GET":
+        return
+
+    if not request.session.session_key:
+        request.session.save()
+
+    session_key = request.session.session_key or ""
+    ip_address = _client_ip(request)
+    user_agent_hash = _user_agent_hash(request)
+    visitor_key = _visitor_key(
+        request,
+        session_key,
+        ip_address,
+        user_agent_hash
+    )
+
+    view, created = BlogView.objects.get_or_create(
+        blog=post,
+        visitor_key=visitor_key,
+        defaults={
+            "user": request.user if request.user.is_authenticated else None,
+            "session_key": session_key,
+            "ip_address": ip_address,
+            "user_agent_hash": user_agent_hash,
+        }
+    )
+
+    if not created:
+        return
+
+    Blog.objects.filter(
+        pk=post.pk
+    ).update(
+        views=F("views") + 1
+    )
+
+    post.views += 1
+
+
 def blog_list(request):
     posts = Blog.objects.filter(
         is_published=True
@@ -126,12 +201,7 @@ def blog_detail(request, slug):
 
         raise Http404("No Blog matches the given query.")
 
-    Blog.objects.filter(
-        pk=post.pk
-    ).update(
-        views=F("views") + 1
-    )
-    post.views += 1
+    _record_unique_blog_view(request, post)
 
     related_posts = Blog.objects.filter(
         category=post.category,

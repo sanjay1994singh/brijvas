@@ -122,6 +122,19 @@ def _user_agent_hash(request):
     ).hexdigest()
 
 
+def _visitor_key(request, session_key, ip_address, user_agent_hash):
+    if request.user.is_authenticated:
+        return f"user:{request.user.pk}"
+
+    if session_key:
+        return f"session:{session_key}"
+
+    fingerprint = f"{ip_address or ''}:{user_agent_hash or ''}"
+    return "anon:" + hashlib.sha256(
+        fingerprint.encode("utf-8", errors="ignore")
+    ).hexdigest()
+
+
 def _record_unique_property_view(request, property_obj):
     if request.method != "GET":
         return
@@ -132,35 +145,26 @@ def _record_unique_property_view(request, property_obj):
     session_key = request.session.session_key or ""
     ip_address = _client_ip(request)
     user_agent_hash = _user_agent_hash(request)
-
-    existing_views = PropertyView.objects.filter(
-        property=property_obj
+    visitor_key = _visitor_key(
+        request,
+        session_key,
+        ip_address,
+        user_agent_hash
     )
 
-    duplicate_filters = Q()
-
-    if request.user.is_authenticated:
-        duplicate_filters |= Q(user=request.user)
-
-    if session_key:
-        duplicate_filters |= Q(session_key=session_key)
-
-    if ip_address and user_agent_hash:
-        duplicate_filters |= Q(
-            ip_address=ip_address,
-            user_agent_hash=user_agent_hash
-        )
-
-    if duplicate_filters and existing_views.filter(duplicate_filters).exists():
-        return
-
-    PropertyView.objects.create(
+    view, created = PropertyView.objects.get_or_create(
         property=property_obj,
-        user=request.user if request.user.is_authenticated else None,
-        session_key=session_key,
-        ip_address=ip_address,
-        user_agent_hash=user_agent_hash
+        visitor_key=visitor_key,
+        defaults={
+            "user": request.user if request.user.is_authenticated else None,
+            "session_key": session_key,
+            "ip_address": ip_address,
+            "user_agent_hash": user_agent_hash,
+        }
     )
+
+    if not created:
+        return
 
     Property.objects.filter(
         pk=property_obj.pk

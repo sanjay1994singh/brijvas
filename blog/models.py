@@ -137,3 +137,79 @@ class BlogComment(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True
     )
+
+
+class BlogView(models.Model):
+    blog = models.ForeignKey(
+        Blog,
+        on_delete=models.CASCADE,
+        related_name="view_logs"
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
+
+    session_key = models.CharField(
+        max_length=40,
+        blank=True,
+        db_index=True
+    )
+
+    ip_address = models.GenericIPAddressField(
+        blank=True,
+        null=True
+    )
+
+    user_agent_hash = models.CharField(
+        max_length=64,
+        blank=True,
+        db_index=True
+    )
+
+    visitor_key = models.CharField(
+        max_length=96,
+        blank=True,
+        db_index=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=[
+                    "blog",
+                    "user",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "blog",
+                    "session_key",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "blog",
+                    "visitor_key",
+                ]
+            ),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "blog",
+                    "visitor_key",
+                ],
+                name="unique_blog_visitor_view"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.blog_id} view"

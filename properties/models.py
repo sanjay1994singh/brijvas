@@ -267,6 +267,12 @@ class PropertyView(models.Model):
         db_index=True
     )
 
+    visitor_key = models.CharField(
+        max_length=96,
+        blank=True,
+        db_index=True
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True
     )
@@ -288,10 +294,18 @@ class PropertyView(models.Model):
             models.Index(
                 fields=[
                     "property",
-                    "ip_address",
-                    "user_agent_hash",
+                    "visitor_key",
                 ]
             ),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "property",
+                    "visitor_key",
+                ],
+                name="unique_property_visitor_view"
+            )
         ]
 
     def __str__(self):
