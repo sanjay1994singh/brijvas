@@ -243,6 +243,65 @@ a{
     font-size:13px;
 }
 
+.home-category-section{
+    background:#fff;
+}
+
+.home-category-title h2{
+    font-size:36px;
+    line-height:1.15;
+}
+
+.home-category-title p{
+    max-width:560px;
+    font-size:16px;
+}
+
+.home-category-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(118px, 1fr));
+    gap:22px;
+    align-items:start;
+}
+
+.home-category-card{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    gap:10px;
+    min-height:158px;
+    padding:8px 6px;
+    text-align:center;
+    color:var(--primary);
+    transition:transform .2s ease, color .2s ease;
+}
+
+.home-category-card:hover{
+    transform:translateY(-4px);
+    color:#0b5ed7;
+}
+
+.home-category-card img{
+    width:112px;
+    height:112px;
+    padding:8px;
+    border:1px solid rgba(13,110,253,.12);
+    border-radius:50%;
+    background:#fff;
+    object-fit:cover;
+    box-shadow:0 10px 28px rgba(15,23,42,.10);
+}
+
+.home-category-card h6{
+    max-width:128px;
+    margin:0;
+    color:currentColor;
+    font-size:15px;
+    font-weight:700;
+    line-height:1.18;
+}
+
 .category-card{
     text-align:center;
     background:#fff;
@@ -1127,6 +1186,20 @@ a{
         flex:1 1 180px;
     }
 
+    .home-category-grid{
+        grid-template-columns:repeat(auto-fit, minmax(104px, 1fr));
+        gap:18px 12px;
+    }
+
+    .home-category-card{
+        min-height:140px;
+    }
+
+    .home-category-card img{
+        width:96px;
+        height:96px;
+    }
+
     .dashboard-sidebar{
         min-height:auto;
         margin-bottom:25px;
@@ -1194,6 +1267,44 @@ a{
 
     .hero-trust-row strong{
         font-size:17px;
+    }
+
+    .home-category-section{
+        padding-top:28px !important;
+        padding-bottom:24px !important;
+    }
+
+    .home-category-title{
+        margin-bottom:20px !important;
+    }
+
+    .home-category-title h2{
+        font-size:26px;
+    }
+
+    .home-category-title p{
+        font-size:14px;
+    }
+
+    .home-category-grid{
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+        gap:16px 8px;
+    }
+
+    .home-category-card{
+        min-height:120px;
+        gap:8px;
+    }
+
+    .home-category-card img{
+        width:78px;
+        height:78px;
+        padding:5px;
+    }
+
+    .home-category-card h6{
+        max-width:96px;
+        font-size:13px;
     }
 
     .category-card img{

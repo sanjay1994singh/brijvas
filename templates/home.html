@@ -151,11 +151,11 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
 <!-- PROPERTY TYPES -->
 
-<section class="py-5">
+<section class="home-category-section py-4">
 
     <div class="container">
 
-        <div class="section-title text-center mb-5">
+        <div class="section-title home-category-title text-center mb-4">
 
             <span>Property Options</span>
 
@@ -167,16 +167,16 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
         </div>
 
-        <div class="row">
+        <div class="home-category-grid">
 
             {% for category in property_types %}
 
-            <div class="col-lg-2 col-md-4 col-6 mb-4">
+            <div class="home-category-item">
 
                 <a href="{% url 'category_properties' category.slug %}"
                    class="text-decoration-none">
 
-                    <div class="category-card">
+                    <div class="home-category-card">
 
                         <img src="{{ category.image.url }}"
                              width="300"
