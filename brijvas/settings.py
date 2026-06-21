@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
 
     'social_django',
-    'ckeditor',
+    'django_ckeditor_5',
     'crispy_forms',
     'django_filters',
 
@@ -150,3 +150,64 @@ STATICFILES_DIRS = [
 MEDIA_URL = os.getenv("MEDIA_URL", "https://theupmedia.in/media/")
 MEDIA_ROOT = BASE_DIR / 'media'
 AUTH_USER_MODEL = "accounts.User"
+
+CKEDITOR_5_FILE_UPLOAD_PERMISSION = "authenticated"
+CKEDITOR_5_CONFIGS = {
+    "default": {
+        "toolbar": [
+            "heading",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "bulletedList",
+            "numberedList",
+            "|",
+            "blockQuote",
+            "insertTable",
+            "imageUpload",
+            "undo",
+            "redo",
+        ],
+    },
+    "extends": {
+        "toolbar": [
+            "heading",
+            "|",
+            "bold",
+            "italic",
+            "underline",
+            "strikethrough",
+            "link",
+            "|",
+            "bulletedList",
+            "numberedList",
+            "outdent",
+            "indent",
+            "|",
+            "blockQuote",
+            "insertTable",
+            "imageUpload",
+            "mediaEmbed",
+            "|",
+            "undo",
+            "redo",
+        ],
+        "image": {
+            "toolbar": [
+                "imageTextAlternative",
+                "|",
+                "imageStyle:alignLeft",
+                "imageStyle:alignCenter",
+                "imageStyle:alignRight",
+            ],
+        },
+        "table": {
+            "contentToolbar": [
+                "tableColumn",
+                "tableRow",
+                "mergeTableCells",
+            ],
+        },
+    },
+}

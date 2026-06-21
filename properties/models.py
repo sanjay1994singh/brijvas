@@ -3,6 +3,7 @@ from django.urls import reverse
 from accounts.models import User
 from locations.models import State, City
 from django.conf import settings
+from django_ckeditor_5.fields import CKEditor5Field
 from core.images import optimize_uploaded_image
 from core.seo import unique_slug
 
@@ -99,7 +100,9 @@ class Property(models.Model):
 
     address = models.TextField()
 
-    description = models.TextField()
+    description = CKEditor5Field(
+        config_name="extends"
+    )
 
     price = models.DecimalField(
         max_digits=15,

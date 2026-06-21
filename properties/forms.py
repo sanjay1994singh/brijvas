@@ -1,4 +1,5 @@
 from django import forms
+from django_ckeditor_5.widgets import CKEditor5Widget
 from .models import Property, PropertyGallery
 
 
@@ -23,10 +24,10 @@ class PropertyForm(forms.ModelForm):
                 }
             ),
 
-            'description': forms.Textarea(
+            'description': CKEditor5Widget(
+                config_name='extends',
                 attrs={
-                    'class': 'form-control',
-                    'rows': 5
+                    'class': 'django_ckeditor_5'
                 }
             ),
 
