@@ -152,7 +152,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 
-MEDIA_URL = os.getenv("MEDIA_URL", "https://theupmedia.in/media/")
+MEDIA_URL = os.getenv("MEDIA_URL", "/media/")
 MEDIA_ROOT = BASE_DIR / 'media'
 AUTH_USER_MODEL = "accounts.User"
 

@@ -15,7 +15,7 @@
             </a>
         </li>
 
-        {% if request.user.is_superuser or request.user.user_type == 'owner' or request.user.user_type == 'agent' %}
+        {% if request.user.is_superuser or request.user.is_staff or request.user.user_type == 'owner' or request.user.user_type == 'agent' and request.user.is_verified %}
         <li>
             <a href="{% url 'add_property' %}">
                 <i class="fa-solid fa-plus"></i>

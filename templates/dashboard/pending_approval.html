@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Agent Approval Pending | Brij Vas
+{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-section">
+
+    <div class="container">
+
+        <div class="approval-card mx-auto">
+
+            <span class="approval-badge">
+                Agent Verification
+            </span>
+
+            <h1>
+                Your agent account is waiting for approval
+            </h1>
+
+            <p>
+                Brij Vas team will review your details first. After approval,
+                you can access dashboard tools and submit properties.
+            </p>
+
+            <div class="approval-actions">
+
+                <a class="btn btn-success"
+                   href="https://wa.me/91639772918?text=Hi%20Brij%20Vas%2C%20I%20want%20to%20join%20as%20an%20agent%20partner.%20Please%20approve%20my%20account."
+                   target="_blank"
+                   rel="noopener">
+                    Contact on WhatsApp
+                </a>
+
+                <a class="btn btn-outline-primary"
+                   href="{% url 'profile' %}">
+                    Update Profile
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

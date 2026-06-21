@@ -366,26 +366,48 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
 </section>
 
-<!-- CTA -->
+<!-- PARTNER CTA -->
 
-<section class="cta-section">
+<section class="partner-cta-section">
 
-    <div class="container text-center">
+    <div class="container">
 
-        <h2>
-            Want To Sell Your Property?
-        </h2>
+        <div class="partner-cta-content">
 
-        <p>
-            List your property and get quality leads.
-        </p>
+            <span>Partner With Brij Vas</span>
 
-        <a href="{% url 'add_property' %}"
-           class="btn btn-light">
+            <h2>
+                Join As A Verified Agent Partner
+            </h2>
 
-            Post Property
+            <p>
+                First contact our team on WhatsApp. Create your account with Google
+                or signup, then admin approval unlocks dashboard and property posting.
+                Every submitted property is reviewed before going live.
+            </p>
 
-        </a>
+            <div class="partner-cta-actions">
+
+                <a href="https://wa.me/91639772918?text=Hi%20Brij%20Vas%2C%20I%20want%20to%20join%20as%20an%20agent%20partner."
+                   class="btn btn-success"
+                   target="_blank"
+                   rel="noopener">
+                    Join On WhatsApp
+                </a>
+
+                <a href="{% url 'social:begin' 'google-oauth2' %}"
+                   class="btn btn-light">
+                    Continue With Google
+                </a>
+
+                <a href="{% url 'register' %}"
+                   class="btn btn-outline-light">
+                    Create Account
+                </a>
+
+            </div>
+
+        </div>
 
     </div>
 

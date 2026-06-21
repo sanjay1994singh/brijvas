@@ -24,6 +24,7 @@ class PropertyAdmin(admin.ModelAdmin):
         "title",
         "city",
         "price",
+        "is_verified",
         "is_featured",
         "is_active",
     )
@@ -31,7 +32,15 @@ class PropertyAdmin(admin.ModelAdmin):
     list_filter = (
         "city",
         "property_type",
+        "is_verified",
         "is_featured",
+        "is_active",
+    )
+
+    list_editable = (
+        "is_verified",
+        "is_featured",
+        "is_active",
     )
 
     search_fields = (

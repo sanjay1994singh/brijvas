@@ -17,7 +17,38 @@ from enquiries.models import Enquiry
 from properties.forms import PropertyForm
 
 
+def _needs_agent_approval(user):
+    return (
+        getattr(user, "user_type", "") == "agent"
+        and not user.is_superuser
+        and not user.is_staff
+        and not user.is_verified
+    )
+
+
+def _can_manage_properties(user):
+    return (
+        user.is_superuser
+        or user.is_staff
+        or getattr(user, "user_type", "") in ("owner", "agent")
+    )
+
+
+def _approved_dashboard_required(view_func):
+    def wrapper(request, *args, **kwargs):
+        if _needs_agent_approval(request.user):
+            return render(
+                request,
+                "dashboard/pending_approval.html"
+            )
+
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
+
 @login_required
+@_approved_dashboard_required
 def dashboard(request):
     properties = Property.objects.filter(
         user=request.user
@@ -66,7 +97,15 @@ def dashboard(request):
 
 
 @login_required
+@_approved_dashboard_required
 def add_property(request):
+    if not _can_manage_properties(request.user):
+        messages.error(
+            request,
+            "Only approved owners and agents can add properties."
+        )
+        return redirect("dashboard")
+
     if request.method == "POST":
 
         form = PropertyForm(
@@ -80,6 +119,8 @@ def add_property(request):
             )
 
             property_obj.user = request.user
+            property_obj.is_active = False
+            property_obj.is_verified = False
 
             property_obj.save()
 
@@ -87,7 +128,7 @@ def add_property(request):
 
             messages.success(
                 request,
-                "Property added successfully."
+                "Property submitted successfully. Admin will review and approve it."
             )
 
             return redirect(
@@ -108,6 +149,7 @@ def add_property(request):
 
 
 @login_required
+@_approved_dashboard_required
 def my_properties(request):
     properties = Property.objects.filter(
         user=request.user
@@ -125,6 +167,7 @@ def my_properties(request):
 
 
 @login_required
+@_approved_dashboard_required
 def edit_property(request, id):
     property_obj = get_object_or_404(
         Property,
@@ -176,6 +219,7 @@ def edit_property(request, id):
 
 
 @login_required
+@_approved_dashboard_required
 def delete_property(request, id):
     property_obj = get_object_or_404(
 
@@ -203,6 +247,7 @@ def delete_property(request, id):
 
 
 @login_required
+@_approved_dashboard_required
 def enquiries(request):
     enquiries = Enquiry.objects.filter(
 
@@ -265,6 +310,7 @@ def wishlist(request):
 
 
 @login_required
+@_approved_dashboard_required
 def agent_dashboard(request):
     if request.user.user_type != "agent":
         return redirect(
