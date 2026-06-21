@@ -49,8 +49,13 @@ def seo_slugify(value, fallback="item", max_length=90):
     return slug or fallback
 
 
-def unique_slug(instance, value, slug_field="slug", fallback="item", max_length=90):
+def unique_slug(instance, value, slug_field="slug", fallback="item", max_length=None):
     model = instance.__class__
+
+    if max_length is None:
+        max_length = model._meta.get_field(slug_field).max_length or 50
+
+    fallback = str(fallback or "item")[:max_length].strip("-") or "item"
     base_slug = seo_slugify(value, fallback=fallback, max_length=max_length)
     slug = base_slug
     counter = 2
@@ -61,7 +66,8 @@ def unique_slug(instance, value, slug_field="slug", fallback="item", max_length=
 
     while queryset.exists():
         suffix = f"-{counter}"
-        slug = f"{base_slug[:max_length - len(suffix)]}{suffix}"
+        base_limit = max(1, max_length - len(suffix))
+        slug = f"{base_slug[:base_limit].strip('-')}{suffix}"
         queryset = model._default_manager.filter(**{slug_field: slug})
         if instance.pk:
             queryset = queryset.exclude(pk=instance.pk)
