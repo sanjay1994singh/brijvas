@@ -6,6 +6,7 @@ from django.conf import settings
 from django_ckeditor_5.fields import CKEditor5Field
 from core.images import optimize_uploaded_image
 from core.seo import unique_slug
+from decimal import Decimal, ROUND_HALF_UP
 
 
 class PropertyType(models.Model):
@@ -65,6 +66,13 @@ class Property(models.Model):
         ('rent', 'Rent'),
     )
 
+    AREA_UNIT_CHOICES = (
+        ('sqft', 'Sqft'),
+        ('gaj', 'Gaj'),
+    )
+
+    SQFT_PER_GAJ = Decimal("9")
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -76,7 +84,10 @@ class Property(models.Model):
         on_delete=models.CASCADE
     )
 
-    title = models.CharField(max_length=255)
+    title = models.CharField(
+        max_length=255,
+        blank=True
+    )
 
     slug = models.SlugField(
         unique=True,
@@ -98,10 +109,13 @@ class Property(models.Model):
         on_delete=models.CASCADE
     )
 
-    address = models.TextField()
+    address = models.TextField(
+        blank=True
+    )
 
     description = CKEditor5Field(
-        config_name="extends"
+        config_name="extends",
+        blank=True
     )
 
     price = models.DecimalField(
@@ -116,7 +130,24 @@ class Property(models.Model):
 
     area_unit = models.CharField(
         max_length=20,
+        choices=AREA_UNIT_CHOICES,
         default='sqft'
+    )
+
+    area_sqft = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        editable=False
+    )
+
+    area_gaj = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        editable=False
     )
 
     bedrooms = models.PositiveIntegerField(
@@ -178,7 +209,92 @@ class Property(models.Model):
         auto_now=True
     )
 
+    def _rounded_area(self, value):
+        return Decimal(value).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+    def _clean_decimal_display(self, value):
+        if value is None:
+            return ""
+
+        normalized = Decimal(value).normalize()
+        return format(normalized, "f")
+
+    def _area_for_title(self):
+        area_value = self.area_gaj if self.area_unit == "gaj" else self.area_sqft
+        unit = "Gaj" if self.area_unit == "gaj" else "Sqft"
+
+        if area_value:
+            return f"{self._clean_decimal_display(area_value)} {unit}"
+
+        return ""
+
+    def _location_text(self):
+        return ", ".join(
+            str(part)
+            for part in [
+                getattr(self.city, "name", ""),
+                getattr(self.state, "name", ""),
+            ]
+            if part
+        )
+
+    def build_seo_title(self):
+        parts = [
+            self.get_purpose_display(),
+            self._area_for_title(),
+            getattr(self.property_type, "name", ""),
+        ]
+        title = " ".join(str(part) for part in parts if part)
+
+        location = self._location_text()
+        if location:
+            title = f"{title} in {location}" if title else location
+
+        return title[:255] or "Property Listing"
+
+    def build_seo_description(self):
+        property_type = getattr(self.property_type, "name", "property")
+        city = getattr(self.city, "name", "")
+        state = getattr(self.state, "name", "")
+        purpose = self.get_purpose_display().lower()
+        price = self._clean_decimal_display(self.price)
+        sqft = self._clean_decimal_display(self.area_sqft)
+        gaj = self._clean_decimal_display(self.area_gaj)
+        location = self._location_text()
+
+        return (
+            f"<p>{self.title} available for {purpose} in {location}. "
+            f"This {property_type} has {sqft} sqft / {gaj} gaj area "
+            f"with price Rs. {price}.</p>"
+            f"<p>Contact Brij Vas for verified property details, site visit "
+            f"and real estate guidance in {city}, {state}.</p>"
+        )
+
     def save(self, *args, **kwargs):
+        if self.area is not None:
+            if self.area_unit == "gaj":
+                self.area_gaj = self._rounded_area(self.area)
+                self.area_sqft = self._rounded_area(
+                    Decimal(self.area) * self.SQFT_PER_GAJ
+                )
+            else:
+                self.area_sqft = self._rounded_area(self.area)
+                self.area_gaj = self._rounded_area(
+                    Decimal(self.area) / self.SQFT_PER_GAJ
+                )
+
+        if not self.title:
+            self.title = self.build_seo_title()
+
+        if not self.address:
+            self.address = self._location_text()
+
+        if not self.description:
+            self.description = self.build_seo_description()
+
         if not self.slug:
             parts = [
                 self.title,

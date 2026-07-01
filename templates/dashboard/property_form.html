@@ -15,17 +15,11 @@
             <span><i class="fa-solid fa-house-chimney"></i></span>
             <div>
                 <h5>Basic Details</h5>
-                <p>Title, purpose and property type for search visibility.</p>
+                <p>SEO title will be created automatically from purpose, area, type and location.</p>
             </div>
         </div>
 
         <div class="property-form-grid">
-            <div class="property-field property-field--wide">
-                <label for="{{ form.title.id_for_label }}">Property Title</label>
-                {{ form.title }}
-                {{ form.title.errors }}
-            </div>
-
             <div class="property-field">
                 <label for="{{ form.property_type.id_for_label }}">Property Type</label>
                 {{ form.property_type }}
@@ -36,6 +30,14 @@
                 <label for="{{ form.purpose.id_for_label }}">Purpose</label>
                 {{ form.purpose }}
                 {{ form.purpose.errors }}
+            </div>
+
+            <div class="property-auto-box">
+                <i class="fa-solid fa-magnifying-glass-chart"></i>
+                <div>
+                    <strong>Auto SEO Title</strong>
+                    <span id="seo-title-preview">Title will appear after property details are selected.</span>
+                </div>
             </div>
         </div>
     </div>
@@ -60,24 +62,6 @@
                 <label for="{{ form.city.id_for_label }}">City</label>
                 {{ form.city }}
                 {{ form.city.errors }}
-            </div>
-
-            <div class="property-field property-field--wide">
-                <label for="{{ form.address.id_for_label }}">Address</label>
-                {{ form.address }}
-                {{ form.address.errors }}
-            </div>
-
-            <div class="property-field">
-                <label for="{{ form.latitude.id_for_label }}">Latitude</label>
-                {{ form.latitude }}
-                {{ form.latitude.errors }}
-            </div>
-
-            <div class="property-field">
-                <label for="{{ form.longitude.id_for_label }}">Longitude</label>
-                {{ form.longitude }}
-                {{ form.longitude.errors }}
             </div>
         </div>
     </div>
@@ -109,63 +93,27 @@
                 {{ form.area_unit }}
                 {{ form.area_unit.errors }}
             </div>
-        </div>
-    </div>
 
-    <div class="property-form-section">
-        <div class="property-form-section__head">
-            <span><i class="fa-solid fa-bed"></i></span>
-            <div>
-                <h5>Features</h5>
-                <p>Rooms, parking and furnishing information.</p>
-            </div>
-        </div>
-
-        <div class="property-form-grid property-form-grid--four">
-            <div class="property-field">
-                <label for="{{ form.bedrooms.id_for_label }}">Bedrooms</label>
-                {{ form.bedrooms }}
-                {{ form.bedrooms.errors }}
-            </div>
-
-            <div class="property-field">
-                <label for="{{ form.bathrooms.id_for_label }}">Bathrooms</label>
-                {{ form.bathrooms }}
-                {{ form.bathrooms.errors }}
-            </div>
-
-            <div class="property-field">
-                <label for="{{ form.parking.id_for_label }}">Parking</label>
-                {{ form.parking }}
-                {{ form.parking.errors }}
-            </div>
-
-            <div class="property-field">
-                <label for="{{ form.furnishing.id_for_label }}">Furnishing</label>
-                {{ form.furnishing }}
-                {{ form.furnishing.errors }}
+            <div class="property-auto-box">
+                <i class="fa-solid fa-ruler-combined"></i>
+                <div>
+                    <strong>Auto Area Conversion</strong>
+                    <span id="area-conversion-preview">Enter area to see sqft and gaj value.</span>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="property-form-section">
         <div class="property-form-section__head">
-            <span><i class="fa-solid fa-align-left"></i></span>
+            <span><i class="fa-solid fa-image"></i></span>
             <div>
-                <h5>Description & Image</h5>
-                <p>Write SEO-friendly details and upload the main property image.</p>
+                <h5>Property Image</h5>
+                <p>Description, address and search text will be generated automatically.</p>
             </div>
         </div>
 
-        <div class="property-field">
-            <label for="{{ form.description.id_for_label }}">Description</label>
-            <div class="property-editor-wrap">
-                {{ form.description }}
-            </div>
-            {{ form.description.errors }}
-        </div>
-
-        <div class="property-form-grid mt-4">
+        <div class="property-form-grid">
             <div class="property-field">
                 <label for="{{ form.featured_image.id_for_label }}">Featured Image</label>
                 {{ form.featured_image }}
@@ -205,3 +153,76 @@
         </button>
     </div>
 </form>
+
+<script>
+    (function () {
+        const areaInput = document.getElementById("{{ form.area.id_for_label }}");
+        const unitInput = document.getElementById("{{ form.area_unit.id_for_label }}");
+        const purposeInput = document.getElementById("{{ form.purpose.id_for_label }}");
+        const typeInput = document.getElementById("{{ form.property_type.id_for_label }}");
+        const stateInput = document.getElementById("{{ form.state.id_for_label }}");
+        const cityInput = document.getElementById("{{ form.city.id_for_label }}");
+        const conversionPreview = document.getElementById("area-conversion-preview");
+        const seoTitlePreview = document.getElementById("seo-title-preview");
+
+        function selectedText(input) {
+            if (!input || input.selectedIndex < 0) {
+                return "";
+            }
+
+            return input.options[input.selectedIndex].text.trim();
+        }
+
+        function formatNumber(value) {
+            return Number(value).toLocaleString("en-IN", {
+                maximumFractionDigits: 2
+            });
+        }
+
+        function updatePreview() {
+            const area = parseFloat(areaInput && areaInput.value ? areaInput.value : "0");
+            const unit = unitInput ? unitInput.value : "sqft";
+            let sqft = 0;
+            let gaj = 0;
+
+            if (area > 0) {
+                if (unit === "gaj") {
+                    gaj = area;
+                    sqft = area * 9;
+                } else {
+                    sqft = area;
+                    gaj = area / 9;
+                }
+
+                conversionPreview.textContent = `${formatNumber(sqft)} sqft / ${formatNumber(gaj)} gaj`;
+            } else {
+                conversionPreview.textContent = "Enter area to see sqft and gaj value.";
+            }
+
+            const titleParts = [
+                selectedText(purposeInput),
+                area > 0 ? `${formatNumber(area)} ${unit === "gaj" ? "Gaj" : "Sqft"}` : "",
+                selectedText(typeInput),
+            ].filter(Boolean);
+            const locationParts = [
+                selectedText(cityInput),
+                selectedText(stateInput),
+            ].filter(Boolean);
+            const title = titleParts.join(" ");
+            const location = locationParts.join(", ");
+
+            seoTitlePreview.textContent = title
+                ? `${title}${location ? ` in ${location}` : ""}`
+                : "Title will appear after property details are selected.";
+        }
+
+        [areaInput, unitInput, purposeInput, typeInput, stateInput, cityInput].forEach(function (input) {
+            if (input) {
+                input.addEventListener("input", updatePreview);
+                input.addEventListener("change", updatePreview);
+            }
+        });
+
+        updatePreview();
+    }());
+</script>

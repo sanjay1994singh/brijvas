@@ -58,7 +58,10 @@
 
                 <span>
                     <i class="fa-solid fa-expand"></i>
-                    {{ property.area }} {{ property.area_unit }}
+                    {{ property.area_sqft|default:property.area }} sqft
+                    {% if property.area_gaj %}
+                    / {{ property.area_gaj }} gaj
+                    {% endif %}
                 </span>
 
                 <span>

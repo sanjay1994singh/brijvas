@@ -14,7 +14,18 @@ class PropertyForm(forms.ModelForm):
 
         exclude = (
             'user',
+            'title',
             'slug',
+            'address',
+            'description',
+            'area_sqft',
+            'area_gaj',
+            'bedrooms',
+            'bathrooms',
+            'parking',
+            'furnishing',
+            'latitude',
+            'longitude',
             'views',
             'is_featured',
             'is_verified',
@@ -24,19 +35,6 @@ class PropertyForm(forms.ModelForm):
         )
 
         widgets = {
-
-            'title': forms.TextInput(
-                attrs={
-                    'class': 'form-control'
-                }
-            ),
-
-            'description': CKEditor5Widget(
-                config_name='extends',
-                attrs={
-                    'class': 'django_ckeditor_5'
-                }
-            ),
 
             'price': forms.NumberInput(
                 attrs={
@@ -49,31 +47,14 @@ class PropertyForm(forms.ModelForm):
                     'class': 'form-control'
                 }
             ),
-
-            'address': forms.Textarea(
-                attrs={
-                    'class': 'form-control',
-                    'rows': 3
-                }
-            ),
-
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         placeholders = {
-            "title": "Example: 250 Gaj premium plot in Vrindavan",
-            "address": "Full property address or nearby landmark",
             "price": "Property price",
             "area": "Area size",
-            "area_unit": "sqft, gaj, acre...",
-            "bedrooms": "0",
-            "bathrooms": "0",
-            "parking": "0",
-            "furnishing": "Semi furnished, furnished, unfurnished...",
-            "latitude": "Optional latitude",
-            "longitude": "Optional longitude",
         }
 
         for name, field in self.fields.items():
@@ -96,6 +77,18 @@ class PropertyForm(forms.ModelForm):
         self.fields["featured_image"].help_text = (
             "Upload a clear front image. It will be compressed automatically."
         )
+
+    def save(self, commit=True):
+        property_obj = super().save(commit=False)
+        property_obj.title = ""
+        property_obj.address = ""
+        property_obj.description = ""
+
+        if commit:
+            property_obj.save()
+            self.save_m2m()
+
+        return property_obj
 
 
 class PropertyGalleryForm(forms.ModelForm):
