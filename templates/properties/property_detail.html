@@ -219,7 +219,11 @@ product
                             Description
                         </h4>
 
+                        {% if property.description %}
                         {{ property.description|safe }}
+                        {% else %}
+                        {{ property.build_seo_description|safe }}
+                        {% endif %}
 
                     </div>
 

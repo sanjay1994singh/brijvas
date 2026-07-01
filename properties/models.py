@@ -303,14 +303,6 @@ class Property(models.Model):
             f"and real estate guidance in {city}, {state}.</p>"
         )
 
-    def build_ai_seo_description(self):
-        from .ai_description import generate_property_description
-
-        return (
-            generate_property_description(self)
-            or self.build_seo_description()
-        )
-
     def save(self, *args, **kwargs):
         if self.area is not None:
             if self.area_unit == "gaj":
@@ -331,7 +323,7 @@ class Property(models.Model):
             self.address = self._location_text()
 
         if not self.description:
-            self.description = self.build_ai_seo_description()
+            self.description = self.build_seo_description()
 
         if not self.slug:
             parts = [

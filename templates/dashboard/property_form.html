@@ -106,14 +106,22 @@
 
     <div class="property-form-section">
         <div class="property-form-section__head">
-            <span><i class="fa-solid fa-image"></i></span>
+            <span><i class="fa-solid fa-align-left"></i></span>
             <div>
-                <h5>Property Image</h5>
-                <p>Description, address and search text will be generated automatically.</p>
+                <h5>Description & Image</h5>
+                <p>Paste your ChatGPT description or leave it blank for auto SEO text.</p>
             </div>
         </div>
 
-        <div class="property-form-grid">
+        <div class="property-field">
+            <label for="{{ form.description.id_for_label }}">Description</label>
+            <div class="property-editor-wrap">
+                {{ form.description }}
+            </div>
+            {{ form.description.errors }}
+        </div>
+
+        <div class="property-form-grid mt-4">
             <div class="property-field">
                 <label for="{{ form.featured_image.id_for_label }}">Featured Image</label>
                 {{ form.featured_image }}

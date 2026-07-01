@@ -17,7 +17,6 @@ class PropertyForm(forms.ModelForm):
             'title',
             'slug',
             'address',
-            'description',
             'area_sqft',
             'area_gaj',
             'bedrooms',
@@ -45,6 +44,13 @@ class PropertyForm(forms.ModelForm):
             'area': forms.NumberInput(
                 attrs={
                     'class': 'form-control'
+                }
+            ),
+
+            'description': CKEditor5Widget(
+                config_name='extends',
+                attrs={
+                    'class': 'django_ckeditor_5'
                 }
             ),
         }
@@ -82,7 +88,6 @@ class PropertyForm(forms.ModelForm):
         property_obj = super().save(commit=False)
         property_obj.title = ""
         property_obj.address = ""
-        property_obj.description = ""
 
         if commit:
             property_obj.save()
