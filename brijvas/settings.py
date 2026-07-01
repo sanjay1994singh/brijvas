@@ -14,6 +14,12 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 SITE_ID = 1
 SITE_URL = os.getenv("SITE_URL", "https://brijvas.com").rstrip("/")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "")
+OPENAI_CHAT_COMPLETIONS_URL = os.getenv(
+    "OPENAI_CHAT_COMPLETIONS_URL",
+    "https://api.openai.com/v1/chat/completions"
+)
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv("GOOGLE_CLIENT_ID")
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 SOCIAL_AUTH_IMMUTABLE_USER_FIELDS = (
