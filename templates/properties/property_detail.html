@@ -72,7 +72,7 @@ product
     },
     "floorSize": {
         "@type": "QuantitativeValue",
-        "value": "{{ property.area_sqft|default:property.area }}",
+        "value": "{{ property.display_area_sqft }}",
         "unitText": "sqft"
     }
 }
@@ -164,10 +164,10 @@ product
                                 <strong>Area</strong>
 
                                 <p>
-                                    {{ property.area_sqft|default:property.area }} sqft
-                                    {% if property.area_gaj %}
+                                    {{ property.display_area_sqft }} sqft
+                                    {% if property.display_area_gaj %}
                                     <br>
-                                    {{ property.area_gaj }} gaj
+                                    {{ property.display_area_gaj }} gaj
                                     {% endif %}
                                 </p>
 

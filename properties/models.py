@@ -231,6 +231,36 @@ class Property(models.Model):
 
         return ""
 
+    @property
+    def display_area_sqft(self):
+        if self.area_sqft is not None:
+            return self.area_sqft
+
+        if self.area is None:
+            return None
+
+        if self.area_unit == "gaj":
+            return self._rounded_area(
+                Decimal(self.area) * self.SQFT_PER_GAJ
+            )
+
+        return self._rounded_area(self.area)
+
+    @property
+    def display_area_gaj(self):
+        if self.area_gaj is not None:
+            return self.area_gaj
+
+        if self.area is None:
+            return None
+
+        if self.area_unit == "gaj":
+            return self._rounded_area(self.area)
+
+        return self._rounded_area(
+            Decimal(self.area) / self.SQFT_PER_GAJ
+        )
+
     def _location_text(self):
         return ", ".join(
             str(part)
