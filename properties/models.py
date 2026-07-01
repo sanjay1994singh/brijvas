@@ -69,9 +69,15 @@ class Property(models.Model):
     AREA_UNIT_CHOICES = (
         ('sqft', 'Sqft'),
         ('gaj', 'Gaj'),
+        ('sq_meter', 'Sq Meter'),
+        ('acre', 'Acre'),
+        ('bigha', 'Bigha'),
     )
 
     SQFT_PER_GAJ = Decimal("9")
+    SQFT_PER_SQ_METER = Decimal("10.7639")
+    SQFT_PER_ACRE = Decimal("43560")
+    SQFT_PER_BIGHA = Decimal("27225")
 
     user = models.ForeignKey(
         User,
@@ -150,6 +156,30 @@ class Property(models.Model):
         editable=False
     )
 
+    area_sq_meter = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        editable=False
+    )
+
+    area_acre = models.DecimalField(
+        max_digits=12,
+        decimal_places=4,
+        blank=True,
+        null=True,
+        editable=False
+    )
+
+    area_bigha = models.DecimalField(
+        max_digits=12,
+        decimal_places=4,
+        blank=True,
+        null=True,
+        editable=False
+    )
+
     bedrooms = models.PositiveIntegerField(
         default=0
     )
@@ -223,42 +253,107 @@ class Property(models.Model):
         return format(normalized, "f")
 
     def _area_for_title(self):
-        area_value = self.area_gaj if self.area_unit == "gaj" else self.area_sqft
-        unit = "Gaj" if self.area_unit == "gaj" else "Sqft"
+        unit_map = {
+            "sqft": ("Sqft", self.display_area_sqft),
+            "gaj": ("Gaj", self.display_area_gaj),
+            "sq_meter": ("Sq Meter", self.display_area_sq_meter),
+            "acre": ("Acre", self.display_area_acre),
+            "bigha": ("Bigha", self.display_area_bigha),
+        }
+        unit, area_value = unit_map.get(
+            self.area_unit,
+            ("Sqft", self.display_area_sqft)
+        )
 
         if area_value:
             return f"{self._clean_decimal_display(area_value)} {unit}"
 
         return ""
 
+    def _base_sqft_from_area(self):
+        if self.area is None:
+            return None
+
+        area = Decimal(self.area)
+        conversion_map = {
+            "sqft": Decimal("1"),
+            "gaj": self.SQFT_PER_GAJ,
+            "sq_meter": self.SQFT_PER_SQ_METER,
+            "acre": self.SQFT_PER_ACRE,
+            "bigha": self.SQFT_PER_BIGHA,
+        }
+        multiplier = conversion_map.get(self.area_unit, Decimal("1"))
+        return area * multiplier
+
     @property
     def display_area_sqft(self):
         if self.area_sqft is not None:
             return self.area_sqft
 
-        if self.area is None:
+        sqft = self._base_sqft_from_area()
+        if sqft is None:
             return None
 
-        if self.area_unit == "gaj":
-            return self._rounded_area(
-                Decimal(self.area) * self.SQFT_PER_GAJ
-            )
-
-        return self._rounded_area(self.area)
+        return self._rounded_area(sqft)
 
     @property
     def display_area_gaj(self):
         if self.area_gaj is not None:
             return self.area_gaj
 
-        if self.area is None:
+        sqft = self._base_sqft_from_area()
+        if sqft is None:
             return None
 
-        if self.area_unit == "gaj":
-            return self._rounded_area(self.area)
+        return self._rounded_area(sqft / self.SQFT_PER_GAJ)
 
-        return self._rounded_area(
-            Decimal(self.area) / self.SQFT_PER_GAJ
+    @property
+    def display_area_sq_meter(self):
+        if self.area_sq_meter is not None:
+            return self.area_sq_meter
+
+        sqft = self._base_sqft_from_area()
+        if sqft is None:
+            return None
+
+        return self._rounded_area(sqft / self.SQFT_PER_SQ_METER)
+
+    @property
+    def display_area_acre(self):
+        if self.area_acre is not None:
+            return self.area_acre
+
+        sqft = self._base_sqft_from_area()
+        if sqft is None:
+            return None
+
+        return (sqft / self.SQFT_PER_ACRE).quantize(
+            Decimal("0.0001"),
+            rounding=ROUND_HALF_UP
+        )
+
+    @property
+    def display_area_bigha(self):
+        if self.area_bigha is not None:
+            return self.area_bigha
+
+        sqft = self._base_sqft_from_area()
+        if sqft is None:
+            return None
+
+        return (sqft / self.SQFT_PER_BIGHA).quantize(
+            Decimal("0.0001"),
+            rounding=ROUND_HALF_UP
+        )
+
+    @property
+    def display_area_summary(self):
+        return (
+            f"{self._clean_decimal_display(self.display_area_sqft)} sqft / "
+            f"{self._clean_decimal_display(self.display_area_gaj)} gaj / "
+            f"{self._clean_decimal_display(self.display_area_sq_meter)} sq m / "
+            f"{self._clean_decimal_display(self.display_area_acre)} acre / "
+            f"{self._clean_decimal_display(self.display_area_bigha)} bigha"
         )
 
     def _location_text(self):
@@ -294,30 +389,32 @@ class Property(models.Model):
         state = getattr(self.state, "name", "")
         purpose = self.get_purpose_display().lower()
         price = self._clean_decimal_display(self.price)
-        sqft = self._clean_decimal_display(self.area_sqft)
-        gaj = self._clean_decimal_display(self.area_gaj)
         location = self._location_text()
 
         return (
             f"<p>{self.title} available for {purpose} in {location}. "
-            f"This {property_type} has {sqft} sqft / {gaj} gaj area "
+            f"This {property_type} has {self.display_area_summary} area "
             f"with price Rs. {price}.</p>"
             f"<p>Contact Brij Vas for verified property details, site visit "
             f"and real estate guidance in {city}, {state}.</p>"
         )
 
     def save(self, *args, **kwargs):
-        if self.area is not None:
-            if self.area_unit == "gaj":
-                self.area_gaj = self._rounded_area(self.area)
-                self.area_sqft = self._rounded_area(
-                    Decimal(self.area) * self.SQFT_PER_GAJ
-                )
-            else:
-                self.area_sqft = self._rounded_area(self.area)
-                self.area_gaj = self._rounded_area(
-                    Decimal(self.area) / self.SQFT_PER_GAJ
-                )
+        sqft = self._base_sqft_from_area()
+        if sqft is not None:
+            self.area_sqft = self._rounded_area(sqft)
+            self.area_gaj = self._rounded_area(sqft / self.SQFT_PER_GAJ)
+            self.area_sq_meter = self._rounded_area(
+                sqft / self.SQFT_PER_SQ_METER
+            )
+            self.area_acre = (sqft / self.SQFT_PER_ACRE).quantize(
+                Decimal("0.0001"),
+                rounding=ROUND_HALF_UP
+            )
+            self.area_bigha = (sqft / self.SQFT_PER_BIGHA).quantize(
+                Decimal("0.0001"),
+                rounding=ROUND_HALF_UP
+            )
 
         if not self.title:
             self.title = self.build_seo_title()

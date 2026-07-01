@@ -359,8 +359,7 @@ def property_detail(request, slug):
         words=24
     ) or (
         f"{property.property_type.name} for {property.get_purpose_display().lower()} "
-        f"in {location_text}. Area {property.display_area_sqft} sqft"
-        f"{f' / {property.display_area_gaj} gaj' if property.display_area_gaj else ''}, "
+        f"in {location_text}. Area {property.display_area_summary}, "
         f"price Rs {property.price}."
     )
     property_image_url = absolute_url(

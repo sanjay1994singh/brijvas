@@ -98,7 +98,7 @@
                 <i class="fa-solid fa-ruler-combined"></i>
                 <div>
                     <strong>Auto Area Conversion</strong>
-                    <span id="area-conversion-preview">Enter area to see sqft and gaj value.</span>
+                    <span id="area-conversion-preview">Enter area to see all converted values.</span>
                 </div>
             </div>
         </div>
@@ -190,26 +190,37 @@
         function updatePreview() {
             const area = parseFloat(areaInput && areaInput.value ? areaInput.value : "0");
             const unit = unitInput ? unitInput.value : "sqft";
+            const sqftMultipliers = {
+                sqft: 1,
+                gaj: 9,
+                sq_meter: 10.7639,
+                acre: 43560,
+                bigha: 27225
+            };
+            const unitLabels = {
+                sqft: "Sqft",
+                gaj: "Gaj",
+                sq_meter: "Sq Meter",
+                acre: "Acre",
+                bigha: "Bigha"
+            };
             let sqft = 0;
-            let gaj = 0;
 
             if (area > 0) {
-                if (unit === "gaj") {
-                    gaj = area;
-                    sqft = area * 9;
-                } else {
-                    sqft = area;
-                    gaj = area / 9;
-                }
+                sqft = area * (sqftMultipliers[unit] || 1);
+                const gaj = sqft / sqftMultipliers.gaj;
+                const sqMeter = sqft / sqftMultipliers.sq_meter;
+                const acre = sqft / sqftMultipliers.acre;
+                const bigha = sqft / sqftMultipliers.bigha;
 
-                conversionPreview.textContent = `${formatNumber(sqft)} sqft / ${formatNumber(gaj)} gaj`;
+                conversionPreview.textContent = `${formatNumber(sqft)} sqft / ${formatNumber(gaj)} gaj / ${formatNumber(sqMeter)} sq m / ${formatNumber(acre)} acre / ${formatNumber(bigha)} bigha`;
             } else {
-                conversionPreview.textContent = "Enter area to see sqft and gaj value.";
+                conversionPreview.textContent = "Enter area to see all converted values.";
             }
 
             const titleParts = [
                 selectedText(purposeInput),
-                area > 0 ? `${formatNumber(area)} ${unit === "gaj" ? "Gaj" : "Sqft"}` : "",
+                area > 0 ? `${formatNumber(area)} ${unitLabels[unit] || "Sqft"}` : "",
                 selectedText(typeInput),
             ].filter(Boolean);
             const locationParts = [
