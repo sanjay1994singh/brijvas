@@ -285,6 +285,9 @@ class Property(models.Model):
 
         return title[:255] or "Property Listing"
 
+    def build_seo_slug_text(self):
+        return self.title or self.build_seo_title()
+
     def build_seo_description(self):
         property_type = getattr(self.property_type, "name", "property")
         city = getattr(self.city, "name", "")
@@ -326,16 +329,9 @@ class Property(models.Model):
             self.description = self.build_seo_description()
 
         if not self.slug:
-            parts = [
-                self.title,
-                getattr(self.property_type, "name", ""),
-                "in",
-                getattr(self.city, "name", ""),
-                getattr(self.state, "name", ""),
-            ]
             self.slug = unique_slug(
                 self,
-                " ".join(str(part) for part in parts if part),
+                self.build_seo_slug_text(),
                 fallback="property"
             )
 
