@@ -61,6 +61,8 @@ def unique_slug(instance, value, slug_field="slug", fallback="item", max_length=
     counter = 2
 
     queryset = model._default_manager.filter(**{slug_field: slug})
+    if hasattr(instance, 'tenant_id'):
+        queryset = queryset.filter(tenant_id=instance.tenant_id)
     if instance.pk:
         queryset = queryset.exclude(pk=instance.pk)
 
@@ -69,6 +71,8 @@ def unique_slug(instance, value, slug_field="slug", fallback="item", max_length=
         base_limit = max(1, max_length - len(suffix))
         slug = f"{base_slug[:base_limit].strip('-')}{suffix}"
         queryset = model._default_manager.filter(**{slug_field: slug})
+        if hasattr(instance, 'tenant_id'):
+            queryset = queryset.filter(tenant_id=instance.tenant_id)
         if instance.pk:
             queryset = queryset.exclude(pk=instance.pk)
         counter += 1
@@ -83,6 +87,8 @@ def clean_excerpt(value, words=28):
 
 
 def site_base_url(request=None):
+    if request is not None and getattr(request, 'tenant', None):
+        return f'{request.scheme}://{request.get_host()}'
     configured = getattr(settings, "SITE_URL", "").strip().rstrip("/")
     if configured:
         return configured

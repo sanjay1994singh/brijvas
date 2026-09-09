@@ -1,354 +1,110 @@
-from django.shortcuts import (
-    render,
-    redirect,
-    get_object_or_404
-)
-
-from django.contrib.auth.decorators import login_required
+from functools import wraps
 from django.contrib import messages
-
-from properties.models import (
-    Property,
-    Wishlist
-)
-
-from enquiries.models import Enquiry
-
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
+from properties.models import Property, Wishlist
 from properties.forms import PropertyForm
+from enquiries.models import Enquiry
+from saas.scoping import scoped
+from saas.services import save_listing, subscription_for
 
 
-def _needs_seller_agent_approval(user):
-    return (
-        getattr(user, "user_type", "") in ("owner", "agent")
-        and not user.is_superuser
-        and not user.is_staff
-        and not user.is_verified
-    )
+def approved(view):
+    @login_required
+    @wraps(view)
+    def wrapped(request, *args, **kwargs):
+        if not request.tenant or not request.membership:
+            raise PermissionDenied('Business membership required.')
+        if request.membership.role in ('seller', 'agent') and not request.membership.is_approved:
+            return render(request, 'dashboard/pending_approval.html')
+        return view(request, *args, **kwargs)
+    return wrapped
 
 
-def _can_manage_properties(user):
-    return (
-        user.is_superuser
-        or user.is_staff
-        or (
-            getattr(user, "user_type", "") in ("owner", "agent")
-            and user.is_verified
-        )
-    )
+def listings_for(request):
+    queryset = scoped(Property, request.tenant)
+    if not request.membership or not request.membership.can_manage:
+        queryset = queryset.filter(user=request.user)
+    return queryset
 
 
-def _approved_dashboard_required(view_func):
-    def wrapper(request, *args, **kwargs):
-        if _needs_seller_agent_approval(request.user):
-            return render(
-                request,
-                "dashboard/pending_approval.html"
-            )
-
-        return view_func(request, *args, **kwargs)
-
-    return wrapper
-
-
-@login_required
-@_approved_dashboard_required
+@approved
 def dashboard(request):
-    properties = Property.objects.filter(
-        user=request.user
-    )
-
-    total_properties = properties.count()
-
-    total_views = sum(
-        properties.values_list(
-            "views",
-            flat=True
-        )
-    )
-
-    total_enquiries = Enquiry.objects.filter(
-        property__user=request.user
-    ).count()
-
-    featured_count = properties.filter(
-        is_featured=True
-    ).count()
-
-    recent_properties = properties.order_by(
-        "-created_at"
-    )[:10]
-
-    context = {
-
-        "total_properties": total_properties,
-
-        "total_views": total_views,
-
-        "total_enquiries": total_enquiries,
-
-        "featured_count": featured_count,
-
-        "recent_properties": recent_properties,
-
-    }
-
-    return render(
-        request,
-        "dashboard/dashboard.html",
-        context
-    )
+    properties = listings_for(request)
+    enquiries = scoped(Enquiry, request.tenant)
+    if not request.membership.can_manage:
+        enquiries = enquiries.filter(property__user=request.user)
+    return render(request, 'dashboard/dashboard.html', {
+        'total_properties': properties.count(),
+        'total_views': sum(properties.values_list('views', flat=True)),
+        'total_enquiries': enquiries.count(),
+        'featured_count': properties.filter(is_featured=True).count(),
+        'recent_properties': properties.order_by('-created_at')[:10],
+    })
 
 
-@login_required
-@_approved_dashboard_required
+@approved
 def add_property(request):
-    if not _can_manage_properties(request.user):
-        messages.error(
-            request,
-            "Only approved owners and agents can add properties."
-        )
-        return redirect("dashboard")
-
-    if request.method == "POST":
-
-        form = PropertyForm(
-            request.POST,
-            request.FILES
-        )
-
-        if form.is_valid():
-            property_obj = form.save(
-                commit=False
-            )
-
-            property_obj.user = request.user
-            property_obj.is_active = False
-            property_obj.is_verified = False
-
-            property_obj.save()
-
-            form.save_m2m()
-
-            messages.success(
-                request,
-                "Property submitted successfully. Admin will review and approve it."
-            )
-
-            return redirect(
-                "my_properties"
-            )
-
-    else:
-
-        form = PropertyForm()
-
-    return render(
-        request,
-        "dashboard/add_property.html",
-        {
-            "form": form
-        }
-    )
+    if not request.membership.can_list:
+        raise PermissionDenied('Approved seller or staff access required.')
+    form = PropertyForm(request.POST or None, request.FILES or None, tenant=request.tenant)
+    if request.method == 'POST' and form.is_valid():
+        try:
+            save_listing(form=form, tenant=request.tenant, user=request.user, membership=request.membership)
+            messages.success(request, 'Property saved.' if request.membership.can_manage else 'Property submitted for review.')
+            return redirect('my_properties')
+        except ValidationError as exc:
+            form.add_error(None, exc)
+    return render(request, 'dashboard/add_property.html', {'form': form})
 
 
-@login_required
-@_approved_dashboard_required
+@approved
 def my_properties(request):
-    properties = Property.objects.filter(
-        user=request.user
-    ).order_by(
-        "-created_at"
-    )
-
-    return render(
-        request,
-        "dashboard/my_properties.html",
-        {
-            "properties": properties
-        }
-    )
+    return render(request, 'dashboard/my_properties.html', {'properties': listings_for(request).order_by('-created_at')})
 
 
-@login_required
-@_approved_dashboard_required
+@approved
 def edit_property(request, id):
-    property_obj = get_object_or_404(
-        Property,
-        id=id,
-        user=request.user
-    )
-
-    if request.method == "POST":
-
-        form = PropertyForm(
-
-            request.POST,
-
-            request.FILES,
-
-            instance=property_obj
-
-        )
-
-        if form.is_valid():
-            form.save()
-
-            messages.success(
-
-                request,
-
-                "Property updated successfully."
-
-            )
-
-            return redirect(
-                "my_properties"
-            )
-
-    else:
-
-        form = PropertyForm(
-            instance=property_obj
-        )
-
-    return render(
-        request,
-        "dashboard/edit_property.html",
-        {
-            "form": form,
-            "property": property_obj
-        }
-    )
+    if not request.membership.can_list:
+        raise PermissionDenied('Approved seller or staff access required.')
+    obj = get_object_or_404(listings_for(request), pk=id)
+    form = PropertyForm(request.POST or None, request.FILES or None, instance=obj, tenant=request.tenant)
+    if request.method == 'POST' and form.is_valid():
+        try:
+            save_listing(form=form, tenant=request.tenant, user=request.user, membership=request.membership)
+            messages.success(request, 'Property updated.')
+            return redirect('my_properties')
+        except ValidationError as exc:
+            form.add_error(None, exc)
+    return render(request, 'dashboard/edit_property.html', {'form': form, 'property': obj})
 
 
-@login_required
-@_approved_dashboard_required
+@approved
+@require_POST
 def delete_property(request, id):
-    property_obj = get_object_or_404(
-
-        Property,
-
-        id=id,
-
-        user=request.user
-
-    )
-
-    property_obj.delete()
-
-    messages.success(
-
-        request,
-
-        "Property deleted successfully."
-
-    )
-
-    return redirect(
-        "my_properties"
-    )
+    if not request.membership.can_list:
+        raise PermissionDenied('Approved seller or staff access required.')
+    get_object_or_404(listings_for(request), pk=id).delete()
+    messages.success(request, 'Property deleted.')
+    return redirect('my_properties')
 
 
-@login_required
-@_approved_dashboard_required
+@approved
 def enquiries(request):
-    enquiries = Enquiry.objects.filter(
-
-        property__user=request.user
-
-    ).select_related(
-
-        "property"
-
-    ).order_by(
-
-        "-created_at"
-
-    )
-
-    return render(
-
-        request,
-
-        "dashboard/enquiries.html",
-
-        {
-            "enquiries": enquiries
-        }
-
-    )
+    queryset = scoped(Enquiry, request.tenant)
+    if not request.membership.can_manage:
+        queryset = queryset.filter(property__user=request.user)
+    return render(request, 'dashboard/enquiries.html', {'enquiries': queryset.select_related('property').order_by('-created_at')})
 
 
 @login_required
 def wishlist(request):
-    wishlist = Wishlist.objects.filter(
-
-        user=request.user
-
-    ).select_related(
-
-        "property"
-
-    )
-
-    context = {
-
-        "wishlist": [
-
-            item.property
-            for item in wishlist
-        ]
-
-    }
-
-    return render(
-
-        request,
-
-        "dashboard/wishlist.html",
-
-        context
-
-    )
+    queryset = scoped(Wishlist, request.tenant).filter(user=request.user).select_related('property')
+    return render(request, 'dashboard/wishlist.html', {'wishlist': [item.property for item in queryset]})
 
 
-@login_required
-@_approved_dashboard_required
+@approved
 def agent_dashboard(request):
-    if request.user.user_type != "agent":
-        return redirect(
-            "dashboard"
-        )
-
-    properties = Property.objects.filter(
-        user=request.user
-    )
-
-    context = {
-
-        "properties": properties,
-
-        "total_properties": properties.count(),
-
-        "total_views": sum(
-            properties.values_list(
-                "views",
-                flat=True
-            )
-        ),
-
-        "total_enquiries": Enquiry.objects.filter(
-            property__user=request.user
-        ).count(),
-
-    }
-
-    return render(
-
-        request,
-
-        "dashboard/agent_dashboard.html",
-
-        context
-
-    )
+    return dashboard(request)

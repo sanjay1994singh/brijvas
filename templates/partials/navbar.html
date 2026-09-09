@@ -6,7 +6,7 @@
 
         <a class="navbar-brand fw-bold" href="{% url 'home' %}">
 
-            <span class="text-primary">Brij</span>Vas
+            {% if site_setting.logo %}<img src="{{ site_setting.logo.url }}" alt="{{ site_setting.site_name }}" style="max-height:44px;max-width:160px;margin-right:10px">{% endif %}{{ site_setting.site_name|default:"Property Studio" }}
 
         </a>
 
@@ -133,7 +133,7 @@
                                 </a>
                             </li>
 
-                            {% if request.user.is_superuser or request.user.is_staff or request.user.user_type == 'owner' and request.user.is_verified or request.user.user_type == 'agent' and request.user.is_verified %}
+                            {% if can_manage_listings %}
                             <li>
                                 <a class="dropdown-item"
                                    href="{% url 'add_property' %}">

@@ -14,6 +14,7 @@ class PropertyForm(forms.ModelForm):
 
         exclude = (
             'user',
+            'tenant',
             'title',
             'slug',
             'address',
@@ -58,8 +59,13 @@ class PropertyForm(forms.ModelForm):
             ),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, tenant=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.tenant = tenant
+        self.instance.tenant = tenant
+        from saas.scoping import scoped
+        from .models import PropertyType
+        self.fields['property_type'].queryset = scoped(PropertyType, tenant)
 
         placeholders = {
             "price": "Property price",
@@ -86,6 +92,18 @@ class PropertyForm(forms.ModelForm):
         self.fields["featured_image"].help_text = (
             "Upload a clear front image. It will be compressed automatically."
         )
+
+    def clean(self):
+        data = super().clean()
+        if data.get('city') and data.get('state') and data['city'].state_id != data['state'].pk:
+            self.add_error('city', 'Select a city in the selected state.')
+        image = data.get('featured_image')
+        if image and getattr(image, 'size', 0) > 5 * 1024 * 1024:
+            self.add_error('featured_image', 'Maximum image size is 5 MB.')
+        if data.get('description'):
+            from saas.uploads import sanitize_html
+            data['description'] = sanitize_html(data['description'])
+        return data
 
     def save(self, commit=True):
         property_obj = super().save(commit=False)

@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block meta_keywords %}
-{{ property.property_type.name }} in {{ property.city.name }}, {{ property.city.name }} property, {{ property.get_purpose_display }} property, Brij Vas property
+{{ property.property_type.name }} in {{ property.city.name }}, {{ property.city.name }} property, {{ property.get_purpose_display }} property, {{ site_setting.site_name|default:"Property website" }} property
 {% endblock %}
 
 {% block canonical_url %}
@@ -312,13 +312,13 @@ product
 
                         </form>
 
-                        <a href="https://wa.me/91XXXXXXXXXX"
+                        {% if site_setting.whatsapp %}<a href="https://wa.me/{{ site_setting.whatsapp }}"
                            target="_blank"
                            class="btn btn-success w-100 mt-3">
 
                             WhatsApp Now
 
-                        </a>
+                        </a>{% endif %}
 
                     </div>
 

@@ -2,14 +2,14 @@
 {% load static %}
 
 {% block title %}
-Property in Vrindavan and Mathura | Brij Vas
+Property in Vrindavan and Mathura | {{ site_setting.site_name|default:"Property website" }}
 {% endblock %}
 
 {% block meta_description %}
-Find verified plots, flats, villas, farm houses, hotels and commercial properties for sale, resale and rent in Vrindavan, Mathura and nearby areas with Brij Vas.
+Find verified plots, flats, villas, farm houses, hotels and commercial properties for sale, resale and rent in Vrindavan, Mathura and nearby areas with {{ site_setting.site_name|default:"Property website" }}.
 {% endblock %}
 
-{% block og_title %}Property in Vrindavan and Mathura | Brij Vas{% endblock %}
+{% block og_title %}Property in Vrindavan and Mathura | {{ site_setting.site_name|default:"Property website" }}{% endblock %}
 
 {% block og_description %}Find verified plots, flats, villas, farm houses, hotels and commercial properties in Vrindavan and Mathura.{% endblock %}
 
@@ -240,7 +240,7 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
         <div class="section-title text-center mb-5">
 
-            <span>Why Brij Vas</span>
+            <span>Why {{ site_setting.site_name|default:"Property website" }}</span>
 
             <h2>Property Search With Local Trust</h2>
 
@@ -374,7 +374,7 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
         <div class="partner-cta-content">
 
-            <span>Partner With Brij Vas</span>
+            <span>Partner With {{ site_setting.site_name|default:"Property website" }}</span>
 
             <h2>
                 Join As A Verified Agent Partner

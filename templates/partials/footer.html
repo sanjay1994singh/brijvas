@@ -7,12 +7,11 @@
             <div class="col-lg-4 mb-4">
 
                 <h4 class="mb-3">
-                    Brij Vas
+                    {{ site_setting.site_name|default:"Property website" }}
                 </h4>
 
                 <p>
-                    Buy, sell and rent verified plots, villas, flats, farm
-                    houses, hotels and agricultural land in Vrindavan and Mathura.
+                    {{ site_setting.tagline }}
                 </p>
 
             </div>
@@ -90,17 +89,17 @@
 
                 <p>
                     <i class="fas fa-phone"></i>
-                    <a href="tel:+918279408396" class="text-white">+91 8279408396</a>
+                    <a href="tel:{{ site_setting.phone }}" class="text-white">{{ site_setting.phone }}</a>
                 </p>
 
                 <p>
                     <i class="fas fa-envelope"></i>
-                    <a href="mailto:srbc500@gmail.com" class="text-white">srbc500@gmail.com</a>
+                    <a href="mailto:{{ site_setting.email }}" class="text-white">{{ site_setting.email }}</a>
                 </p>
 
                 <p>
                     <i class="fas fa-map-marker-alt"></i>
-                    Radha Nivas, Vrindavan, Mathura, Uttar Pradesh
+                    {{ site_setting.address }}
                 </p>
 
             </div>
@@ -110,7 +109,7 @@
         <hr>
 
         <div class="text-center">
-            Copyright {% now "Y" %} Brij Vas. All Rights Reserved.
+            Copyright {% now "Y" %} {{ site_setting.site_name|default:"Property website" }}. All Rights Reserved.
         </div>
 
     </div>

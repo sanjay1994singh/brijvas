@@ -2,11 +2,11 @@
 {% load static %}
 
 {% block title %}
-Contact Us | Brij Vas
+Contact Us | {{ site_setting.site_name|default:"Property website" }}
 {% endblock %}
 
 {% block meta_description %}
-Contact Brij Vas founder Mr. Sanjay and the Brij Vas team for property enquiries in Vrindavan, Mathura and nearby areas.
+Contact {{ site_setting.site_name|default:"Property website" }} founder Mr. Sanjay and the {{ site_setting.site_name|default:"Property website" }} team for property enquiries in Vrindavan, Mathura and nearby areas.
 {% endblock %}
 
 {% block content %}

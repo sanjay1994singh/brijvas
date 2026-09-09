@@ -19,12 +19,14 @@ sitemaps = {
 
 admin.site.site_header = "Brij Vas"
 admin.site.site_title = "Brij Vas"
-admin.site.index_title = "Brij Vas Administration"
+admin.site.index_title = "Property SaaS Administration"
+admin.site.has_permission = lambda request: request.user.is_active and request.user.is_superuser
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("saas/", include("saas.urls")),
     path('auth/', include('social_django.urls', namespace='social')),
-    path("ckeditor5/", include("django_ckeditor_5.urls")),
+    path("ckeditor5/", include("saas.upload_urls")),
 
     path(
         "google90e7d13ae9f2d42d.html",
@@ -44,8 +46,7 @@ urlpatterns = [
 
     path(
         'sitemap.xml',
-        sitemap,
-        {'sitemaps': sitemaps},
+        views.tenant_sitemap,
         name='django.contrib.sitemaps.views.sitemap'
     ),
 ]

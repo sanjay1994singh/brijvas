@@ -1,3 +1,5 @@
+from saas.uploads import tenant_upload_path
+from saas.models import TenantOwnedModel
 from django.db import models
 from django.urls import reverse
 from accounts.models import User
@@ -9,18 +11,21 @@ from core.seo import unique_slug
 from decimal import Decimal, ROUND_HALF_UP
 
 
-class PropertyType(models.Model):
+class PropertyType(TenantOwnedModel):
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['tenant', 'slug'], name='propertytype_tenant_slug')]
+
     name = models.CharField(max_length=100)
 
     slug = models.SlugField(
-        unique=True,
+        unique=False,
         blank=True
     )
 
     icon = models.CharField(max_length=100, blank=True)
 
     image = models.ImageField(
-        upload_to='property-types/'
+        upload_to=tenant_upload_path, blank=True
     )
 
     def save(self, *args, **kwargs):
@@ -59,7 +64,10 @@ class PropertyType(models.Model):
 # Office
 # Warehouse
 
-class Property(models.Model):
+class Property(TenantOwnedModel):
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['tenant', 'slug'], name='property_tenant_slug')]
+
     PURPOSE_CHOICES = (
         ('sale', 'Sale'),
         ('resale', 'Resale'),
@@ -96,7 +104,7 @@ class Property(models.Model):
     )
 
     slug = models.SlugField(
-        unique=True,
+        unique=False,
         blank=True
     )
 
@@ -198,7 +206,7 @@ class Property(models.Model):
     )
 
     featured_image = models.ImageField(
-        upload_to='properties/'
+        upload_to=tenant_upload_path
     )
 
     latitude = models.DecimalField(
@@ -395,7 +403,7 @@ class Property(models.Model):
             f"<p>{self.title} available for {purpose} in {location}. "
             f"This {property_type} has {self.display_area_summary} area "
             f"with price Rs. {price}.</p>"
-            f"<p>Contact Brij Vas for verified property details, site visit "
+            f"<p>Contact {self.tenant.name} for property details, site visit "
             f"and real estate guidance in {city}, {state}.</p>"
         )
 
@@ -460,7 +468,7 @@ class PropertyGallery(models.Model):
     )
 
     image = models.ImageField(
-        upload_to='property-gallery/'
+        upload_to=tenant_upload_path
     )
 
     def __str__(self):
@@ -551,7 +559,7 @@ class PropertyView(models.Model):
         return f"{self.property_id} view"
 
 
-class Amenity(models.Model):
+class Amenity(TenantOwnedModel):
     name = models.CharField(max_length=100)
 
     icon = models.CharField(

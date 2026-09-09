@@ -1,3 +1,7 @@
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.db import transaction
+from saas.models import Membership
+from saas.scoping import scoped
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
@@ -11,15 +15,20 @@ from enquiries.models import Enquiry
 
 
 def register(request):
+    if not request.tenant:
+        return redirect('saas_signup')
     if request.user.is_authenticated:
-        return redirect("dashboard")
+        return redirect('dashboard' if request.tenant else 'saas_workspaces')
 
     if request.method == "POST":
 
         form = RegisterForm(request.POST)
 
         if form.is_valid():
-            user = form.save()
+            with transaction.atomic():
+                user = form.save()
+                role = {'owner': 'seller', 'agent': 'agent'}.get(user.user_type, 'buyer')
+                Membership.objects.create(tenant=request.tenant, user=user, role=role, is_approved=(role == 'buyer'))
 
             login(
                 request,
@@ -87,7 +96,7 @@ def check_username(request):
 
 def user_login(request):
     if request.user.is_authenticated:
-        return redirect("dashboard")
+        return redirect('dashboard' if request.tenant else 'saas_workspaces')
 
     if request.method == "POST":
 
@@ -101,16 +110,16 @@ def user_login(request):
             password=password
         )
 
-        if user:
+        if user and (not request.tenant or Membership.objects.filter(tenant=request.tenant, user=user, is_active=True).exists()):
 
             login(request, user)
 
             next_url = request.GET.get("next")
 
-            if next_url:
+            if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
                 return redirect(next_url)
 
-            return redirect("dashboard")
+            return redirect('dashboard' if request.tenant else 'saas_workspaces')
 
         messages.error(
             request,
@@ -119,7 +128,7 @@ def user_login(request):
 
     return render(
         request,
-        "accounts/login.html"
+        "accounts/login.html" if request.tenant else "saas/login.html"
     )
 
 
@@ -172,11 +181,11 @@ def user_logout(request):
 #     )
 @login_required
 def profile(request):
-    property_count = Property.objects.filter(
+    property_count = scoped(Property, request.tenant).filter(
         user=request.user
     ).count()
 
-    enquiry_count = Enquiry.objects.filter(
+    enquiry_count = scoped(Enquiry, request.tenant).filter(
         property__user=request.user
     ).count()
 

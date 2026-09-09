@@ -1,3 +1,5 @@
+from saas.uploads import tenant_upload_path
+from saas.models import TenantOwnedModel
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
@@ -5,11 +7,14 @@ from core.images import optimize_uploaded_image
 from core.seo import unique_slug
 
 
-class BlogCategory(models.Model):
+class BlogCategory(TenantOwnedModel):
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['tenant', 'slug'], name='blogcategory_tenant_slug')]
+
     name = models.CharField(max_length=100)
 
     slug = models.SlugField(
-        unique=True,
+        unique=False,
         blank=True
     )
 
@@ -33,13 +38,16 @@ class BlogCategory(models.Model):
         return self.name
 
 
-class Blog(models.Model):
+class Blog(TenantOwnedModel):
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['tenant', 'slug'], name='blog_tenant_slug')]
+
     title = models.CharField(
         max_length=255
     )
 
     slug = models.SlugField(
-        unique=True,
+        unique=False,
         blank=True
     )
 
@@ -54,7 +62,7 @@ class Blog(models.Model):
     )
 
     featured_image = models.ImageField(
-        upload_to="blogs/"
+        upload_to=tenant_upload_path
     )
 
     excerpt = models.TextField(

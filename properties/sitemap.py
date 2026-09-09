@@ -1,14 +1,18 @@
+from saas.scoping import scoped
 from django.contrib.sitemaps import Sitemap
 from .models import Property, PropertyType
 
 
 class PropertySitemap(Sitemap):
+    def __init__(self, tenant):
+        self.tenant = tenant
+
     changefreq = "daily"
 
     priority = 0.9
 
     def items(self):
-        return Property.objects.filter(
+        return scoped(Property, self.tenant).filter(
             is_active=True
         )
 
@@ -17,9 +21,12 @@ class PropertySitemap(Sitemap):
 
 
 class PropertyTypeSitemap(Sitemap):
+    def __init__(self, tenant):
+        self.tenant = tenant
+
     changefreq = "weekly"
 
     priority = 0.7
 
     def items(self):
-        return PropertyType.objects.all()
+        return scoped(PropertyType, self.tenant).all()

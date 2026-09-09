@@ -13,21 +13,21 @@
 
     <title>
         {% block title %}
-        Brij Vas | Property in Vrindavan
+        {{ site_setting.site_name }} | {{ site_setting.tagline }}
         {% endblock %}
     </title>
-    <meta name="google-site-verification" content="-6hsUO9pCmWRvU7lG4Y3YYYj6EsqKjbMuor84d88IBg" />
+    {% if request.tenant.slug == "brijvas" %}<meta name="google-site-verification" content="-6hsUO9pCmWRvU7lG4Y3YYYj6EsqKjbMuor84d88IBg" />{% endif %}
     <meta name="description"
-          content="{% block meta_description %}Buy plots, villas, flats, farm houses and agricultural land in Vrindavan, Mathura and nearby areas.{% endblock %}">
+          content="{% block meta_description %}{{ site_setting.tagline }}{% endblock %}">
 
     <meta name="keywords"
-          content="{% block meta_keywords %}Vrindavan Property, Plot in Vrindavan, Villa in Vrindavan, Farm House, Real Estate{% endblock %}">
+          content="{% block meta_keywords %}Property, Plots, Villas, Real Estate{% endblock %}">
 
     <meta name="robots"
           content="index,follow">
 
     <meta name="author"
-          content="Brij Vas">
+          content="{{ site_setting.site_name|default:"Property website" }}">
 
     <meta name="theme-color"
           content="#0d6efd">
@@ -38,10 +38,10 @@
     <!-- Open Graph -->
 
     <meta property="og:title"
-          content="{% block og_title %}Brij Vas{% endblock %}">
+          content="{% block og_title %}{{ site_setting.site_name|default:"Property website" }}{% endblock %}">
 
     <meta property="og:description"
-          content="{% block og_description %}Find Your Dream Property in Vrindavan{% endblock %}">
+          content="{% block og_description %}{{ site_setting.tagline }}{% endblock %}">
 
     <meta property="og:image"
           content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-image.jpg' %}{% endblock %}">
@@ -53,7 +53,7 @@
           content="{% block og_type %}website{% endblock %}">
 
     <meta property="og:site_name"
-          content="Brij Vas">
+          content="{{ site_setting.site_name|default:"Property website" }}">
 
     <!-- Website Schema -->
 
@@ -65,7 +65,7 @@
         {
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": "Brij Vas",
+            "name": "{{ site_setting.site_name|escapejs }}",
             "url": "{{ request.scheme }}://{{ request.get_host }}"
         }
     </script>
@@ -75,7 +75,7 @@
 
     <link rel="icon"
           type="image/png"
-          href="{% static 'images/favicon.png' %}">
+          href="{% if site_setting.favicon %}{{ site_setting.favicon.url }}{% else %}{% static 'images/favicon.png' %}{% endif %}">
 
     <!-- Bootstrap -->
 
@@ -117,6 +117,7 @@
     {% block extra_css %}
     {% endblock %}
 
+<style>:root{--bs-primary:{{ site_setting.primary_color|default:"#146b50" }};} .btn-primary{background-color:var(--bs-primary);border-color:var(--bs-primary)} .text-primary{color:var(--bs-primary)!important}</style>
 </head>
 
 <body>
@@ -169,7 +170,7 @@
 
 <!-- Site Ads -->
 
-{% include 'partials/site_ads.html' %}
+{% if request.tenant.slug == 'brijvas' %}{% include 'partials/site_ads.html' %}{% endif %}
 
 <!-- Footer -->
 
@@ -177,7 +178,7 @@
 
 <!-- WhatsApp -->
 
-<a href="https://wa.me/918279408396?text=Hi%20I%20am%20interested%20in%20your%20property"
+<a href="https://wa.me/{{ site_setting.whatsapp }}?text=Hi%20I%20am%20interested%20in%20your%20property"
    target="_blank"
    class="whatsapp-btn">
 

@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{{ category.name }} Properties in Vrindavan and Mathura | Brij Vas
+{{ category.name }} Properties | {{ site_setting.site_name|default:"Property website" }}
 {% endblock %}
 
 {% block meta_description %}
-Explore verified {{ category.name|lower }} properties for sale, resale and rent in Vrindavan, Mathura and nearby areas with Brij Vas.
+Explore verified {{ category.name|lower }} properties for sale, resale and rent with {{ site_setting.site_name|default:"Property website" }}.
 {% endblock %}
 
 {% block content %}

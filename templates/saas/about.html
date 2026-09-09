@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<section class="container py-5"><h1>About {{ site_setting.site_name }}</h1><div class="lead my-4">{{ site_setting.about_text|linebreaks }}</div><a class="btn btn-primary" href="{% url 'contact' %}">Contact our team</a></section>{% endblock %}

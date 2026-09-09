@@ -1,0 +1,10 @@
+Django>=5.2.8,<5.3
+python-dotenv>=1.0,<2
+Pillow>=11,<13
+social-auth-app-django>=5.4,<6
+django-ckeditor-5>=0.2.15,<0.3
+django-crispy-forms>=2.3,<3
+django-filter>=25.1,<26
+dnspython>=2.7,<3
+bleach>=6.2,<7
+

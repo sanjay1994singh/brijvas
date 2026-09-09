@@ -66,12 +66,7 @@ My Properties
 
                                     </a>
 
-                                    <a href="{% url 'delete_property' property.id %}"
-                                       class="btn btn-sm btn-danger">
-
-                                        Delete
-
-                                    </a>
+                                    <form method="post" action="{% url 'delete_property' property.id %}">{% csrf_token %}<button class="btn btn-sm btn-danger" onclick="return confirm('Delete this property?')">Delete</button></form>
 
                                 </td>
 

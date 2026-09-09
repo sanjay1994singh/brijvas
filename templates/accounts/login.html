@@ -95,14 +95,14 @@ Login | PropertyHub
 
                     <hr>
 
-                    <a href="{% url 'social:begin' 'google-oauth2' %}"
+                    {% if google_login_enabled %}<a href="{% url 'social:begin' 'google-oauth2' %}"
                        class="btn btn-danger w-100">
 
                         <i class="fab fa-google"></i>
 
                         Continue With Google
 
-                    </a>
+                    </a>{% endif %}
 
                     <div class="text-center mt-4">
 

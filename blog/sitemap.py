@@ -1,14 +1,18 @@
+from saas.scoping import scoped
 from django.contrib.sitemaps import Sitemap
 from .models import Blog, BlogCategory
 
 
 class BlogSitemap(Sitemap):
+    def __init__(self, tenant):
+        self.tenant = tenant
+
     changefreq = "weekly"
 
     priority = 0.8
 
     def items(self):
-        return Blog.objects.filter(
+        return scoped(Blog, self.tenant).filter(
             is_published=True
         )
 
@@ -17,9 +21,12 @@ class BlogSitemap(Sitemap):
 
 
 class BlogCategorySitemap(Sitemap):
+    def __init__(self, tenant):
+        self.tenant = tenant
+
     changefreq = "weekly"
 
     priority = 0.6
 
     def items(self):
-        return BlogCategory.objects.all()
+        return scoped(BlogCategory, self.tenant).all()

@@ -1,15 +1,24 @@
+from saas.uploads import tenant_upload_path
+from saas.models import TenantOwnedModel
 from django.db import models
 
 
-class SiteSetting(models.Model):
+class SiteSetting(TenantOwnedModel):
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['tenant'], name='one_site_setting_per_tenant')]
+
+    tagline = models.CharField(max_length=180, default='Find your next property')
+    about_text = models.TextField(blank=True)
+    primary_color = models.CharField(max_length=7, default='#146b50')
+
     site_name = models.CharField(max_length=200)
 
     logo = models.ImageField(
-        upload_to='settings/'
+        upload_to=tenant_upload_path, blank=True
     )
 
     favicon = models.ImageField(
-        upload_to='settings/'
+        upload_to=tenant_upload_path, blank=True
     )
 
     email = models.EmailField()
@@ -30,7 +39,7 @@ class SiteSetting(models.Model):
         return self.site_name
 
 
-class Contact(models.Model):
+class Contact(TenantOwnedModel):
     name = models.CharField(max_length=200)
 
     email = models.EmailField()

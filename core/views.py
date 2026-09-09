@@ -1,3 +1,4 @@
+from saas.scoping import scoped
 from django.shortcuts import (
     render,
     get_object_or_404,
@@ -20,14 +21,17 @@ from accounts.models import User
 
 
 def home(request):
-    latest_properties = Property.objects.filter(
+    if request.tenant is None:
+        from saas.views import index
+        return index(request)
+    latest_properties = scoped(Property, request.tenant).filter(
         is_active=True
     ).order_by("-created_at")[:12]
 
     cities = City.objects.all()
-    property_types = PropertyType.objects.all()
+    property_types = scoped(PropertyType, request.tenant).all()
 
-    latest_blogs = Blog.objects.filter(
+    latest_blogs = scoped(Blog, request.tenant).filter(
         is_published=True
     )[:6]
 
@@ -41,21 +45,21 @@ def home(request):
 
         "latest_blogs": latest_blogs,
 
-        "total_properties": Property.objects.count(),
+        "total_properties": scoped(Property, request.tenant).count(),
 
         "total_agents": User.objects.filter(
-            user_type="agent"
+            memberships__tenant=request.tenant, memberships__role="agent", memberships__is_active=True
         ).count(),
 
         "total_cities": cities.count(),
 
-        "total_users": User.objects.count(),
+        "total_users": User.objects.filter(memberships__tenant=request.tenant, memberships__is_active=True).count(),
 
     }
 
     return render(
         request,
-        "home.html",
+        "home.html" if request.tenant.slug == "brijvas" else "saas/storefront.html",
         context
     )
 
@@ -70,7 +74,7 @@ def robots_txt(request):
         "User-agent: *",
         "Allow: /",
         "",
-        "Sitemap: https://brijvas.com/sitemap.xml",
+        f"Sitemap: {request.scheme}://{request.get_host()}/sitemap.xml",
     ]
 
     return HttpResponse(
@@ -81,11 +85,11 @@ def robots_txt(request):
 
 def category_properties(request, slug):
     category = get_object_or_404(
-        PropertyType,
+        scoped(PropertyType, request.tenant),
         slug=slug
     )
 
-    properties = Property.objects.filter(
+    properties = scoped(Property, request.tenant).filter(
         property_type=category,
         is_active=True
     )
@@ -113,13 +117,18 @@ def category_properties(request, slug):
 def about(request):
     return render(
         request,
-        "core/about.html"
+        "core/about.html" if request.tenant.slug == "brijvas" else "saas/about.html"
     )
 
 
 def contact(request):
     if request.method == "POST":
-        Contact.objects.create(
+        from .forms import ContactForm
+        form = ContactForm(request.POST)
+        if not form.is_valid():
+            messages.error(request, 'Please provide a valid name, email and message (maximum 5000 characters).')
+            return render(request, 'saas/contact.html', {'form': form}, status=400)
+        scoped(Contact, request.tenant).create(tenant=request.tenant,
 
             name=request.POST.get("name"),
 
@@ -142,7 +151,7 @@ def contact(request):
 
     return render(
         request,
-        "core/contact.html"
+        "core/contact.html" if request.tenant.slug == "brijvas" else "saas/contact.html"
     )
 
 
@@ -165,3 +174,9 @@ def terms_conditions(request):
         request,
         "core/terms_conditions.html"
     )
+
+
+def tenant_sitemap(request):
+    from django.contrib.sitemaps.views import sitemap
+    from brijvas.urls import sitemaps
+    return sitemap(request, sitemaps={key: cls(request.tenant) if key != 'static' else cls() for key, cls in sitemaps.items()})

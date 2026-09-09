@@ -1,3 +1,4 @@
+from saas.scoping import scoped
 from django.shortcuts import (
     render,
     get_object_or_404,
@@ -41,7 +42,7 @@ def _slug_similarity(left, right):
     return (ratio * 0.65) + (overlap * 0.35)
 
 
-def _find_similar_blog_by_slug(slug):
+def _find_similar_blog_by_slug(request, slug):
     requested_slug = seo_slugify(
         slug,
         fallback="blog",
@@ -51,7 +52,7 @@ def _find_similar_blog_by_slug(slug):
     best_post = None
     best_score = 0
 
-    posts = Blog.objects.filter(
+    posts = scoped(Blog, request.tenant).filter(
         is_published=True
     ).select_related(
         "category"
@@ -140,7 +141,7 @@ def _record_unique_blog_view(request, post):
         user_agent_hash
     )
 
-    view, created = BlogView.objects.get_or_create(
+    view, created = scoped(BlogView, request.tenant).get_or_create(
         blog=post,
         visitor_key=visitor_key,
         defaults={
@@ -154,7 +155,7 @@ def _record_unique_blog_view(request, post):
     if not created:
         return
 
-    Blog.objects.filter(
+    scoped(Blog, request.tenant).filter(
         pk=post.pk
     ).update(
         views=F("views") + 1
@@ -164,7 +165,7 @@ def _record_unique_blog_view(request, post):
 
 
 def blog_list(request):
-    posts = Blog.objects.filter(
+    posts = scoped(Blog, request.tenant).filter(
         is_published=True
     ).order_by('-created_at')
 
@@ -185,12 +186,12 @@ def blog_list(request):
 
 def blog_detail(request, slug):
     try:
-        post = Blog.objects.get(
+        post = scoped(Blog, request.tenant).get(
             slug=slug,
             is_published=True
         )
     except Blog.DoesNotExist:
-        similar_post = _find_similar_blog_by_slug(slug)
+        similar_post = _find_similar_blog_by_slug(request, slug)
 
         if similar_post:
             return redirect(
@@ -203,7 +204,7 @@ def blog_detail(request, slug):
 
     _record_unique_blog_view(request, post)
 
-    related_posts = Blog.objects.filter(
+    related_posts = scoped(Blog, request.tenant).filter(
         category=post.category,
         is_published=True
     ).exclude(
@@ -225,7 +226,7 @@ def blog_search(request):
         "q"
     )
 
-    blogs = Blog.objects.filter(
+    blogs = scoped(Blog, request.tenant).filter(
         is_published=True
     )
 
@@ -278,13 +279,13 @@ def category_blogs(
 ):
     category = get_object_or_404(
 
-        BlogCategory,
+        scoped(BlogCategory, request.tenant),
 
         slug=slug
 
     )
 
-    blogs = Blog.objects.filter(
+    blogs = scoped(Blog, request.tenant).filter(
 
         category=category,
 
@@ -330,7 +331,7 @@ def add_comment(
         blog_id
 ):
     blog = get_object_or_404(
-        Blog,
+        scoped(Blog, request.tenant),
         id=blog_id
     )
 
@@ -339,7 +340,7 @@ def add_comment(
             "comment"
         )
 
-        BlogComment.objects.create(
+        scoped(BlogComment, request.tenant).create(
 
             blog=blog,
 

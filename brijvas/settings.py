@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django_filters',
 
     'core.apps.CoreConfig',
+    'saas.apps.SaasConfig',
     'accounts',
     'properties',
     'locations',
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'saas.middleware.TenantMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -216,3 +218,33 @@ CKEDITOR_5_CONFIGS = {
         },
     },
 }
+
+
+# Property SaaS configuration. Development/test settings use a separate SQLite DB.
+SAAS_BASE_URL = os.getenv('SAAS_BASE_URL', 'https://property.example.com').rstrip('/')
+from urllib.parse import urlsplit
+SAAS_PLATFORM_HOSTS = [h.strip() for h in os.getenv('SAAS_PLATFORM_HOSTS', urlsplit(SAAS_BASE_URL).hostname).split(',') if h.strip()]
+SAAS_DOMAIN_TARGET = os.getenv('SAAS_DOMAIN_TARGET', urlsplit(SAAS_BASE_URL).hostname)
+SAAS_TRIAL_DAYS = int(os.getenv('SAAS_TRIAL_DAYS', '14'))
+SAAS_USE_PATH_URLS = os.getenv('SAAS_USE_PATH_URLS', 'False') == 'True'
+SAAS_ROOT_TENANT = os.getenv('SAAS_ROOT_TENANT', '')
+SAAS_GOOGLE_LOGIN_ENABLED = os.getenv('SAAS_GOOGLE_LOGIN_ENABLED', 'False') == 'True'
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '')
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '')
+RAZORPAY_WEBHOOK_SECRET = os.getenv('RAZORPAY_WEBHOOK_SECRET', '')
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_CONTENT_TYPE_NOSNIFF = True
+CSRF_TRUSTED_ORIGINS = [v.strip() for v in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if v.strip()]
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+EMAIL_HOST = os.getenv('EMAIL_HOST', '')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+# Enable only when the trusted reverse proxy overwrites this header.
+if os.getenv('TRUST_PROXY_SSL_HEADER', 'False') == 'True':
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

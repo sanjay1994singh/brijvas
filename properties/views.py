@@ -1,3 +1,5 @@
+from django.views.decorators.http import require_POST
+from saas.scoping import scoped
 from django.shortcuts import (
     render,
     get_object_or_404,
@@ -47,7 +49,7 @@ def _slug_similarity(left, right):
     return (ratio * 0.65) + (overlap * 0.35)
 
 
-def _find_similar_property_by_slug(slug):
+def _find_similar_property_by_slug(request, slug):
     requested_slug = seo_slugify(
         slug,
         fallback="property",
@@ -57,7 +59,7 @@ def _find_similar_property_by_slug(slug):
     best_property = None
     best_score = 0
 
-    properties = Property.objects.filter(
+    properties = scoped(Property, request.tenant).filter(
         is_active=True
     ).select_related(
         "property_type",
@@ -152,7 +154,7 @@ def _record_unique_property_view(request, property_obj):
         user_agent_hash
     )
 
-    view, created = PropertyView.objects.get_or_create(
+    view, created = scoped(PropertyView, request.tenant).get_or_create(
         property=property_obj,
         visitor_key=visitor_key,
         defaults={
@@ -166,7 +168,7 @@ def _record_unique_property_view(request, property_obj):
     if not created:
         return
 
-    Property.objects.filter(
+    scoped(Property, request.tenant).filter(
         pk=property_obj.pk
     ).update(
         views=F("views") + 1
@@ -176,7 +178,7 @@ def _record_unique_property_view(request, property_obj):
 
 
 def property_list(request):
-    properties = Property.objects.filter(
+    properties = scoped(Property, request.tenant).filter(
         is_active=True
     ).select_related(
         "city",
@@ -184,10 +186,10 @@ def property_list(request):
     )
 
     cities = City.objects.filter(
-        property__is_active=True
+        property__tenant=request.tenant, property__is_active=True
     ).distinct()
 
-    property_types = PropertyType.objects.all()
+    property_types = scoped(PropertyType, request.tenant).all()
 
     paginator = Paginator(
         properties,
@@ -212,7 +214,7 @@ def property_list(request):
 
 
 def property_search(request):
-    properties = Property.objects.filter(
+    properties = scoped(Property, request.tenant).filter(
         is_active=True
     ).select_related(
         "city",
@@ -261,10 +263,10 @@ def property_search(request):
     properties = paginator.get_page(page)
 
     cities = City.objects.filter(
-        property__is_active=True
+        property__tenant=request.tenant, property__is_active=True
     ).distinct()
 
-    property_types = PropertyType.objects.all()
+    property_types = scoped(PropertyType, request.tenant).all()
 
     context = {
         "properties": properties,
@@ -284,12 +286,12 @@ def property_search(request):
 
 def property_detail(request, slug):
     try:
-        property = Property.objects.get(
+        property = scoped(Property, request.tenant).get(
             slug=slug,
             is_active=True
         )
     except Property.DoesNotExist:
-        similar_property = _find_similar_property_by_slug(slug)
+        similar_property = _find_similar_property_by_slug(request, slug)
 
         if similar_property:
             return redirect(
@@ -333,14 +335,14 @@ def property_detail(request, slug):
 
     _record_unique_property_view(request, property)
 
-    related_properties = Property.objects.filter(
+    related_properties = scoped(Property, request.tenant).filter(
         property_type=property.property_type,
         is_active=True
     ).exclude(
         id=property.id
     )[:6]
 
-    reviews = PropertyReview.objects.filter(
+    reviews = scoped(PropertyReview, request.tenant).filter(
         property=property
     )
 
@@ -400,9 +402,10 @@ def property_detail(request, slug):
 
 
 @login_required
+@require_POST
 def add_review(request, property_id):
     property = get_object_or_404(
-        Property,
+        scoped(Property, request.tenant),
         id=property_id
     )
 
@@ -411,11 +414,14 @@ def add_review(request, property_id):
             "rating"
         )
 
+        if str(rating) not in ('1', '2', '3', '4', '5'):
+            from django.http import HttpResponseBadRequest
+            return HttpResponseBadRequest('Rating must be between 1 and 5.')
         review = request.POST.get(
             "review"
         )
 
-        PropertyReview.objects.create(
+        scoped(PropertyReview, request.tenant).create(
 
             property=property,
 
@@ -449,13 +455,14 @@ def property_type(request, slug):
 
 
 @login_required
+@require_POST
 def add_to_wishlist(request, id):
     property = get_object_or_404(
-        Property,
+        scoped(Property, request.tenant),
         id=id
     )
 
-    Wishlist.objects.get_or_create(
+    scoped(Wishlist, request.tenant).get_or_create(
 
         user=request.user,
 
@@ -475,8 +482,9 @@ def add_to_wishlist(request, id):
 
 
 @login_required
+@require_POST
 def remove_from_wishlist(request, id):
-    Wishlist.objects.filter(
+    scoped(Wishlist, request.tenant).filter(
 
         user=request.user,
 
@@ -495,13 +503,14 @@ def remove_from_wishlist(request, id):
 
 
 @login_required
+@require_POST
 def add_to_compare(request, id):
     property = get_object_or_404(
-        Property,
+        scoped(Property, request.tenant),
         id=id
     )
 
-    count = CompareProperty.objects.filter(
+    count = scoped(CompareProperty, request.tenant).filter(
 
         user=request.user
 
@@ -521,7 +530,7 @@ def add_to_compare(request, id):
             slug=property.slug
         )
 
-    CompareProperty.objects.get_or_create(
+    scoped(CompareProperty, request.tenant).get_or_create(
 
         user=request.user,
 
@@ -542,7 +551,7 @@ def add_to_compare(request, id):
 
 @login_required
 def compare_properties(request):
-    compare_items = CompareProperty.objects.filter(
+    compare_items = scoped(CompareProperty, request.tenant).filter(
         user=request.user
     )
 
@@ -564,8 +573,9 @@ def compare_properties(request):
 
 
 @login_required
+@require_POST
 def remove_compare(request, id):
-    CompareProperty.objects.filter(
+    scoped(CompareProperty, request.tenant).filter(
 
         user=request.user,
 

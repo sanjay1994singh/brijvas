@@ -43,6 +43,9 @@ class RegisterForm(forms.ModelForm):
                 "Passwords do not match"
             )
 
+        if password1:
+            from django.contrib.auth.password_validation import validate_password
+            validate_password(password1, self.instance)
         return cleaned_data
 
     def clean_username(self):
@@ -76,6 +79,11 @@ class RegisterForm(forms.ModelForm):
 
 
 class ProfileForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields.pop('user_type', None)
+        self.fields.pop('profile_image', None)
+
     class Meta:
         model = User
 
