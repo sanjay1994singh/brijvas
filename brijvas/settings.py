@@ -226,6 +226,7 @@ CKEDITOR_5_CONFIGS = {
 SAAS_BASE_URL = os.getenv('SAAS_BASE_URL', 'https://property.example.com').rstrip('/')
 from urllib.parse import urlsplit
 SAAS_PLATFORM_HOSTS = [h.strip() for h in os.getenv('SAAS_PLATFORM_HOSTS', urlsplit(SAAS_BASE_URL).hostname).split(',') if h.strip()]
+SAAS_CUSTOMER_DOMAIN_ROOT = os.getenv('SAAS_CUSTOMER_DOMAIN_ROOT', urlsplit(SAAS_BASE_URL).hostname).strip().lower().rstrip('.')
 SAAS_DOMAIN_TARGET = os.getenv('SAAS_DOMAIN_TARGET', urlsplit(SAAS_BASE_URL).hostname)
 SAAS_TRIAL_DAYS = int(os.getenv('SAAS_TRIAL_DAYS', '14'))
 SAAS_USE_PATH_URLS = os.getenv('SAAS_USE_PATH_URLS', 'False') == 'True'

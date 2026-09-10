@@ -1,4 +1,3 @@
-from urllib.parse import urlsplit
 from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect
 from django.urls import get_script_prefix, set_script_prefix
@@ -18,7 +17,7 @@ class DomainHostMiddleware:
         host, port = split_domain_port(raw.lower())
         configured = [h for h in settings.ALLOWED_HOSTS if h != '*']
         configured += list(settings.SAAS_PLATFORM_HOSTS)
-        root = urlsplit(settings.SAAS_BASE_URL).hostname
+        root = settings.SAAS_CUSTOMER_DOMAIN_ROOT
         allowed = bool(host) and (validate_host(host, configured) or
                     (host.endswith('.' + root) and Tenant.objects.filter(slug=host[:-(len(root)+1)]).exists()) or
                     Domain.objects.filter(hostname=host, is_verified=True).exists())
@@ -40,7 +39,7 @@ class TenantMiddleware:
 
     def resolve(self, request):
         hostname = request.get_host().split(':')[0].lower().rstrip('.')
-        base_host = urlsplit(settings.SAAS_BASE_URL).hostname
+        base_host = settings.SAAS_CUSTOMER_DOMAIN_ROOT
         request.tenant = None
         request.membership = None
         platform_hosts = set(settings.SAAS_PLATFORM_HOSTS)

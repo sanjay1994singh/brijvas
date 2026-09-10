@@ -1,7 +1,5 @@
 from datetime import timedelta
 import re
-from urllib.parse import urlsplit
-
 from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
@@ -34,7 +32,7 @@ def provision(*, owner, name, plan, slug=None):
             base = 'business' + (base or secrets.token_hex(3))
         slug = base
         index = 2
-        root = urlsplit(settings.SAAS_BASE_URL).hostname
+        root = settings.SAAS_CUSTOMER_DOMAIN_ROOT
         while Tenant.objects.filter(slug=slug).exists() or Domain.objects.filter(hostname=f'{slug}.{root}').exists():
             slug = f'{base}-{index}'
             index += 1
@@ -56,7 +54,7 @@ def provision(*, owner, name, plan, slug=None):
         PropertyType.objects.create(tenant=tenant, name=title)
     AuditEvent.objects.create(tenant=tenant, actor=owner, action='workspace.created')
     if getattr(settings, 'SAAS_AUTO_DOMAINS', False):
-        Domain.objects.create(tenant=tenant, hostname=f'{slug}.{urlsplit(settings.SAAS_BASE_URL).hostname}',
+        Domain.objects.create(tenant=tenant, hostname=f'{slug}.{settings.SAAS_CUSTOMER_DOMAIN_ROOT}',
                               is_platform=True, is_verified=True, provisioning_requested=True)
     return tenant
 
@@ -105,7 +103,7 @@ def save_listing(*, form, tenant, user, membership):
 def validate_domain_for_tenant(hostname):
     from .models import normalize_domain
     hostname = normalize_domain(hostname)
-    base = urlsplit(settings.SAAS_BASE_URL).hostname
+    base = settings.SAAS_CUSTOMER_DOMAIN_ROOT
     if hostname == base or hostname.endswith('.' + base) or hostname.endswith(('.localhost', '.local', '.internal')):
         raise ValidationError('Use a public custom domain outside the platform domain.')
     import ipaddress

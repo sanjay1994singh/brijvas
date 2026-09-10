@@ -8,6 +8,7 @@ DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DI
 MEDIA_ROOT = BASE_DIR / '.dev' / 'media'
 SAAS_BASE_URL = 'http://localhost:8000'
 SAAS_PLATFORM_HOSTS = ['localhost', '127.0.0.1', 'testserver']
+SAAS_CUSTOMER_DOMAIN_ROOT = 'localhost'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False

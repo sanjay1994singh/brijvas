@@ -16,9 +16,9 @@ Existing active account `admin_charan` owns the Brijvas workspace. Its password 
 
 ## Deliver a customer website
 
-1. Customer opens signup and enters business name, unique site slug, account details and plan.
-2. Signup creates the owner membership, branding, property categories and a 14-day trial.
-3. Share `https://propertystudio.live-app.in/sites/<customer-slug>/`; it is usable immediately without new DNS or certificate provisioning.
+1. Customer opens signup and enters business name, account details and plan.
+2. Signup creates the owner membership, branding, property categories, a 14-day trial and a pending platform subdomain from the business name.
+3. The platform activates `https://<business-name>.live-app.in/` automatically after DNS, Apache and HTTPS provisioning complete. The portal shows a temporary path URL until SSL is ready.
 4. In Business settings, update logo, contact information and business description. Add listings from the customer site's dashboard and manage approvals, enquiries and team access.
 
 Starter allows 50 listings, 3 staff seats and 1 GB media; Agency 250/10/5 GB; Business 1000/25/20 GB. Existing Brijvas uses a separate legacy plan to preserve access. Prices have not been commercially configured and paid checkout remains disabled.
@@ -42,7 +42,7 @@ Public HTTPS portal, signup and existing storefront were inspected in a browser.
 
 - Configure independent Razorpay credentials, webhook secret and approved plan prices; then run provider sandbox and real settlement checks. Current billing supports one-time 30-day periods, not automatic recurring mandates or tax invoicing.
 - Configure SMTP and test actual email delivery. Until then, recovery displays an explicit unavailable message. In-memory email/template tests do not establish real delivery.
-- Wildcard DNS/certificate and custom-domain proxy/TLS activation remain separate operations. Path-based websites already work; automatic custom-domain issuance is not implemented.
+- Customer platform subdomains are issued as exact Let's Encrypt certificates on demand under `live-app.in`. Custom domains require customer DNS ownership verification before automatic HTTPS activation.
 - Google OAuth is disabled until callbacks and account handoff are configured.
 - Schedule off-server backups, restore drills and operational monitoring. Current private server backups protect this migration but are not an off-server backup service.
 
@@ -54,8 +54,8 @@ Do not blindly restore the old Apache configuration after new customer writes ha
 
 ## Platform domain separation
 
-The platform is now `https://propertystudio.live-app.in/`. Its dedicated certificate is issued with Certbot webroot and automatic renewal. Apache's `00-propertystudio.conf` must sort before the existing unrelated `*.live-app.in` HTTP wildcard so ACME challenges reach this application.
+The platform is now `https://propertystudio.live-app.in/`. Customer websites use direct brand subdomains under `live-app.in`, for example `https://brijvas.live-app.in/`. The platform certificate and each customer subdomain certificate are issued with Certbot webroot and automatic renewal. Apache's `00-propertystudio.conf` and generated `00-property-domain-*.conf` files must sort before the existing unrelated `*.live-app.in` HTTP wildcard so ACME challenges reach this application.
 
 `brijvas.com` and `www.brijvas.com` serve only the verified existing Brijvas tenant. They are no longer platform hosts. Management GET links redirect to the platform; management POST requests must be submitted on the platform itself. Sessions remain host-only: sign in separately when opening the Brijvas property dashboard. Existing account passwords are unchanged.
 
-The platform root has no default tenant. New customer websites use its `/sites/<slug>/` path. Brijvas retains its primary public URL `https://brijvas.com`.
+The platform root has no default tenant. New customer websites use `https://<business-name>.live-app.in/`. Brijvas retains its primary public URL `https://brijvas.com`.

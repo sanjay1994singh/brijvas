@@ -10,7 +10,7 @@ from .domain_provisioning import check_dns, http_config, https_config
 
 
 class AutomaticDomainTests(TwoBusinessFixture, TestCase):
-    @override_settings(SAAS_AUTO_DOMAINS=True, SAAS_USE_PATH_URLS=True)
+    @override_settings(SAAS_AUTO_DOMAINS=True, SAAS_USE_PATH_URLS=True, SAAS_CUSTOMER_DOMAIN_ROOT='localhost')
     def test_brand_name_and_collision_create_pending_https_addresses(self):
         users = [get_user_model().objects.create_user(username=f'brand{i}') for i in range(2)]
         tenants = [provision(owner=user, name='Sharma Realty', plan=self.plan) for user in users]
@@ -23,6 +23,15 @@ class AutomaticDomainTests(TwoBusinessFixture, TestCase):
         domain.ssl_ready = domain.is_primary = True
         domain.save()
         self.assertEqual(tenants[0].public_url, 'https://sharmarealty.localhost')
+
+    @override_settings(SAAS_BASE_URL='https://propertystudio.live-app.in', SAAS_CUSTOMER_DOMAIN_ROOT='live-app.in',
+                       SAAS_AUTO_DOMAINS=True, SAAS_USE_PATH_URLS=False)
+    def test_customer_subdomain_uses_root_domain_separate_from_portal(self):
+        user = get_user_model().objects.create_user(username='directroot')
+        tenant = provision(owner=user, name='Green Acre Homes', plan=self.plan)
+        self.assertEqual(tenant.slug, 'greenacrehomes')
+        self.assertEqual(tenant.domains.get().hostname, 'greenacrehomes.live-app.in')
+        self.assertEqual(tenant.public_url, 'https://greenacrehomes.live-app.in')
 
     @override_settings(ALLOWED_HOSTS=['*'])
     def test_dynamic_custom_host_guard_rejects_unverified_and_unknown_hosts(self):

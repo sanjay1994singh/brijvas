@@ -49,8 +49,7 @@ class Command(BaseCommand):
         subprocess.run(args, check=True, timeout=180, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     def activate(self, domain):
-        from urllib.parse import urlsplit
-        root = urlsplit(settings.SAAS_BASE_URL).hostname
+        root = settings.SAAS_CUSTOMER_DOMAIN_ROOT
         if domain.is_platform and domain.hostname != f'{domain.tenant.slug}.{root}':
             raise CommandError('Platform hostname does not match tenant.')
         check_dns(domain)

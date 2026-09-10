@@ -62,7 +62,7 @@ class Tenant(models.Model):
                 return settings.SAAS_BASE_URL
             return f'{settings.SAAS_BASE_URL}/sites/{self.slug}'
         base = urlsplit(settings.SAAS_BASE_URL)
-        return f'{base.scheme}://{self.slug}.{base.netloc}'
+        return f'{base.scheme}://{self.slug}.{settings.SAAS_CUSTOMER_DOMAIN_ROOT}'
 
     def __str__(self):
         return self.name
