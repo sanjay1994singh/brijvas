@@ -47,14 +47,14 @@ def signup(request):
     return render(request, 'saas/form.html', {'form': form, 'heading': 'Launch your property website', 'button': 'Create my website'})
 
 
-@login_required
+@login_required(login_url='saas_login')
 def workspaces(request):
     memberships = request.user.memberships.filter(is_active=True, role__in=['owner', 'admin'], is_approved=True).select_related('tenant')
     return render(request, 'saas/workspaces.html', {'memberships': memberships})
 
 
 def business_admin(view):
-    @login_required
+    @login_required(login_url='saas_login')
     @wraps(view)
     def wrapped(request, slug, *args, **kwargs):
         tenant = get_object_or_404(Tenant, slug=slug)

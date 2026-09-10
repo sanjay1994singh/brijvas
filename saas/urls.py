@@ -1,9 +1,11 @@
 from django.urls import path
 from . import views
+from accounts.views import user_login
 
 urlpatterns = [
     path('', views.index, name='saas_home'),
     path('signup/', views.signup, name='saas_signup'),
+    path('login/', user_login, name='saas_login'),
     path('workspaces/', views.workspaces, name='saas_workspaces'),
     path('webhook/razorpay/', views.webhook, name='saas_webhook'),
     path('business/<slug:slug>/', views.business, name='saas_business'),

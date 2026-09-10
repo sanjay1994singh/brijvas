@@ -23,6 +23,12 @@ class LimitAndWriteTests(TwoBusinessFixture, TestCase):
         self.assertEqual(self.get('/sites/cedar/dashboard/', host='localhost').status_code, 403)
         self.assertContains(self.get('/saas/', host='localhost'), 'Property Studio')
 
+    @override_settings(SAAS_USE_PATH_URLS=True, SAAS_ROOT_TENANT='brijvas')
+    def test_platform_login_does_not_require_legacy_membership(self):
+        response = self.post('/saas/login/', {'username': self.a.username, 'password': 'Strong-Test-Pass-672!'}, host='localhost')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/saas/workspaces/')
+
     def test_storage_limit_blocks_editor_and_listing_upload(self):
         self.plan.storage_mb = 0
         self.plan.save()
