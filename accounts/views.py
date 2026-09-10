@@ -12,6 +12,19 @@ from .forms import RegisterForm, ProfileForm
 from .username_utils import suggest_usernames, username_exists, validate_username
 from properties.models import Property
 from enquiries.models import Enquiry
+from django.conf import settings
+from django.contrib.auth.views import PasswordResetView
+
+
+class ConfiguredPasswordResetView(PasswordResetView):
+    template_name = 'accounts/password_reset.html'
+    email_template_name = 'accounts/password_reset_email.txt'
+    subject_template_name = 'accounts/password_reset_subject.txt'
+
+    def dispatch(self, request, *args, **kwargs):
+        if settings.EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend' and not settings.EMAIL_HOST:
+            return render(request, self.template_name, {'email_unavailable': True}, status=503)
+        return super().dispatch(request, *args, **kwargs)
 
 
 def register(request):

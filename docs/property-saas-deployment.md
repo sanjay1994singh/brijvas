@@ -2,7 +2,7 @@
 
 ## Release boundaries
 
-Development changed source files in the current Brijvas workspace. NewsWebSaas was used as architectural reference, not overwritten. Existing customer MySQL data, media and live DNS were not migrated. Never deploy this code against an unmigrated customer database.
+The initial release is deployed on brijvas.com using a separate migrated database and application service. See [live handover](live-saas-handover.md) for the verified deployment and remaining integrations. NewsWebSaas was used as architectural reference, not overwritten. Never deploy this code against an unmigrated customer database.
 
 ## Staging first
 
@@ -50,4 +50,4 @@ For initial rollout, use one app host with durable local media and MySQL/InnoDB.
 - Razorpay sandbox flow, SMTP recovery and production configuration checks pass.
 - MySQL tests/concurrency, backup restore and cutover/rollback rehearsals pass.
 
-Until these checks are completed, treat this as a locally verified application release, not a certified production deployment.
+The core trial onboarding release is live. Paid checkout, SMTP delivery and wildcard/custom-domain activation still require their respective configuration and acceptance checks; deployment alone does not establish that those integrations are ready.

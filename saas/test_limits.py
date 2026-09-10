@@ -11,6 +11,21 @@ from properties.forms import PropertyForm
 class LimitAndWriteTests(TwoBusinessFixture, TestCase):
     """Additional write-path checks reuse the two-business fixture."""
 
+    @override_settings(EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend', EMAIL_HOST='')
+    def test_unconfigured_recovery_is_explicit_and_does_not_send(self):
+        response = self.get('/accounts/password-reset/', host='localhost')
+        self.assertContains(response, 'Email recovery is not available yet', status_code=503)
+
+    def test_password_recovery_templates_and_email(self):
+        from django.core import mail
+        self.assertEqual(self.get('/accounts/password-reset/').status_code, 200)
+        self.assertEqual(self.post('/accounts/password-reset/', {'email': self.a.email}).status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('/accounts/reset/', mail.outbox[0].body)
+        self.assertEqual(self.get('/accounts/password-reset/done/').status_code, 200)
+        self.assertEqual(self.get('/accounts/reset/invalid/invalid/').status_code, 200)
+        self.assertEqual(self.get('/accounts/reset-complete/').status_code, 200)
+
     def test_generated_description_strips_untrusted_business_markup(self):
         self.ta.name = '<img src=x onerror=alert(1)>Business'
         self.ta.save()

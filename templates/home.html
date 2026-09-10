@@ -381,8 +381,8 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
             </h2>
 
             <p>
-                First contact our team on WhatsApp. Create your account with Google
-                or signup, then admin approval unlocks dashboard and property posting.
+                First contact our team on WhatsApp. Create your account,
+                then admin approval unlocks dashboard and property posting.
                 Every submitted property is reviewed before going live.
             </p>
 
@@ -395,10 +395,10 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
                     Join On WhatsApp
                 </a>
 
-                <a href="{% url 'social:begin' 'google-oauth2' %}"
+                {% if google_login_enabled %}<a href="{% url 'social:begin' 'google-oauth2' %}"
                    class="btn btn-light">
                     Continue With Google
-                </a>
+                </a>{% endif %}
 
                 <a href="{% url 'register' %}"
                    class="btn btn-outline-light">
