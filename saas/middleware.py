@@ -1,6 +1,6 @@
 from urllib.parse import urlsplit
 from django.conf import settings
-from django.http import HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect
 from django.urls import get_script_prefix, set_script_prefix
 import re
 from .models import Domain, Membership, Tenant
@@ -47,6 +47,15 @@ class TenantMiddleware:
                 return HttpResponseForbidden('This website is currently unavailable.')
         if request.tenant and request.tenant.status == 'suspended':
             return HttpResponseForbidden('This website is currently unavailable.')
+        if request.tenant and request.path_info.startswith(('/saas/', '/admin/')):
+            if request.path_info.startswith('/admin/') and request.user.is_authenticated and not request.user.is_superuser:
+                return HttpResponseForbidden('Platform administration is restricted.')
+            if request.method not in ('GET', 'HEAD'):
+                return HttpResponseForbidden('Use the platform domain for business management.')
+            target = settings.SAAS_BASE_URL.rstrip('/') + request.path_info
+            if request.META.get('QUERY_STRING'):
+                target += '?' + request.META['QUERY_STRING']
+            return HttpResponseRedirect(target)
         if request.tenant and request.user.is_authenticated:
             request.membership = Membership.objects.filter(tenant=request.tenant, user=request.user, is_active=True).first()
         if request.path_info.startswith('/admin/'):

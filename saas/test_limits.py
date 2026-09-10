@@ -11,6 +11,13 @@ from properties.forms import PropertyForm
 class LimitAndWriteTests(TwoBusinessFixture, TestCase):
     """Additional write-path checks reuse the two-business fixture."""
 
+    def test_tenant_management_moves_to_platform_host(self):
+        response = self.get('/saas/login/?next=/saas/workspaces/')
+        self.assertEqual(response.url, 'http://localhost/saas/login/?next=/saas/workspaces/')
+        self.assertEqual(self.get('/admin/').url, 'http://localhost/admin/')
+        self.assertEqual(self.post('/saas/signup/').status_code, 403)
+        self.assertContains(self.get('/', host='localhost'), 'Property Studio')
+
     @override_settings(EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend', EMAIL_HOST='')
     def test_unconfigured_recovery_is_explicit_and_does_not_send(self):
         response = self.get('/accounts/password-reset/', host='localhost')

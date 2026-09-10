@@ -17,8 +17,8 @@ sitemaps = {
     "blog_categories": BlogCategorySitemap,
 }
 
-admin.site.site_header = "Brij Vas"
-admin.site.site_title = "Brij Vas"
+admin.site.site_header = "Property Studio"
+admin.site.site_title = "Property Studio"
 admin.site.index_title = "Property SaaS Administration"
 admin.site.has_permission = lambda request: request.user.is_active and request.user.is_superuser
 
