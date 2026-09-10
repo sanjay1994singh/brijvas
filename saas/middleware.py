@@ -65,3 +65,38 @@ class TenantMiddleware:
         if not request.tenant and not request.path_info.startswith(('/saas/', '/admin/', '/accounts/', '/static/', '/media/', '/auth/')) and request.path_info != '/':
             return HttpResponseNotFound('Open your business website to access this page.')
         return self.get_response(request)
+
+
+class PublicRateLimitMiddleware:
+    """Shared Redis counters for public write endpoints; trust only local reverse proxy."""
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if settings.SAAS_RATE_LIMIT_ENABLED and request.method == 'POST':
+            path = request.path_info
+            limited = ('/saas/signup/', '/saas/login/', '/accounts/login/', '/accounts/register/', '/accounts/password-reset/', '/contact/')
+            if path in limited or path.startswith('/properties/'):
+                import hashlib
+                from django.core.cache import cache
+                from django.http import HttpResponse
+                address = request.META.get('REMOTE_ADDR', '')
+                if address in ('127.0.0.1', '::1') and getattr(settings, 'SECURE_PROXY_SSL_HEADER', None):
+                    address = request.META.get('HTTP_X_FORWARDED_FOR', address).split(',')[-1].strip()
+                key = 'public-write:' + hashlib.sha256(address.encode()).hexdigest()
+                try:
+                    if cache.add(key, 1, timeout=60):
+                        count = 1
+                    else:
+                        try:
+                            count = cache.incr(key)
+                        except ValueError:
+                            cache.set(key, 1, timeout=60)
+                            count = 1
+                except Exception:
+                    return HttpResponse('Please retry shortly.', status=503)
+                if count > 30:
+                    response = HttpResponse('Too many requests. Please retry in a minute.', status=429)
+                    response['Retry-After'] = '60'
+                    return response
+        return self.get_response(request)

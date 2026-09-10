@@ -7,4 +7,4 @@ django-crispy-forms>=2.3,<3
 django-filter>=25.1,<26
 dnspython>=2.7,<3
 bleach>=6.2,<7
-
+redis>=5,<7
