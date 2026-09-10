@@ -39,7 +39,7 @@ def signup(request):
         try:
             with transaction.atomic():
                 user = form.save()
-                tenant = provision(owner=user, name=form.cleaned_data['business_name'], slug=form.cleaned_data['site_slug'], plan=form.cleaned_data['plan'])
+                tenant = provision(owner=user, name=form.cleaned_data['business_name'], plan=form.cleaned_data['plan'])
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('saas_business', slug=tenant.slug)
         except (ValidationError, IntegrityError) as exc:
@@ -187,13 +187,13 @@ def domains(request, tenant):
             sub = subscription_for(tenant)
             if not sub.plan.custom_domain:
                 raise ValidationError('Upgrade to a plan with custom domains.')
-            if tenant.domains.count() >= 5:
+            if tenant.domains.filter(is_platform=False).count() >= 5:
                 raise ValidationError('Maximum five domains per business.')
             Domain.objects.create(tenant=tenant, hostname=form.cleaned_data['hostname'])
             return redirect('saas_domains', slug=tenant.slug)
         except (ValidationError, IntegrityError) as exc:
             form.add_error(None, exc if isinstance(exc, ValidationError) else 'This domain is already registered.')
-    return render(request, 'saas/domains.html', {'business': tenant, 'form': form, 'domains': tenant.domains.all(), 'target': settings.SAAS_DOMAIN_TARGET})
+    return render(request, 'saas/domains.html', {'business': tenant, 'form': form, 'domains': tenant.domains.all(), 'target': settings.SAAS_DOMAIN_TARGET, 'server_ip': settings.SAAS_SERVER_IP})
 
 
 @business_admin
@@ -208,8 +208,10 @@ def verify_domain(request, tenant, pk):
             raise ValueError('TXT token not found')
         domain.is_verified = True
         domain.error = ''
-        domain.save(update_fields=['is_verified', 'error'])
-        messages.success(request, 'Ownership verified. SSL activation is the next step; your platform URL remains available.')
+        domain.provisioning_requested = True
+        domain.last_attempt_at = None
+        domain.save(update_fields=['is_verified', 'error', 'provisioning_requested', 'last_attempt_at'])
+        messages.success(request, 'Ownership verified. Automatic HTTPS setup is queued. Keep your DNS pointed to our server.')
     except Exception:
         messages.error(request, 'TXT verification record is not available yet. Check the record and retry.')
     return redirect('saas_domains', slug=tenant.slug)

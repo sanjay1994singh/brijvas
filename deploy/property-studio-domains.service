@@ -1,0 +1,11 @@
+[Unit]
+Description=Property Studio automatic domain HTTPS provisioning
+After=network-online.target mysql.service apache2.service
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/var/www/brijvas-saas
+ExecStart=/var/www/brijvas-saas/.venv/bin/python manage.py provision_domains
+TimeoutStartSec=1200
+UMask=0022

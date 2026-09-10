@@ -107,6 +107,9 @@ class Domain(models.Model):
     ssl_ready = models.BooleanField(default=False)
     is_primary = models.BooleanField(default=False)
     error = models.CharField(max_length=300, blank=True)
+    is_platform = models.BooleanField(default=False)
+    provisioning_requested = models.BooleanField(default=False)
+    last_attempt_at = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.hostname = normalize_domain(self.hostname)

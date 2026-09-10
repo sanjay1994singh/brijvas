@@ -6,6 +6,27 @@ import re
 from .models import Domain, Membership, Tenant
 
 
+class DomainHostMiddleware:
+    """Validate dynamic customer hosts before Django security redirects use Host."""
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        from django.http import HttpResponseBadRequest
+        from django.http.request import split_domain_port, validate_host
+        raw = request.META.get('HTTP_HOST', request.META.get('SERVER_NAME', ''))
+        host, port = split_domain_port(raw.lower())
+        configured = [h for h in settings.ALLOWED_HOSTS if h != '*']
+        configured += list(settings.SAAS_PLATFORM_HOSTS)
+        root = urlsplit(settings.SAAS_BASE_URL).hostname
+        allowed = bool(host) and (validate_host(host, configured) or
+                    (host.endswith('.' + root) and Tenant.objects.filter(slug=host[:-(len(root)+1)]).exists()) or
+                    Domain.objects.filter(hostname=host, is_verified=True).exists())
+        if not allowed:
+            return HttpResponseBadRequest('Unknown website host.')
+        return self.get_response(request)
+
+
 class TenantMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response

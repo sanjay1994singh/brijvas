@@ -132,7 +132,7 @@ class SaasTests(TwoBusinessFixture, TestCase):
     def test_signup_provisions_complete_independent_site(self):
         result = self.post('/saas/signup/', {'business_name': 'New Realty', 'site_slug': 'new-realty', 'username': 'newowner', 'email': 'new@example.test', 'phone': '', 'plan': self.plan.pk, 'password1': 'Distant-Orange-7284!', 'password2': 'Distant-Orange-7284!'}, host='localhost')
         self.assertEqual(result.status_code, 302)
-        tenant = Tenant.objects.get(slug='new-realty')
+        tenant = Tenant.objects.get(slug='newrealty')
         self.assertTrue(tenant.memberships.get().can_manage)
         self.assertEqual(Property.objects.filter(tenant=tenant).count(), 0)
         self.assertEqual(PropertyType.objects.filter(tenant=tenant).count(), 5)

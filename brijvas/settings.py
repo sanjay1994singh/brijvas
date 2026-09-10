@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'saas.middleware.DomainHostMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -229,6 +230,8 @@ SAAS_DOMAIN_TARGET = os.getenv('SAAS_DOMAIN_TARGET', urlsplit(SAAS_BASE_URL).hos
 SAAS_TRIAL_DAYS = int(os.getenv('SAAS_TRIAL_DAYS', '14'))
 SAAS_USE_PATH_URLS = os.getenv('SAAS_USE_PATH_URLS', 'False') == 'True'
 SAAS_ROOT_TENANT = os.getenv('SAAS_ROOT_TENANT', '')
+SAAS_AUTO_DOMAINS = os.getenv('SAAS_AUTO_DOMAINS', 'False') == 'True'
+SAAS_SERVER_IP = os.getenv('SAAS_SERVER_IP', '')
 SAAS_GOOGLE_LOGIN_ENABLED = os.getenv('SAAS_GOOGLE_LOGIN_ENABLED', 'False') == 'True'
 RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '')
 RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '')

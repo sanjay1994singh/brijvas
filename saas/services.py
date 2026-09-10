@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
 
-from .models import AuditEvent, Membership, Plan, Subscription, Tenant
+from .models import AuditEvent, Domain, Membership, Plan, Subscription, Tenant
 
 RESERVED = {'www', 'admin', 'api', 'mail', 'app', 'saas', 'support', 'static', 'media', 'localhost', 'billing'}
 
@@ -22,8 +22,22 @@ def validate_slug(slug):
 
 
 @transaction.atomic
-def provision(*, owner, name, slug, plan):
+def provision(*, owner, name, plan, slug=None):
     # Unique slug + atomic transaction protects concurrent registrations and partial sites.
+    if slug is None:
+        from django.utils.text import slugify
+        import secrets
+        # Serialize allocation without relying on a pre-submit availability check.
+        Plan.objects.select_for_update().order_by('pk').first()
+        base = slugify(name).replace('-', '')[:40]
+        if len(base) < 3 or not base[0].isalpha() or base in RESERVED:
+            base = 'business' + (base or secrets.token_hex(3))
+        slug = base
+        index = 2
+        root = urlsplit(settings.SAAS_BASE_URL).hostname
+        while Tenant.objects.filter(slug=slug).exists() or Domain.objects.filter(hostname=f'{slug}.{root}').exists():
+            slug = f'{base}-{index}'
+            index += 1
     slug = validate_slug(slug)
     if not plan.is_active:
         raise ValidationError('This plan is unavailable.')
@@ -41,6 +55,9 @@ def provision(*, owner, name, slug, plan):
     for title in ('Plot', 'Flat', 'Villa', 'Farm House', 'Commercial'):
         PropertyType.objects.create(tenant=tenant, name=title)
     AuditEvent.objects.create(tenant=tenant, actor=owner, action='workspace.created')
+    if getattr(settings, 'SAAS_AUTO_DOMAINS', False):
+        Domain.objects.create(tenant=tenant, hostname=f'{slug}.{urlsplit(settings.SAAS_BASE_URL).hostname}',
+                              is_platform=True, is_verified=True, provisioning_requested=True)
     return tenant
 
 

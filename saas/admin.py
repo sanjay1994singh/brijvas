@@ -15,7 +15,10 @@ class TenantAdmin(admin.ModelAdmin):
 @admin.register(Domain)
 class DomainAdmin(admin.ModelAdmin):
     list_display = ('hostname', 'tenant', 'is_verified', 'ssl_ready', 'is_primary')
-    readonly_fields = ('token', 'is_verified', 'ssl_ready', 'is_primary')
+    readonly_fields = ('token', 'is_verified', 'ssl_ready', 'is_primary', 'is_platform', 'provisioning_requested', 'last_attempt_at', 'error')
+
+    def get_readonly_fields(self, request, obj=None):
+        return self.readonly_fields + (('hostname', 'tenant') if obj else ())
 
 
 @admin.register(AuditEvent, BillingOrder)

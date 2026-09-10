@@ -8,21 +8,17 @@ from .services import validate_slug, validate_domain_for_tenant
 
 
 class SignupForm(UserCreationForm):
-    business_name = forms.CharField(max_length=160)
-    site_slug = forms.CharField(max_length=48, help_text='Your unique website address, for example sunrise-realty.')
+    business_name = forms.CharField(max_length=160, label='Business / brand name', help_text='Your website address is created automatically from this name. Example: Sharma Realty becomes sharmarealty. If taken, a number is added.')
     email = forms.EmailField(required=True)
     plan = forms.ModelChoiceField(queryset=Plan.objects.none(), empty_label=None)
 
     class Meta:
         model = get_user_model()
-        fields = ('business_name', 'site_slug', 'username', 'email', 'phone', 'plan', 'password1', 'password2')
+        fields = ('business_name', 'username', 'email', 'phone', 'plan', 'password1', 'password2')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['plan'].queryset = Plan.objects.filter(is_active=True).order_by('listing_limit')
-
-    def clean_site_slug(self):
-        return validate_slug(self.cleaned_data['site_slug'])
 
     def clean_email(self):
         email = self.cleaned_data['email'].strip().lower()
