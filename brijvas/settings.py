@@ -232,6 +232,13 @@ SAAS_USE_PATH_URLS = os.getenv('SAAS_USE_PATH_URLS', 'False') == 'True'
 SAAS_ROOT_TENANT = os.getenv('SAAS_ROOT_TENANT', '')
 SAAS_AUTO_DOMAINS = os.getenv('SAAS_AUTO_DOMAINS', 'False') == 'True'
 SAAS_SERVER_IP = os.getenv('SAAS_SERVER_IP', '')
+SAAS_DOMAIN_HOSTS_FILE = os.getenv('SAAS_DOMAIN_HOSTS_FILE', '')
+if SAAS_DOMAIN_HOSTS_FILE:
+    import re
+    domain_hosts_file = Path(SAAS_DOMAIN_HOSTS_FILE)
+    if domain_hosts_file.exists():
+        ALLOWED_HOSTS += [host for host in domain_hosts_file.read_text().splitlines()
+                          if re.fullmatch(r'[a-z0-9.-]+', host) and '.' in host]
 SAAS_GOOGLE_LOGIN_ENABLED = os.getenv('SAAS_GOOGLE_LOGIN_ENABLED', 'False') == 'True'
 RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '')
 RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '')

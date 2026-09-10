@@ -90,6 +90,22 @@ class Command(BaseCommand):
                 raise CommandError('Public HTTPS routing verification failed.')
         finally:
             probe.unlink(missing_ok=True)
+        # Keep Django's host protection explicit; never use a global wildcard.
+        import shutil
+        hostfile = Path('/etc/property-studio/allowed-hosts')
+        hosts = hostfile.read_text().splitlines() if hostfile.exists() else []
+        if '*' in hosts:
+            raise CommandError('Explicit host allowlist required.')
+        if domain.hostname not in hosts:
+            hosts.append(domain.hostname)
+            hostfile.parent.mkdir(mode=0o750, exist_ok=True)
+            shutil.chown(hostfile.parent, user='root', group='www-data')
+            temporary = hostfile.with_suffix('.tmp')
+            temporary.write_text('\n'.join(hosts) + '\n')
+            shutil.chown(temporary, user='root', group='www-data')
+            os.chmod(temporary, 0o640)
+            temporary.replace(hostfile)
+            self.run(['systemctl', 'restart', 'brijvas-saas'])
         with transaction.atomic():
             Tenant.objects.select_for_update().get(pk=domain.tenant_id)
             current = Domain.objects.select_for_update().get(pk=domain.pk)
