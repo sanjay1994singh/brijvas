@@ -11,6 +11,16 @@ from properties.forms import PropertyForm
 class LimitAndWriteTests(TwoBusinessFixture, TestCase):
     """Additional write-path checks reuse the two-business fixture."""
 
+    def test_generated_description_strips_untrusted_business_markup(self):
+        self.ta.name = '<img src=x onerror=alert(1)>Business'
+        self.ta.save()
+        self.pa.tenant = self.ta
+        self.pa.description = ''
+        self.pa.save()
+        self.pa.refresh_from_db()
+        self.assertNotIn('onerror', self.pa.description)
+        self.assertIn('Business', self.pa.description)
+
     @override_settings(SAAS_USE_PATH_URLS=True, SAAS_ROOT_TENANT='brijvas')
     def test_path_sites_keep_navigation_and_isolation(self):
         response = self.get('/sites/sunrise/', host='localhost')

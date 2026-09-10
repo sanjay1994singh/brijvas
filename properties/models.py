@@ -1,4 +1,4 @@
-from saas.uploads import tenant_upload_path
+from saas.uploads import tenant_upload_path, sanitize_html
 from saas.models import TenantOwnedModel
 from django.db import models
 from django.urls import reverse
@@ -432,6 +432,7 @@ class Property(TenantOwnedModel):
 
         if not self.description:
             self.description = self.build_seo_description()
+        self.description = sanitize_html(self.description)
 
         if not self.slug:
             self.slug = unique_slug(
