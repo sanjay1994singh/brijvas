@@ -1,0 +1,21 @@
+[Unit]
+Description=Brijvas Property SaaS
+After=network.target mysql.service redis-server.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/brijvas-saas
+ExecStart=/var/www/brijvas-saas/.venv/bin/gunicorn brijvas.wsgi:application --workers 2 --bind 127.0.0.1:8012 --timeout 90 --access-logfile - --error-logfile -
+Restart=on-failure
+RestartSec=3
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/www/brijvas-saas/media
+
+[Install]
+WantedBy=multi-user.target
