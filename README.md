@@ -1,4 +1,4 @@
-# Property Studio — Brijvas Property SaaS
+# Vistaflo — Brijvas Property SaaS
 
 Multi-tenant Django property websites with trial provisioning, business administration, listing approvals, tenant branding, enquiries, team roles, plan limits, Razorpay adapter and verified domain routing.
 

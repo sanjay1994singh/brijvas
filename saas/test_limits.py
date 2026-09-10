@@ -16,7 +16,7 @@ class LimitAndWriteTests(TwoBusinessFixture, TestCase):
         self.assertEqual(response.url, 'http://localhost/saas/login/?next=/saas/workspaces/')
         self.assertEqual(self.get('/admin/').url, 'http://localhost/admin/')
         self.assertEqual(self.post('/saas/signup/').status_code, 403)
-        self.assertContains(self.get('/', host='localhost'), 'Property Studio')
+        self.assertContains(self.get('/', host='localhost'), 'Vistaflo')
 
     @override_settings(EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend', EMAIL_HOST='')
     def test_unconfigured_recovery_is_explicit_and_does_not_send(self):
@@ -53,7 +53,7 @@ class LimitAndWriteTests(TwoBusinessFixture, TestCase):
         self.client.force_login(self.a)
         self.assertEqual(self.get('/sites/sunrise/dashboard/', host='localhost').status_code, 200)
         self.assertEqual(self.get('/sites/cedar/dashboard/', host='localhost').status_code, 403)
-        self.assertContains(self.get('/saas/', host='localhost'), 'Property Studio')
+        self.assertContains(self.get('/saas/', host='localhost'), 'Vistaflo')
 
     @override_settings(SAAS_USE_PATH_URLS=True, SAAS_ROOT_TENANT='brijvas')
     def test_platform_login_does_not_require_legacy_membership(self):

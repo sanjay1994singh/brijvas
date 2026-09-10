@@ -5,12 +5,12 @@ Deployed 10 September 2026 using local commits -> GitHub master -> server `git p
 ## Live entry points
 
 - Existing customer website: https://brijvas.com/
-- SaaS portal: https://propertystudio.live-app.in/saas/
-- New customer signup: https://propertystudio.live-app.in/saas/signup/
-- Business login: https://propertystudio.live-app.in/saas/login/
-- Business selection after login: https://propertystudio.live-app.in/saas/workspaces/
-- Existing Brijvas management: https://propertystudio.live-app.in/saas/business/brijvas/
-- Platform administration: https://propertystudio.live-app.in/admin/ (superuser only)
+- SaaS portal: https://vistaflo.live-app.in/saas/
+- New customer signup: https://vistaflo.live-app.in/saas/signup/
+- Business login: https://vistaflo.live-app.in/saas/login/
+- Business selection after login: https://vistaflo.live-app.in/saas/workspaces/
+- Existing Brijvas management: https://vistaflo.live-app.in/saas/business/brijvas/
+- Platform administration: https://vistaflo.live-app.in/admin/ (superuser only)
 
 Existing active account `admin_charan` owns the Brijvas workspace. Its password was not changed. The new application secret invalidates old sessions, so sign in again.
 
@@ -54,7 +54,7 @@ Do not blindly restore the old Apache configuration after new customer writes ha
 
 ## Platform domain separation
 
-The platform is now `https://propertystudio.live-app.in/`. Customer websites use direct brand subdomains under `live-app.in`, for example `https://brijvas.live-app.in/`. The platform certificate and each customer subdomain certificate are issued with Certbot webroot and automatic renewal. Apache's `00-propertystudio.conf` and generated `00-property-domain-*.conf` files must sort before the existing unrelated `*.live-app.in` HTTP wildcard so ACME challenges reach this application.
+The platform is now `https://vistaflo.live-app.in/`. Customer websites use direct brand subdomains under `live-app.in`, for example `https://brijvas.live-app.in/`. The platform certificate and each customer subdomain certificate are issued with Certbot webroot and automatic renewal. Apache's `00-vistaflo.conf` and generated `00-property-domain-*.conf` files must sort before the existing unrelated `*.live-app.in` HTTP wildcard so ACME challenges reach this application.
 
 `brijvas.com` and `www.brijvas.com` serve only the verified existing Brijvas tenant. They are no longer platform hosts. Management GET links redirect to the platform; management POST requests must be submitted on the platform itself. Sessions remain host-only: sign in separately when opening the Brijvas property dashboard. Existing account passwords are unchanged.
 

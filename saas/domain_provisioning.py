@@ -62,8 +62,8 @@ def https_config(hostname, cert_name):
     if not re.fullmatch(r'property-domain-[0-9]+', cert_name):
         raise ValidationError('Invalid certificate identifier.')
     template = (Path(settings.BASE_DIR) / 'deploy/propertystudio-le-ssl.conf').read_text()
-    template = template.replace('ServerName propertystudio.live-app.in', f'ServerName {hostname}')
-    template = template.replace('/live/propertystudio.live-app.in/', f'/live/{cert_name}/')
+    template = template.replace('ServerName vistaflo.live-app.in', f'ServerName {hostname}')
+    template = template.replace('/live/vistaflo.live-app.in/', f'/live/{cert_name}/')
     template = template.replace('    ProxyPass /static/ !', '''    Alias /.well-known/acme-challenge/ /var/www/brijvas-saas/acme/.well-known/acme-challenge/
     <Directory /var/www/brijvas-saas/acme>
         Require all granted

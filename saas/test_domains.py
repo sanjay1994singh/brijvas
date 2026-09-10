@@ -24,7 +24,7 @@ class AutomaticDomainTests(TwoBusinessFixture, TestCase):
         domain.save()
         self.assertEqual(tenants[0].public_url, 'https://sharmarealty.localhost')
 
-    @override_settings(SAAS_BASE_URL='https://propertystudio.live-app.in', SAAS_CUSTOMER_DOMAIN_ROOT='live-app.in',
+    @override_settings(SAAS_BASE_URL='https://vistaflo.live-app.in', SAAS_CUSTOMER_DOMAIN_ROOT='live-app.in',
                        SAAS_AUTO_DOMAINS=True, SAAS_USE_PATH_URLS=False)
     def test_customer_subdomain_uses_root_domain_separate_from_portal(self):
         user = get_user_model().objects.create_user(username='directroot')

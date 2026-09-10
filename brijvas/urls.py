@@ -17,9 +17,9 @@ sitemaps = {
     "blog_categories": BlogCategorySitemap,
 }
 
-admin.site.site_header = "Property Studio"
-admin.site.site_title = "Property Studio"
-admin.site.index_title = "Property SaaS Administration"
+admin.site.site_header = "Vistaflo"
+admin.site.site_title = "Vistaflo"
+admin.site.index_title = "Vistaflo Administration"
 admin.site.has_permission = lambda request: request.user.is_active and request.user.is_superuser
 
 urlpatterns = [
