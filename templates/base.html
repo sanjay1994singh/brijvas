@@ -244,30 +244,28 @@
         once: true
     });
 
-    window.addEventListener('load', function () {
-
-        const loader = document.getElementById('loader');
-
-        if(loader){
-            loader.style.display = 'none';
-        }
-
-    });
-
     window.AppLoader = {
         show: function () {
             const loader = document.getElementById('loader');
             if (loader) {
-                loader.style.display = 'flex';
+                loader.classList.add('is-visible');
             }
         },
         hide: function () {
             const loader = document.getElementById('loader');
             if (loader) {
-                loader.style.display = 'none';
+                loader.classList.remove('is-visible');
             }
         }
     };
+
+    window.addEventListener('load', window.AppLoader.hide);
+    window.addEventListener('pageshow', window.AppLoader.hide);
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            window.AppLoader.hide();
+        }
+    });
 
     document.addEventListener('submit', function (event) {
         if (!event.target.matches('[data-no-loader]')) {
@@ -281,7 +279,14 @@
             return;
         }
         const href = link.getAttribute('href');
-        if (href && !href.startsWith('#') && !href.startsWith('javascript:') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+        if (
+            href &&
+            !href.startsWith('#') &&
+            !href.startsWith('javascript:') &&
+            !href.startsWith('mailto:') &&
+            !href.startsWith('tel:') &&
+            new URL(href, window.location.href).origin === window.location.origin
+        ) {
             window.AppLoader.show();
         }
     });
@@ -291,8 +296,14 @@
     });
 
     const originalFetch = window.fetch;
-    window.fetch = function () {
-        window.AppLoader.show();
+    window.fetch = function (resource, options) {
+        const skipLoader = options && options.headers && (
+            options.headers['X-No-Loader'] ||
+            (typeof options.headers.get === 'function' && options.headers.get('X-No-Loader'))
+        );
+        if (!skipLoader) {
+            window.AppLoader.show();
+        }
         return originalFetch.apply(this, arguments).finally(function () {
             window.AppLoader.hide();
         });
