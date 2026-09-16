@@ -29,4 +29,4 @@ class PropertyTypeSitemap(Sitemap):
     priority = 0.7
 
     def items(self):
-        return scoped(PropertyType, self.tenant).all()
+        return PropertyType.objects.filter(tenant__isnull=True).order_by("name")

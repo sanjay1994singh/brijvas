@@ -41,7 +41,7 @@ def home(request):
     ).order_by("-created_at")[:12]
 
     cities = City.objects.all()
-    property_types = scoped(PropertyType, request.tenant).all()
+    property_types = PropertyType.objects.filter(tenant__isnull=True).order_by("name")
 
     latest_blogs = scoped(Blog, request.tenant).filter(
         is_published=True
@@ -97,7 +97,7 @@ def robots_txt(request):
 
 def category_properties(request, slug):
     category = get_object_or_404(
-        scoped(PropertyType, request.tenant),
+        PropertyType.objects.filter(tenant__isnull=True),
         slug=slug
     )
 

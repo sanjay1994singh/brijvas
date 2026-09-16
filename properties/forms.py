@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Q
 from django_ckeditor_5.widgets import CKEditor5Widget
 from accounts.locations import INDIAN_STATES
 from locations.models import City, District, State
@@ -72,9 +73,15 @@ class PropertyForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.tenant = tenant
         self.instance.tenant = tenant
-        from saas.scoping import scoped
         from .models import PropertyType
-        self.fields['property_type'].queryset = scoped(PropertyType, tenant)
+        property_type_queryset = PropertyType.objects.filter(tenant__isnull=True)
+        if self.instance and self.instance.property_type_id:
+            property_type_queryset = PropertyType.objects.filter(
+                Q(tenant__isnull=True) | Q(pk=self.instance.property_type_id)
+            )
+        self.fields['property_type'].queryset = property_type_queryset.order_by('name')
+        self.fields['property_type'].empty_label = "Select property type"
+        self.fields['purpose'].choices = [("", "Select purpose")] + list(Property.PURPOSE_CHOICES)
         for state_name in INDIAN_STATES:
             State.objects.get_or_create(name=state_name, defaults={'tenant': None})
         self.fields['state'].queryset = State.objects.filter(tenant__isnull=True).order_by('name')
@@ -91,6 +98,9 @@ class PropertyForm(forms.ModelForm):
         self.fields['district'].required = True
         self.fields['city'].queryset = city_queryset
         self.fields['price'].required = False
+        self.fields['state'].empty_label = "Select state"
+        self.fields['district'].empty_label = "Select district"
+        self.fields['city'].empty_label = "Select city"
 
         placeholders = {
             "price": "Property price",

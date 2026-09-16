@@ -189,7 +189,7 @@ def property_list(request):
         property__tenant=request.tenant, property__is_active=True
     ).distinct()
 
-    property_types = scoped(PropertyType, request.tenant).all()
+    property_types = PropertyType.objects.filter(tenant__isnull=True).order_by("name")
 
     paginator = Paginator(
         properties,
@@ -266,7 +266,7 @@ def property_search(request):
         property__tenant=request.tenant, property__is_active=True
     ).distinct()
 
-    property_types = scoped(PropertyType, request.tenant).all()
+    property_types = PropertyType.objects.filter(tenant__isnull=True).order_by("name")
 
     context = {
         "properties": properties,

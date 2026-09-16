@@ -17,5 +17,5 @@ def site_settings(request):
 
 def property_types(request):
     return {
-        "property_types": scoped(PropertyType, request.tenant).all()
+        "property_types": PropertyType.objects.filter(tenant__isnull=True).order_by("name")
     }

@@ -53,6 +53,16 @@ def allocate_business_slug(name, *, lock=False):
     return slug
 
 
+def ensure_default_property_types():
+    from properties.models import PropertyType
+    for title in ('Plot', 'Flat', 'Villa', 'Farm House', 'Commercial'):
+        PropertyType.objects.get_or_create(
+            tenant=None,
+            slug=title.lower().replace(' ', '-'),
+            defaults={'name': title},
+        )
+
+
 @transaction.atomic
 def provision(*, owner, name, plan, slug=None):
     # Unique slug + atomic transaction protects concurrent registrations and partial sites.
@@ -75,19 +85,13 @@ def provision(*, owner, name, plan, slug=None):
         is_trial=plan.trial_enabled,
     )
     from core.models import SiteSetting
-    from properties.models import PropertyType
+    ensure_default_property_types()
     try:
         whatsapp = indian_whatsapp_number(owner.phone)
     except ValueError:
         whatsapp = re.sub(r'\D+', '', owner.phone or '')
     SiteSetting.objects.create(tenant=tenant, site_name=name, email=owner.email, phone=owner.phone, whatsapp=whatsapp, state=owner.state,
                                tagline='Find your next property', about_text=f'Welcome to {name}. Contact our team for property enquiries and site visits.')
-    for title in ('Plot', 'Flat', 'Villa', 'Farm House', 'Commercial'):
-        PropertyType.objects.get_or_create(
-            tenant=tenant,
-            slug=title.lower().replace(' ', '-'),
-            defaults={'name': title},
-        )
     AuditEvent.objects.create(tenant=tenant, actor=owner, action='workspace.created')
     if getattr(settings, 'SAAS_AUTO_DOMAINS', False):
         Domain.objects.create(tenant=tenant, hostname=f'{slug}.{settings.SAAS_CUSTOMER_DOMAIN_ROOT}',
