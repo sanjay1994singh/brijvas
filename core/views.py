@@ -9,6 +9,7 @@ from properties.models import (
     PropertyType,
 )
 from django.http import HttpResponse
+from django.conf import settings
 
 from blog.models import Blog
 from django.core.paginator import Paginator
@@ -18,6 +19,17 @@ from django.contrib import messages
 from .models import Contact
 from locations.models import City
 from accounts.models import User
+
+
+def is_platform_request(request):
+    host = request.get_host().split(":")[0].lower().rstrip(".")
+    return host in {item.lower().rstrip(".") for item in settings.SAAS_PLATFORM_HOSTS}
+
+
+def platform_or_tenant_template(request, platform_template, tenant_template):
+    if is_platform_request(request) or request.tenant is None:
+        return platform_template
+    return tenant_template
 
 
 def home(request):
@@ -59,7 +71,7 @@ def home(request):
 
     return render(
         request,
-        "home.html" if request.tenant.slug == "brijvas" else "saas/storefront.html",
+        "saas/storefront.html",
         context
     )
 
@@ -117,17 +129,18 @@ def category_properties(request, slug):
 def about(request):
     return render(
         request,
-        "core/about.html" if request.tenant.slug == "brijvas" else "saas/about.html"
+        platform_or_tenant_template(request, "saas/about.html", "core/about.html")
     )
 
 
 def contact(request):
+    from .forms import ContactForm
+    template = platform_or_tenant_template(request, "saas/contact.html", "core/contact.html")
     if request.method == "POST":
-        from .forms import ContactForm
         form = ContactForm(request.POST)
         if not form.is_valid():
             messages.error(request, 'Please provide a valid name, email and message (maximum 5000 characters).')
-            return render(request, 'saas/contact.html', {'form': form}, status=400)
+            return render(request, template, {'form': form}, status=400)
         scoped(Contact, request.tenant).create(tenant=request.tenant,
 
             name=request.POST.get("name"),
@@ -151,28 +164,57 @@ def contact(request):
 
     return render(
         request,
-        "core/contact.html" if request.tenant.slug == "brijvas" else "saas/contact.html"
+        template,
+        {'form': ContactForm()}
     )
 
 
 def faq(request):
     return render(
         request,
-        "core/faq.html"
+        platform_or_tenant_template(request, "saas/faq.html", "core/faq.html")
     )
 
 
 def privacy_policy(request):
     return render(
         request,
-        "core/privacy_policy.html"
+        platform_or_tenant_template(request, "saas/privacy_policy.html", "core/privacy_policy.html")
     )
 
 
 def terms_conditions(request):
     return render(
         request,
-        "core/terms_conditions.html"
+        platform_or_tenant_template(request, "saas/terms_conditions.html", "core/terms_conditions.html")
+    )
+
+
+def refund_policy(request):
+    return render(
+        request,
+        platform_or_tenant_template(request, "saas/refund_policy.html", "core/refund_policy.html")
+    )
+
+
+def billing_policy(request):
+    return render(
+        request,
+        platform_or_tenant_template(request, "saas/billing_policy.html", "core/billing_policy.html")
+    )
+
+
+def grievance(request):
+    return render(
+        request,
+        platform_or_tenant_template(request, "saas/grievance.html", "core/grievance.html")
+    )
+
+
+def disclaimer(request):
+    return render(
+        request,
+        platform_or_tenant_template(request, "saas/disclaimer.html", "core/disclaimer.html")
     )
 
 

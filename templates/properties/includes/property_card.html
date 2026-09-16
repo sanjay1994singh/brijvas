@@ -50,7 +50,11 @@
 
             <h4 class="text-primary fw-bold mb-3">
 
+                {% if property.price %}
                 Rs {{ property.price }}
+                {% else %}
+                Price on request
+                {% endif %}
 
             </h4>
 

@@ -2,16 +2,16 @@
 {% load static %}
 
 {% block title %}
-Property in Vrindavan and Mathura | {{ site_setting.site_name|default:"Property website" }}
+Property Listings | {{ site_setting.site_name|default:"Property website" }}
 {% endblock %}
 
 {% block meta_description %}
-Find verified plots, flats, villas, farm houses, hotels and commercial properties for sale, resale and rent in Vrindavan, Mathura and nearby areas with {{ site_setting.site_name|default:"Property website" }}.
+Find property listings for sale, resale and rent with {{ site_setting.site_name|default:"Property website" }}.
 {% endblock %}
 
-{% block og_title %}Property in Vrindavan and Mathura | {{ site_setting.site_name|default:"Property website" }}{% endblock %}
+{% block og_title %}Property Listings | {{ site_setting.site_name|default:"Property website" }}{% endblock %}
 
-{% block og_description %}Find verified plots, flats, villas, farm houses, hotels and commercial properties in Vrindavan and Mathura.{% endblock %}
+{% block og_description %}Find property listings, compare options and contact the team.{% endblock %}
 
 {% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/home-vrindavan-hero.webp' %}{% endblock %}
 
@@ -28,16 +28,16 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
         <div class="hero-content">
 
             <span class="hero-kicker">
-                Vrindavan & Mathura Real Estate
+                {{ site_setting.site_name|default:"Property website" }}
             </span>
 
             <h1>
-                Find Verified Property in Brij Bhoomi
+                Find property options that match your need
             </h1>
 
             <p>
                 Buy, sell and rent plots, villas, flats, farm houses and
-                commercial spaces with trusted local guidance.
+                commercial spaces with the website team.
             </p>
 
             <!-- SEARCH BOX -->
@@ -133,7 +133,7 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
                 <div>
                     <strong>Local</strong>
-                    <span>Vrindavan Guidance</span>
+                    <span>Local Guidance</span>
                 </div>
 
                 <div>
@@ -162,7 +162,7 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
             <h2>Browse By Category</h2>
 
             <p>
-                Choose the property type that fits your plan in Vrindavan and Mathura.
+                Choose the property type that fits your plan.
             </p>
 
         </div>
@@ -388,7 +388,7 @@ Find verified plots, flats, villas, farm houses, hotels and commercial propertie
 
             <div class="partner-cta-actions">
 
-                <a href="https://wa.me/916397712918?text=Hi%20Brij%20Vas%2C%20I%20want%20to%20join%20as%20an%20agent%20partner."
+                <a href="https://wa.me/{{ site_setting.whatsapp }}?text=Hi%2C%20I%20want%20to%20join%20as%20an%20agent%20partner."
                    class="btn btn-success"
                    target="_blank"
                    rel="noopener">

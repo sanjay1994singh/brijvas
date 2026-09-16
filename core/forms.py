@@ -16,3 +16,9 @@ class ContactForm(forms.Form):
     message = forms.CharField(
         widget=forms.Textarea, max_length=5000
     )
+
+    consent = forms.BooleanField(
+        label='I agree to be contacted about this enquiry and have read the Privacy Policy.',
+        required=True,
+        error_messages={'required': 'Please agree to be contacted before sending your enquiry.'},
+    )

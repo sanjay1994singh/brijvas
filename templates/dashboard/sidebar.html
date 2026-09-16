@@ -38,6 +38,15 @@
             </a>
         </li>
 
+        {% if can_manage_business %}
+        <li>
+            <a href="{% url 'dashboard_subscription' %}">
+                <i class="fa-solid fa-credit-card"></i>
+                Plan & Billing
+            </a>
+        </li>
+        {% endif %}
+
         <li>
             <a href="{% url 'wishlist' %}">
                 <i class="fa-solid fa-heart"></i>

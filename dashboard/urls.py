@@ -16,6 +16,36 @@ urlpatterns = [
     ),
 
     path(
+        "subscription/",
+        views.subscription,
+        name="dashboard_subscription"
+    ),
+
+    path(
+        "locations/districts/add/",
+        views.add_district,
+        name="dashboard_add_district"
+    ),
+
+    path(
+        "locations/districts/",
+        views.districts_for_state,
+        name="dashboard_districts"
+    ),
+
+    path(
+        "locations/cities/add/",
+        views.add_city,
+        name="dashboard_add_city"
+    ),
+
+    path(
+        "locations/cities/",
+        views.cities_for_district,
+        name="dashboard_cities"
+    ),
+
+    path(
         "my-properties/",
         views.my_properties,
         name="my_properties"

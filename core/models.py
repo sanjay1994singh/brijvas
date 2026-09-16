@@ -27,6 +27,8 @@ class SiteSetting(TenantOwnedModel):
 
     whatsapp = models.CharField(max_length=20)
 
+    state = models.CharField(max_length=100, blank=True)
+
     address = models.TextField()
 
     facebook = models.URLField(blank=True)
@@ -34,6 +36,14 @@ class SiteSetting(TenantOwnedModel):
     instagram = models.URLField(blank=True)
 
     youtube = models.URLField(blank=True)
+
+    google_analytics_id = models.CharField(max_length=40, blank=True)
+
+    google_ads_id = models.CharField(max_length=40, blank=True)
+
+    google_site_verification = models.CharField(max_length=160, blank=True)
+
+    custom_head_scripts = models.TextField(blank=True)
 
     def __str__(self):
         return self.site_name

@@ -53,7 +53,7 @@ My Properties
 
                                 <td>{{ property.title }}</td>
 
-                                <td>₹ {{ property.price }}</td>
+                                <td>{% if property.price %}₹ {{ property.price }}{% else %}Price on request{% endif %}</td>
 
                                 <td>{{ property.views }}</td>
 

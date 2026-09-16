@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Support and Grievance | {{ site_setting.site_name|default:"Property website" }}{% endblock %}
+{% block content %}
+<section class="tenant-policy-hero">
+  <div class="container">
+    <span>{{ site_setting.site_name|default:"Property website" }}</span>
+    <h1>Support and Grievance</h1>
+    <p>For property enquiry, listing, account or website support, use the details below.</p>
+  </div>
+</section>
+<section class="tenant-policy-section">
+  <div class="container">
+    <div class="tenant-policy-grid">
+      <article><h2>Contact</h2><p>{% if site_setting.email %}Email: <a href="mailto:{{ site_setting.email }}">{{ site_setting.email }}</a><br>{% endif %}{% if site_setting.phone %}Phone: <a href="tel:{{ site_setting.phone }}">{{ site_setting.phone }}</a><br>{% endif %}{% if site_setting.whatsapp %}WhatsApp: <a href="https://wa.me/{{ site_setting.whatsapp }}" target="_blank" rel="noopener">{{ site_setting.whatsapp }}</a>{% endif %}</p></article>
+      <article><h2>Required information</h2><p>Please include your name, mobile number, property link if relevant, screenshots and a clear description of the issue.</p></article>
+      <article><h2>Response timeline</h2><p>The website team will try to respond as soon as possible during normal business hours.</p></article>
+      <article><h2>Scope</h2><p>We can help with website enquiries, listing information, contact requests and account-related questions for this property website.</p></article>
+    </div>
+  </div>
+</section>
+{% endblock %}

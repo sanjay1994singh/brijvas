@@ -1,164 +1,41 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}
-About {{ site_setting.site_name|default:"Property website" }} | Property in Vrindavan
-{% endblock %}
-
-{% block meta_description %}
-Learn about {{ site_setting.site_name|default:"Property website" }}, founded by Mr. Sanjay, a trusted real estate platform for plots, villas, flats, farm houses, hotels and agricultural land in Vrindavan and Mathura.
-{% endblock %}
-
-{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/about-vrindavan-banner.webp' %}{% endblock %}
+{% block title %}About {{ site_setting.site_name|default:"Property website" }}{% endblock %}
+{% block meta_description %}Learn about {{ site_setting.site_name|default:"this property website" }} and the property services available here.{% endblock %}
 
 {% block content %}
-
-<section class="about-hero">
-
-    <img src="{% static 'images/about-vrindavan-banner.webp' %}"
-         width="1672"
-         height="941"
-         alt="Vrindavan temple and Yamuna ghats banner for {{ site_setting.site_name|default:"Property website" }}">
-
-    <div class="about-hero-overlay"></div>
-
-    <div class="container">
-
-        <div class="about-hero-content">
-
-            <span>Brij Bhoomi Real Estate</span>
-
-            <h1>About {{ site_setting.site_name|default:"Property website" }}</h1>
-
-            <p>
-                Trusted property guidance for plots, villas, flats, farm houses
-                and commercial spaces in Vrindavan and Mathura.
-            </p>
-
-        </div>
-
-    </div>
-
+<section class="tenant-about-hero">
+  <div class="container">
+    <span>{{ site_setting.site_name|default:"Property website" }}</span>
+    <h1>About {{ site_setting.site_name|default:"our property website" }}</h1>
+    <p>{{ site_setting.tagline|default:"Find property options and connect with the right team." }}</p>
+  </div>
 </section>
 
-<section class="py-5 about-content-section">
-
-    <div class="container">
-
-        <div class="row align-items-center">
-
-            <div class="col-lg-6">
-
-                <img src="{% static 'images/about-vrindavan-banner.webp' %}"
-                     class="img-fluid about-poster shadow"
-                     width="836"
-                     height="470"
-                     loading="lazy"
-                     alt="Beautiful Vrindavan banner for {{ site_setting.site_name|default:"Property website" }}">
-
-            </div>
-
-            <div class="col-lg-6">
-
-                <h2>Who We Are</h2>
-
-                <p>
-
-                    {{ site_setting.site_name|default:"Property website" }} is a leading real estate platform dedicated to helping buyers,
-                    sellers, investors, and property owners connect across Vrindavan,
-                    Mathura, and nearby regions.
-
-                </p>
-
-                <p>
-
-                    We specialize in residential plots, villas, flats, farm houses,
-                    agricultural land, hotels, and commercial properties.
-
-                </p>
-
-                <p>
-
-                    Our goal is to provide verified property listings, transparent
-                    information, and a seamless property buying experience.
-
-                </p>
-
-            </div>
-
-        </div>
-
-        <div class="row mt-5">
-
-            <div class="col-lg-8 mx-auto">
-
-                <div class="card border-0 shadow-sm">
-
-                    <div class="card-body p-4 p-md-5">
-
-                        <h2 class="mb-3">Founder Details</h2>
-
-                        <p>
-
-                            {{ site_setting.site_name|default:"Property website" }} was founded by Mr. Sanjay with the vision of
-                            helping people find trusted property options in Vrindavan,
-                            Mathura, and nearby areas.
-
-                        </p>
-
-                        <div class="row g-3 mt-3">
-
-                            <div class="col-md-6">
-
-                                <strong>Founder</strong>
-
-                                <p class="mb-0">Mr. Sanjay</p>
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <strong>Contact Number</strong>
-
-                                <p class="mb-0">
-                                    <a href="tel:+918279408396">8279408396</a>
-                                </p>
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <strong>Email</strong>
-
-                                <p class="mb-0">
-                                    <a href="mailto:srbc500@gmail.com">srbc500@gmail.com</a>
-                                </p>
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <strong>Address</strong>
-
-                                <p class="mb-0">
-                                    Radha Nivas, Vrindavan, District Mathura,
-                                    Uttar Pradesh
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
+<section class="tenant-about-section">
+  <div class="container">
+    <div class="tenant-about-grid">
+      <div class="tenant-about-main">
+        <span>Who we are</span>
+        <h2>Property discovery made simple.</h2>
+        {% if site_setting.about_text %}
+          <p>{{ site_setting.about_text|linebreaksbr }}</p>
+        {% else %}
+          <p>{{ site_setting.site_name|default:"This website" }} helps visitors explore property listings, send enquiries and connect with the team for more information.</p>
+          <p>All property information should be verified directly before any transaction or decision.</p>
+        {% endif %}
+      </div>
+      <aside class="tenant-about-card">
+        <h3>Contact details</h3>
+        {% if site_setting.phone %}<p><strong>Phone</strong><br><a href="tel:{{ site_setting.phone }}">{{ site_setting.phone }}</a></p>{% endif %}
+        {% if site_setting.email %}<p><strong>Email</strong><br><a href="mailto:{{ site_setting.email }}">{{ site_setting.email }}</a></p>{% endif %}
+        {% if site_setting.address %}<p><strong>Address</strong><br>{{ site_setting.address }}</p>{% endif %}
+        {% if not site_setting.phone and not site_setting.email and not site_setting.address %}
+          <p>Contact details will appear here after the website owner updates business settings.</p>
+        {% endif %}
+      </aside>
     </div>
-
+  </div>
 </section>
-
 {% endblock %}

@@ -54,16 +54,37 @@ def optimize_uploaded_image(
                     compress_level=9,
                 )
 
+            current_quality = quality
+            target_bytes = target_kb * 1024
+
             image.save(path, **save_kwargs)
 
             if suffix == ".png":
+                while path.stat().st_size > target_bytes and max(image.size) > 900:
+                    image.thumbnail(
+                        (
+                            max(int(image.width * 0.85), 900),
+                            max(int(image.height * 0.85), 900),
+                        ),
+                        Image.Resampling.LANCZOS,
+                    )
+                    image.save(path, **save_kwargs)
                 return
 
-            current_quality = quality
-            target_bytes = target_kb * 1024
-            while path.stat().st_size > target_bytes and current_quality > min_quality:
-                current_quality -= 5
-                save_kwargs["quality"] = max(current_quality, min_quality)
+            while path.stat().st_size > target_bytes and (
+                current_quality > min_quality or max(image.size) > 900
+            ):
+                if current_quality > min_quality:
+                    current_quality -= 5
+                    save_kwargs["quality"] = max(current_quality, min_quality)
+                else:
+                    image.thumbnail(
+                        (
+                            max(int(image.width * 0.85), 900),
+                            max(int(image.height * 0.85), 900),
+                        ),
+                        Image.Resampling.LANCZOS,
+                    )
                 image.save(path, **save_kwargs)
     except OSError:
         return

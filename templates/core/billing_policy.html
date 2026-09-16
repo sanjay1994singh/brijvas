@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Billing Policy | {{ site_setting.site_name|default:"Property website" }}{% endblock %}
+{% block content %}
+<section class="tenant-policy-hero">
+  <div class="container">
+    <span>{{ site_setting.site_name|default:"Property website" }}</span>
+    <h1>Billing Policy</h1>
+    <p>Understand payment communication for property enquiries, bookings and services on this website.</p>
+  </div>
+</section>
+<section class="tenant-policy-section">
+  <div class="container">
+    <div class="tenant-policy-grid">
+      <article><h2>No automatic sale</h2><p>Website enquiries do not automatically create a booking, purchase, rental agreement or invoice.</p></article>
+      <article><h2>Written confirmation</h2><p>Any payment request, token amount, brokerage or service charge should be confirmed clearly before payment.</p></article>
+      <article><h2>Payment records</h2><p>Keep receipts, transaction IDs, screenshots and written confirmation for any property-related payment.</p></article>
+      <article><h2>Help</h2><p>For billing clarification, contact {{ site_setting.site_name|default:"our team" }}{% if site_setting.email %} at <a href="mailto:{{ site_setting.email }}">{{ site_setting.email }}</a>{% endif %}.</p></article>
+    </div>
+  </div>
+</section>
+{% endblock %}

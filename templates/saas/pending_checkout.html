@@ -1,0 +1,127 @@
+{% extends 'saas/base.html' %}
+
+{% block content %}
+<style>
+    .checkout-wrap { max-width: 980px; margin: 56px auto; }
+    .checkout-panel { border:1px solid var(--line); border-radius:8px; background:#fff; padding:34px; box-shadow:0 16px 40px rgba(11,42,31,.08); }
+    .summary-row { display:flex; justify-content:space-between; gap:18px; padding:12px 0; border-bottom:1px solid #edf2ee; color:#566860; }
+    .summary-row strong { color:#0b211b; white-space:nowrap; }
+    .summary-row.minus strong { color:#0f6b52; }
+    .summary-total { margin-top:8px; padding-top:16px; border-top:2px solid #0b211b; font-size:22px; color:#0b211b; }
+    .payable-box { background:var(--green); color:#fff; border-radius:8px; padding:22px; margin:24px 0; }
+    .payable-box small { display:block; color:rgba(255,255,255,.78); margin-bottom:6px; }
+    .payable-box strong { display:block; font-size:42px; line-height:1; }
+    .agreement-block { display:grid; gap:12px; margin-top:22px; padding:16px; border:1px solid var(--line); border-radius:8px; background:#fbfdfc; }
+    .agreement-block h2 { margin:0; font-size:18px; }
+    .agreement-content { max-height:180px; overflow:auto; padding:12px; border:1px solid #d9e4de; border-radius:8px; background:#fff; color:#314840; font-size:14px; }
+    .agreement-check { display:flex; align-items:flex-start; gap:10px; font-weight:800; }
+    .agreement-check input { width:18px; min-width:18px; height:18px; margin-top:3px; }
+    #payment-status { margin-top:14px; color:#9f3a38; }
+</style>
+
+<section class="checkout-wrap">
+    <div class="checkout-panel">
+        <span class="eyebrow">Secure payment</span>
+        <h1>Complete payment</h1>
+        <p>{{ pending.plan.name }} · 30 days</p>
+
+        <div class="payable-box">
+            <small>Final amount to pay</small>
+            <strong>₹{{ pending.amount_rupees|floatformat:2 }}</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Plan amount</span>
+            <strong>₹{{ pending.subtotal_rupees|floatformat:2 }}</strong>
+        </div>
+        {% if pending.discount_amount %}
+        <div class="summary-row minus">
+            <span>Discount {{ pending.discount_percent }}%</span>
+            <strong>-₹{{ pending.discount_rupees|floatformat:2 }}</strong>
+        </div>
+        {% endif %}
+        <div class="summary-row">
+            <span>Amount before GST</span>
+            <strong>₹{{ pending.taxable_rupees|floatformat:2 }}</strong>
+        </div>
+        <div class="summary-row">
+            <span>GST {{ pending.gst_percent }}%</span>
+            <strong>₹{{ pending.gst_rupees|floatformat:2 }}</strong>
+        </div>
+        <div class="summary-row summary-total">
+            <span>Pay now</span>
+            <strong>₹{{ pending.amount_rupees|floatformat:2 }}</strong>
+        </div>
+
+        <p>Your website and account will be created only after payment is verified.</p>
+
+        <div class="agreement-block">
+            {% if purchase_agreement %}
+                <h2>{{ purchase_agreement.title }}</h2>
+                <div class="agreement-content">{{ purchase_agreement.content|linebreaks }}</div>
+                <label class="agreement-check">
+                    <input type="checkbox" id="accepted_purchase_terms">
+                    <span>{{ purchase_agreement.checkbox_label }}</span>
+                </label>
+            {% else %}
+                <h2>Plan Purchase Agreement</h2>
+                <div class="agreement-content">
+                    <p>Please review the selected plan, billing amount, GST, and business details before paying. Your workspace is created only after successful payment verification.</p>
+                </div>
+                <label class="agreement-check">
+                    <input type="checkbox" id="accepted_purchase_terms">
+                    <span>I have read and agree to the plan purchase terms.</span>
+                </label>
+            {% endif %}
+        </div>
+
+        <button class="button" id="pay">Pay securely</button>
+        <p id="payment-status" role="status"></p>
+    </div>
+</section>
+
+<form method="post" id="verification" action="{% url 'saas_pending_payment_verify' pending.uuid %}">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_order_id">
+    <input type="hidden" name="razorpay_payment_id">
+    <input type="hidden" name="razorpay_signature">
+    <input type="hidden" name="accepted_purchase_terms">
+</form>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('pay').onclick = function () {
+    const status = document.getElementById('payment-status');
+    const accepted = document.getElementById('accepted_purchase_terms');
+    if (!accepted || !accepted.checked) {
+        status.textContent = 'Please read and accept the plan purchase terms to continue.';
+        return;
+    }
+    if (!window.Razorpay) {
+        status.textContent = 'Payment service could not load. Please retry.';
+        return;
+    }
+    new Razorpay({
+        key: '{{ key_id|escapejs }}',
+        order_id: '{{ pending.provider_order|escapejs }}',
+        amount: {{ pending.amount }},
+        currency: 'INR',
+        name: '{{ pending.business_name|escapejs }}',
+        description: '{{ pending.plan.name|escapejs }} - 30 days',
+        prefill: {
+            name: '{{ pending.business_name|escapejs }}',
+            email: '{{ pending.email|escapejs }}',
+            contact: '{{ pending.phone|escapejs }}'
+        },
+        handler: function (result) {
+            const form = document.getElementById('verification');
+            for (const key of ['razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature']) {
+                form.elements[key].value = result[key];
+            }
+            form.elements.accepted_purchase_terms.value = 'on';
+            form.submit();
+        }
+    }).open();
+};
+</script>
+{% endblock %}

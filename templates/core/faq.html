@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}FAQ | {{ site_setting.site_name|default:"Property website" }}{% endblock %}
+{% block content %}
+<section class="tenant-policy-hero">
+  <div class="container">
+    <span>{{ site_setting.site_name|default:"Property website" }}</span>
+    <h1>Frequently Asked Questions</h1>
+    <p>Common questions about property search, enquiries and listings on this website.</p>
+  </div>
+</section>
+<section class="tenant-policy-section">
+  <div class="container">
+    <div class="tenant-policy-grid">
+      <article><h2>Property details verified hain?</h2><p>Website team listings ko review kar sakti hai, but visitors should still verify documents, ownership and availability before any decision.</p></article>
+      <article><h2>Enquiry bhejne ke baad kya hoga?</h2><p>Your message is shared with the website team so they can contact you about the property or requirement.</p></article>
+      <article><h2>Property add kaise karein?</h2><p>Registered and approved members can add properties from their dashboard, depending on website rules.</p></article>
+      <article><h2>Support kahan milega?</h2><p>Use the Contact or Grievance page for help with enquiries, listings or account access.</p></article>
+    </div>
+  </div>
+</section>
+{% endblock %}

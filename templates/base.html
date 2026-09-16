@@ -16,7 +16,6 @@
         {{ site_setting.site_name }} | {{ site_setting.tagline }}
         {% endblock %}
     </title>
-    {% if request.tenant.slug == "brijvas" %}<meta name="google-site-verification" content="-6hsUO9pCmWRvU7lG4Y3YYYj6EsqKjbMuor84d88IBg" />{% endif %}
     <meta name="description"
           content="{% block meta_description %}{{ site_setting.tagline }}{% endblock %}">
 
@@ -114,6 +113,35 @@
     <link rel="stylesheet"
           href="{% static 'css/style.css' %}">
 
+    {% if site_setting.google_site_verification %}
+    <meta name="google-site-verification"
+          content="{{ site_setting.google_site_verification }}">
+    {% endif %}
+
+    {% if site_setting.google_analytics_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site_setting.google_analytics_id }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ site_setting.google_analytics_id }}');
+    </script>
+    {% endif %}
+
+    {% if site_setting.google_ads_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site_setting.google_ads_id }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ site_setting.google_ads_id }}');
+    </script>
+    {% endif %}
+
+    {% if site_setting.custom_head_scripts %}
+    {{ site_setting.custom_head_scripts|safe }}
+    {% endif %}
+
     {% block extra_css %}
     {% endblock %}
 
@@ -170,7 +198,6 @@
 
 <!-- Site Ads -->
 
-{% if request.tenant.slug == 'brijvas' %}{% include 'partials/site_ads.html' %}{% endif %}
 
 <!-- Footer -->
 
@@ -226,6 +253,50 @@
         }
 
     });
+
+    window.AppLoader = {
+        show: function () {
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.style.display = 'flex';
+            }
+        },
+        hide: function () {
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.style.display = 'none';
+            }
+        }
+    };
+
+    document.addEventListener('submit', function (event) {
+        if (!event.target.matches('[data-no-loader]')) {
+            window.AppLoader.show();
+        }
+    }, true);
+
+    document.addEventListener('click', function (event) {
+        const link = event.target.closest('a[href]');
+        if (!link || link.target || link.hasAttribute('download') || link.dataset.noLoader !== undefined) {
+            return;
+        }
+        const href = link.getAttribute('href');
+        if (href && !href.startsWith('#') && !href.startsWith('javascript:') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+            window.AppLoader.show();
+        }
+    });
+
+    window.addEventListener('beforeunload', function () {
+        window.AppLoader.show();
+    });
+
+    const originalFetch = window.fetch;
+    window.fetch = function () {
+        window.AppLoader.show();
+        return originalFetch.apply(this, arguments).finally(function () {
+            window.AppLoader.hide();
+        });
+    };
 
     const topBtn = document.getElementById("backToTop");
 

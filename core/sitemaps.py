@@ -20,6 +20,16 @@ class StaticViewSitemap(Sitemap):
 
             'property_list',
 
+            'privacy_policy',
+
+            'terms_conditions',
+
+            'refund_policy',
+
+            'billing_policy',
+
+            'grievance',
+
         ]
 
     def location(self, item):

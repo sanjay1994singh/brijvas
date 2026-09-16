@@ -3,6 +3,13 @@ from core.seo import unique_slug
 
 
 class State(models.Model):
+    tenant = models.ForeignKey(
+        'saas.Tenant',
+        on_delete=models.CASCADE,
+        related_name='states',
+        null=True,
+        blank=True
+    )
 
     name = models.CharField(max_length=100)
 
@@ -28,12 +35,66 @@ class State(models.Model):
         return self.name
 
 
+class District(models.Model):
+    tenant = models.ForeignKey(
+        'saas.Tenant',
+        on_delete=models.CASCADE,
+        related_name='districts',
+        null=True,
+        blank=True
+    )
+
+    state = models.ForeignKey(
+        State,
+        on_delete=models.CASCADE,
+        related_name='districts'
+    )
+
+    name = models.CharField(max_length=100)
+
+    slug = models.SlugField(
+        unique=True,
+        blank=True
+    )
+
+    class Meta:
+        ordering = ['name']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slug(
+                self,
+                f"{self.name} {getattr(self.state, 'name', '')}",
+                fallback="district"
+            )
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
 class City(models.Model):
+    tenant = models.ForeignKey(
+        'saas.Tenant',
+        on_delete=models.CASCADE,
+        related_name='cities',
+        null=True,
+        blank=True
+    )
 
     state = models.ForeignKey(
         State,
         on_delete=models.CASCADE,
         related_name='cities'
+    )
+
+    district = models.ForeignKey(
+        District,
+        on_delete=models.CASCADE,
+        related_name='cities',
+        null=True,
+        blank=True
     )
 
     name = models.CharField(max_length=100)

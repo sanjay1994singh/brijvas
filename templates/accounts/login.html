@@ -41,16 +41,36 @@ Login | PropertyHub
 
                             <label class="form-label">
 
-                                Username / Email
+                                Username / Email / Mobile
 
                             </label>
 
                             <input type="text"
                                    name="username"
                                    class="form-control"
+                                   value="{{ login_identifier|default:'' }}"
                                    required>
 
                         </div>
+                        {% if login_accounts %}
+                        <input type="hidden" name="username" value="{{ login_identifier }}">
+                        <div class="mb-3">
+                            <label class="form-label">Choose account</label>
+                            {% for account in login_accounts %}
+                            <label class="form-check border rounded p-2 mb-2">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="account_username"
+                                       value="{{ account.username }}"
+                                       required>
+                                <span class="form-check-label">
+                                    <strong>{{ account.username }}</strong>
+                                    {% if account.email %}<small class="d-block text-muted">{{ account.email }}</small>{% endif %}
+                                </span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
 
                         <div class="mb-3">
 

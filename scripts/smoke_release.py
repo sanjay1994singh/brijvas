@@ -26,7 +26,7 @@ for path in paths:
     assert response.status_code == 200, (path, response.status_code)
     print('PASS', path)
 platform = Client(HTTP_HOST=urlsplit(settings.SAAS_BASE_URL).netloc, HTTP_X_FORWARDED_PROTO='https')
-for path in ['/', '/saas/', '/saas/signup/', '/saas/login/']:
+for path in ['/', '/accounts/signup/', '/accounts/login/']:
     assert platform.get(path).status_code == 200, path
     print('PASS platform', path)
 print('Release smoke checks passed; property count:', Property.objects.filter(tenant=tenant).count())

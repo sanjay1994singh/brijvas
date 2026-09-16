@@ -1,239 +1,73 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}
-Contact Us | {{ site_setting.site_name|default:"Property website" }}
-{% endblock %}
-
-{% block meta_description %}
-Contact {{ site_setting.site_name|default:"Property website" }} founder Mr. Sanjay and the {{ site_setting.site_name|default:"Property website" }} team for property enquiries in Vrindavan, Mathura and nearby areas.
-{% endblock %}
+{% block title %}Contact Us | {{ site_setting.site_name|default:"Property website" }}{% endblock %}
+{% block meta_description %}Contact {{ site_setting.site_name|default:"this property website" }} for property enquiries and support.{% endblock %}
 
 {% block content %}
-
-<section class="contact-section py-5">
-
-    <div class="container">
-
-        <div class="text-center mb-5">
-
-            <h1 class="fw-bold">
-                Contact Us
-            </h1>
-
-            <p class="text-muted">
-                Have questions about plots, villas, flats, farm houses or investment opportunities?
-                Get in touch with us.
-            </p>
-
-        </div>
-
-        <div class="row g-4">
-
-            <!-- Contact Form -->
-
-            <div class="col-lg-7">
-
-                <div class="contact-form-card">
-
-                    <h3 class="mb-4">
-                        Send Us A Message
-                    </h3>
-
-                    <form method="POST">
-
-                        {% csrf_token %}
-
-                        <div class="row">
-
-                            <div class="col-md-6 mb-3">
-
-                                <label class="form-label">
-                                    Full Name
-                                </label>
-
-                                <input type="text"
-                                       name="name"
-                                       class="form-control"
-                                       required>
-
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-
-                                <label class="form-label">
-                                    Mobile Number
-                                </label>
-
-                                <input type="text"
-                                       name="phone"
-                                       class="form-control"
-                                       required>
-
-                            </div>
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Email Address
-                            </label>
-
-                            <input type="email"
-                                   name="email"
-                                   class="form-control">
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Subject
-                            </label>
-
-                            <input type="text"
-                                   name="subject"
-                                   class="form-control">
-
-                        </div>
-
-                        <div class="mb-4">
-
-                            <label class="form-label">
-                                Message
-                            </label>
-
-                            <textarea name="message"
-                                      rows="6"
-                                      class="form-control"
-                                      required></textarea>
-
-                        </div>
-
-                        <button type="submit"
-                                class="btn btn-primary btn-lg">
-
-                            Send Message
-
-                        </button>
-
-                    </form>
-
-                </div>
-
-            </div>
-
-            <!-- Contact Details -->
-
-            <div class="col-lg-5">
-
-                <div class="contact-info-card">
-
-                    <h3 class="mb-4">
-                        Contact Information
-                    </h3>
-
-                    <div class="contact-item">
-
-                        <i class="fas fa-phone-alt"></i>
-
-                        <div>
-
-                            <h6>Mr. Sanjay</h6>
-
-                            <p>
-                                <a href="tel:+918279408396">+91 8279408396</a>
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="contact-item">
-
-                        <i class="fas fa-envelope"></i>
-
-                        <div>
-
-                            <h6>Email Address</h6>
-
-                            <p>
-                                <a href="mailto:srbc500@gmail.com">srbc500@gmail.com</a>
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="contact-item">
-
-                        <i class="fas fa-map-marker-alt"></i>
-
-                        <div>
-
-                            <h6>Office Address</h6>
-
-                            <p>
-                                Radha Nivas, Vrindavan,
-                                District Mathura, Uttar Pradesh
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="contact-item">
-
-                        <i class="fas fa-user"></i>
-
-                        <div>
-
-                            <h6>Charan Singh</h6>
-
-                            <p>
-                                <a href="tel:+918445336966">+91 8445336966</a>
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="contact-item">
-
-                        <i class="fas fa-user"></i>
-
-                        <div>
-
-                            <h6>Shiv Kumar</h6>
-
-                            <p>
-                                <a href="tel:+918864912425">+91 8864912425</a>
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <hr>
-
-                    <h5 class="mb-3">
-                        Business Hours
-                    </h5>
-
-                    <p>
-                        Monday - Sunday<br>
-                        9:00 AM - 7:00 PM
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
+<section class="tenant-contact-hero">
+  <div class="container">
+    <span>{{ site_setting.site_name|default:"Property website" }}</span>
+    <h1>Contact Us</h1>
+    <p>Send your requirement or ask about any property listed on this website.</p>
+  </div>
 </section>
 
+<section class="tenant-contact-section">
+  <div class="container">
+    <div class="tenant-contact-grid">
+      <div class="tenant-contact-card">
+        <h2>Send a message</h2>
+        <form method="POST">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Full Name</label>
+              <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Mobile Number</label>
+              <input type="text" name="phone" class="form-control">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="email" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" name="subject" class="form-control">
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Message</label>
+            <textarea name="message" rows="6" class="form-control" required></textarea>
+          </div>
+          <label class="tenant-consent mb-4">
+            <input type="checkbox" name="consent" required>
+            <span>I agree to be contacted about this enquiry and have read the <a href="{% url 'privacy_policy' %}">Privacy Policy</a>.</span>
+          </label>
+          <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+        </form>
+      </div>
+
+      <aside class="tenant-contact-card tenant-contact-info">
+        <h2>Contact information</h2>
+        {% if site_setting.phone %}
+          <div class="tenant-contact-item"><i class="fas fa-phone-alt"></i><div><h6>Phone</h6><p><a href="tel:{{ site_setting.phone }}">{{ site_setting.phone }}</a></p></div></div>
+        {% endif %}
+        {% if site_setting.email %}
+          <div class="tenant-contact-item"><i class="fas fa-envelope"></i><div><h6>Email</h6><p><a href="mailto:{{ site_setting.email }}">{{ site_setting.email }}</a></p></div></div>
+        {% endif %}
+        {% if site_setting.whatsapp %}
+          <div class="tenant-contact-item"><i class="fab fa-whatsapp"></i><div><h6>WhatsApp</h6><p><a href="https://wa.me/{{ site_setting.whatsapp }}" target="_blank" rel="noopener">{{ site_setting.whatsapp }}</a></p></div></div>
+        {% endif %}
+        {% if site_setting.address %}
+          <div class="tenant-contact-item"><i class="fas fa-map-marker-alt"></i><div><h6>Address</h6><p>{{ site_setting.address }}</p></div></div>
+        {% endif %}
+        {% if not site_setting.phone and not site_setting.email and not site_setting.whatsapp and not site_setting.address %}
+          <p>Contact details will appear here after the website owner updates business settings.</p>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+</section>
 {% endblock %}

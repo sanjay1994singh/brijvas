@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db.models import Q
 
 from .forms import RegisterForm, ProfileForm
 from .username_utils import suggest_usernames, username_exists, validate_username
@@ -14,6 +15,38 @@ from properties.models import Property
 from enquiries.models import Enquiry
 from django.conf import settings
 from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth import get_user_model
+from .phone_utils import indian_mobile_last10, normalize_indian_mobile
+
+
+def login_candidates(identifier):
+    identifier = (identifier or "").strip()
+    if not identifier:
+        return []
+    User = get_user_model()
+    users = list(User.objects.filter(Q(username__iexact=identifier) | Q(email__iexact=identifier)).order_by('id'))
+    digits = indian_mobile_last10(identifier)
+    if len(digits) == 10:
+        users.extend(User.objects.filter(phone__endswith=digits).order_by('id'))
+    unique = {}
+    for user in users:
+        unique[user.pk] = user
+    return list(unique.values())
+
+
+def resolve_login_username(identifier, tenant=None):
+    identifier = (identifier or "").strip()
+    if not identifier:
+        return identifier
+    matches = login_candidates(identifier)
+    if tenant and matches:
+        matches = [
+            user for user in matches
+            if Membership.objects.filter(tenant=tenant, user=user, is_active=True).exists()
+        ]
+    if len(matches) == 1:
+        return matches[0].username
+    return identifier
 
 
 class ConfiguredPasswordResetView(PasswordResetView):
@@ -113,7 +146,27 @@ def user_login(request):
 
     if request.method == "POST":
 
-        username = request.POST.get("username")
+        selected_username = (request.POST.get("account_username") or "").strip()
+        identifier = request.POST.get("username")
+        candidates = login_candidates(identifier)
+        if request.tenant and candidates:
+            candidates = [
+                user for user in candidates
+                if Membership.objects.filter(tenant=request.tenant, user=user, is_active=True).exists()
+            ]
+        if selected_username and candidates and not any(user.username == selected_username for user in candidates):
+            selected_username = ""
+        if not selected_username and len(candidates) > 1:
+            return render(
+                request,
+                "accounts/login.html" if request.tenant else "saas/login.html",
+                {"login_identifier": identifier, "login_accounts": candidates},
+            )
+        username = selected_username
+        if not username and len(candidates) == 1:
+            username = candidates[0].username
+        if not username:
+            username = resolve_login_username(identifier, request.tenant)
 
         password = request.POST.get("password")
 

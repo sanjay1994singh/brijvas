@@ -1,1 +1,126 @@
-{% extends 'base.html' %}{% block content %}<section class="container py-5"><h1>About {{ site_setting.site_name }}</h1><div class="lead my-4">{{ site_setting.about_text|linebreaks }}</div><a class="btn btn-primary" href="{% url 'contact' %}">Contact our team</a></section>{% endblock %}
+{% extends 'saas/base.html' %}
+
+{% block title %}About Vistaflo{% endblock %}
+
+{% block content %}
+<style>
+    .legal-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
+        gap: 28px;
+        align-items: stretch;
+        padding: 46px 0 38px;
+        border-bottom: 1px solid var(--line);
+    }
+    .legal-hero h1 {
+        font-size: clamp(34px, 5vw, 56px);
+        line-height: 1.05;
+        margin: 12px 0 18px;
+    }
+    .legal-hero p {
+        font-size: 18px;
+        max-width: 720px;
+    }
+    .identity-panel {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 22px;
+        box-shadow: 0 18px 44px rgba(19, 32, 27, .08);
+    }
+    .identity-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+    }
+    .identity-row:last-child {
+        border-bottom: 0;
+    }
+    .identity-row span {
+        color: var(--muted);
+    }
+    .identity-row strong {
+        text-align: right;
+    }
+    .legal-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 28px;
+    }
+    .legal-card,
+    .address-band {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 22px;
+    }
+    .address-band {
+        margin-top: 28px;
+        background: #edf7f2;
+    }
+    .chat-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 7px 13px;
+        margin-left: 8px;
+        border-radius: 6px;
+        background: var(--green);
+        color: #fff;
+        font-weight: 800;
+    }
+    @media (max-width: 860px) {
+        .legal-hero,
+        .legal-grid {
+            grid-template-columns: 1fr;
+        }
+        .identity-row {
+            display: block;
+        }
+        .identity-row strong {
+            display: block;
+            text-align: left;
+            margin-top: 4px;
+        }
+    }
+</style>
+
+<section class="legal-hero">
+    <div>
+        <span class="eyebrow">About Vistaflo</span>
+        <h1>Property website platform built for real estate businesses.</h1>
+        <p>Vistaflo helps property businesses launch branded websites, manage listings, handle enquiries, connect custom domains, and run subscriptions from one managed system.</p>
+    </div>
+    <aside class="identity-panel" aria-label="Company identity">
+        <div class="identity-row"><span>Legal entity</span><strong>SHRI INFOWAVE PRIVATE LIMITED</strong></div>
+        <div class="identity-row"><span>CIN</span><strong>U62012UW2026PTC257361</strong></div>
+        <div class="identity-row"><span>PAN</span><strong>ABUCS7544P</strong></div>
+        <div class="identity-row"><span>GSTIN</span><strong>09ABUCS7544P1Z2</strong></div>
+    </aside>
+</section>
+
+<section class="legal-grid" aria-label="Services">
+    <article class="legal-card">
+        <h2>Property Websites</h2>
+        <p>Tenant-aware websites with pages, listings, enquiries, contact details, SEO tags and business-specific branding.</p>
+    </article>
+    <article class="legal-card">
+        <h2>Technology Services</h2>
+        <p>Web applications, hosting coordination, integrations, payment workflows, maintenance and technical support.</p>
+    </article>
+    <article class="legal-card">
+        <h2>Business Tools</h2>
+        <p>Plans, billing, invoices, WhatsApp notifications, custom domains, analytics setup and team access controls.</p>
+    </article>
+</section>
+
+<section class="address-band">
+    <span class="eyebrow">Registered Office</span>
+    <h2>101 Govind Kund Tila, Radha Niwas, Vrindaban, Mathura, Uttar Pradesh, India</h2>
+    <p>Support: shriinfowaveprivatelimited@gmail.com | WhatsApp: 918279408396 <a class="chat-btn" href="https://wa.me/918279408396" target="_blank" rel="noopener">Chat</a></p>
+</section>
+{% endblock %}

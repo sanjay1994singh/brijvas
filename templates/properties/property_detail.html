@@ -63,13 +63,13 @@ product
         "longitude": "{{ property.longitude }}"
     },
     {% endif %}
-    "offers": {
+    {% if property.price %}"offers": {
         "@type": "Offer",
         "price": "{{ property.price }}",
         "priceCurrency": "INR",
         "availability": "https://schema.org/InStock",
         "url": "{{ property_canonical_url }}"
-    },
+    },{% endif %}
     "floorSize": {
         "@type": "QuantitativeValue",
         "value": "{{ property.display_area_sqft }}",
@@ -292,7 +292,11 @@ product
 
                         <h2 class="text-primary">
 
+                            {% if property.price %}
                             Rs {{ property.price }}
+                            {% else %}
+                            Price on request
+                            {% endif %}
 
                         </h2>
 

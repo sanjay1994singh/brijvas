@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Plan & Billing | {{ site_setting.site_name }}{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                {% include 'dashboard/sidebar.html' %}
+            </div>
+            <div class="col-lg-9">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+                    <div>
+                        <h2 class="mb-2">Plan & Billing</h2>
+                        <p class="text-muted mb-0">Upgrade, renew, and view invoices for {{ request.tenant.name }}.</p>
+                    </div>
+                    {% if subscription %}
+                    <span class="badge bg-success fs-6 py-2 px-3">
+                        {{ subscription.plan.name }} · {% if subscription.is_trial %}Trial{% else %}Paid{% endif %}
+                    </span>
+                    {% endif %}
+                </div>
+
+                {% if subscription %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <small class="text-muted d-block">Current plan</small>
+                                <strong>{{ subscription.plan.name }}</strong>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted d-block">Properties</small>
+                                <strong>{{ subscription.plan.listing_limit }}</strong>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted d-block">Staff seats</small>
+                                <strong>{{ subscription.plan.staff_limit }}</strong>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted d-block">Valid until</small>
+                                <strong>{{ subscription.expires_at|date:"d M Y" }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row g-4">
+                    {% for item in plans %}
+                    <div class="col-xl-4 col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between gap-2 align-items-start">
+                                    <h4 class="mb-1">{{ item.plan.name }}</h4>
+                                    {% if item.is_current %}<span class="badge bg-secondary">Current</span>{% endif %}
+                                </div>
+                                <div class="my-3">
+                                    {% if item.breakup.plan_discount_amount %}
+                                    <div class="text-muted"><del>₹{{ item.subtotal_rupees|floatformat:2 }}</del> {{ item.breakup.discount_percent }}% off</div>
+                                    {% endif %}
+                                    <div class="display-6 fw-bold">₹{{ item.display_price_rupees|floatformat:2 }}</div>
+                                    <div class="text-muted">/ 30 days</div>
+                                </div>
+                                <ul class="list-unstyled text-muted mb-4">
+                                    <li>✓ {{ item.plan.listing_limit }} property listings</li>
+                                    <li>✓ {{ item.plan.staff_limit }} staff seats</li>
+                                    <li>✓ Custom domain support</li>
+                                </ul>
+                                <div class="border-top pt-3 small text-muted">
+                                    <div class="d-flex justify-content-between"><span>Plan amount</span><strong>₹{{ item.subtotal_rupees|floatformat:2 }}</strong></div>
+                                    {% if item.breakup.plan_discount_amount %}
+                                    <div class="d-flex justify-content-between"><span>Discount {{ item.breakup.discount_percent }}%</span><strong>-₹{{ item.plan_discount_rupees|floatformat:2 }}</strong></div>
+                                    {% endif %}
+                                    {% if not item.is_current and item.breakup.upgrade_credit_amount %}
+                                    <div class="d-flex justify-content-between"><span>Last paid amount</span><strong>-₹{{ item.last_paid_rupees|floatformat:2 }}</strong></div>
+                                    {% endif %}
+                                    <div class="d-flex justify-content-between"><span>Balance amount</span><strong>₹{{ item.taxable_rupees|floatformat:2 }}</strong></div>
+                                    <div class="d-flex justify-content-between"><span>GST {{ item.breakup.gst_percent }}%</span><strong>₹{{ item.gst_rupees|floatformat:2 }}</strong></div>
+                                    <div class="d-flex justify-content-between border-top mt-2 pt-2 text-dark"><span>Pay now</span><strong>₹{{ item.amount_rupees|floatformat:2 }}</strong></div>
+                                </div>
+                                <form class="mt-auto pt-3" method="post" action="{% url 'saas_checkout' request.tenant.slug %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="plan" value="{{ item.plan.pk }}">
+                                    <button class="btn {% if item.is_current %}btn-outline-primary{% else %}btn-primary{% endif %} w-100" {% if not item.plan.monthly_amount %}disabled{% endif %}>
+                                        {% if item.is_current %}Renew plan{% elif item.is_upgrade %}Upgrade plan{% else %}Choose plan{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">Plans are not configured yet.</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="card border-0 shadow-sm mt-4">
+                    <div class="card-header">Payment history</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Plan</th>
+                                    <th>Amount</th>
+                                    <th>GST</th>
+                                    <th>Status</th>
+                                    <th>Invoice</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>{{ order.created_at|date:"d M Y" }}</td>
+                                    <td>{{ order.plan.name }}</td>
+                                    <td>₹{{ order.amount_rupees|floatformat:2 }}</td>
+                                    <td>{{ order.gst_percent }}% · ₹{{ order.gst_rupees|floatformat:2 }}</td>
+                                    <td>{{ order.get_status_display }}</td>
+                                    <td>
+                                        {% if order.status == 'paid' %}
+                                        <a href="{% url 'saas_invoice' request.tenant.slug order.uuid %}">View</a>
+                                        ·
+                                        <a href="{% url 'saas_invoice_download' request.tenant.slug order.uuid %}" download data-no-loader>Download</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="text-muted">No payment records yet.</td></tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -52,7 +52,7 @@ class TenantMiddleware:
             request.path_info = path_match.group(2) or '/'
             request.META['SCRIPT_NAME'] = prefix
             set_script_prefix(prefix)
-        elif hostname in platform_hosts and settings.SAAS_ROOT_TENANT and not request.path_info.startswith(('/saas/', '/admin/')):
+        elif hostname in platform_hosts and settings.SAAS_ROOT_TENANT and not request.path_info.startswith(('/accounts/', '/manage/', '/billing/', '/admin/')):
             request.tenant = Tenant.objects.filter(slug=settings.SAAS_ROOT_TENANT).first()
         if hostname not in platform_hosts:
             if hostname.endswith('.' + base_host):
@@ -67,11 +67,11 @@ class TenantMiddleware:
                 return HttpResponseForbidden('This website is currently unavailable.')
         if request.tenant and request.tenant.status == 'suspended':
             return HttpResponseForbidden('This website is currently unavailable.')
-        if request.tenant and request.path_info.startswith(('/saas/', '/admin/')):
+        if request.tenant and request.path_info.startswith(('/accounts/workspaces/', '/billing/', '/admin/')):
             if request.path_info.startswith('/admin/') and request.user.is_authenticated and not request.user.is_superuser:
                 return HttpResponseForbidden('Platform administration is restricted.')
             if request.method not in ('GET', 'HEAD'):
-                return HttpResponseForbidden('Use the platform domain for business management.')
+                return HttpResponseForbidden('Use the correct account area for this action.')
             target = settings.SAAS_BASE_URL.rstrip('/') + request.path_info
             if request.META.get('QUERY_STRING'):
                 target += '?' + request.META['QUERY_STRING']
@@ -91,7 +91,22 @@ class TenantMiddleware:
         if request.tenant and request.method not in ('GET', 'HEAD', 'OPTIONS'):
             if request.user.is_authenticated and not request.membership and not request.path_info.startswith('/accounts/'):
                 return HttpResponseForbidden('You do not belong to this business.')
-        if not request.tenant and not request.path_info.startswith(('/saas/', '/admin/', '/accounts/', '/static/', '/media/', '/auth/')) and request.path_info != '/':
+        platform_public_paths = (
+            '/about/',
+            '/blog/',
+            '/contact/',
+            '/faq/',
+            '/privacy-policy/',
+            '/terms-and-conditions/',
+            '/refund-policy/',
+            '/billing-policy/',
+            '/grievance/',
+            '/disclaimer/',
+            '/robots.txt',
+            '/sitemap.xml',
+            '/google90e7d13ae9f2d42d.html',
+        )
+        if not request.tenant and not request.path_info.startswith(('/admin/', '/accounts/', '/manage/', '/billing/', '/static/', '/media/', '/auth/')) and request.path_info not in ('/', *platform_public_paths):
             return HttpResponseNotFound('Open your business website to access this page.')
         return self.get_response(request)
 
@@ -104,7 +119,7 @@ class PublicRateLimitMiddleware:
     def __call__(self, request):
         if settings.SAAS_RATE_LIMIT_ENABLED and request.method == 'POST':
             path = request.path_info
-            limited = ('/saas/signup/', '/saas/login/', '/accounts/login/', '/accounts/register/', '/accounts/password-reset/', '/contact/')
+            limited = ('/accounts/signup/', '/accounts/login/', '/accounts/register/', '/accounts/password-reset/', '/contact/')
             if path in limited or path.startswith('/properties/'):
                 import hashlib
                 from django.core.cache import cache

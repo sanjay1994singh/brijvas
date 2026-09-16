@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        <div class="property-form-grid">
+        <div class="property-form-grid property-form-grid--three">
             <div class="property-field">
                 <label for="{{ form.property_type.id_for_label }}">Property Type</label>
                 {{ form.property_type }}
@@ -32,7 +32,7 @@
                 {{ form.purpose.errors }}
             </div>
 
-            <div class="property-auto-box">
+            <div class="property-auto-box d-none">
                 <i class="fa-solid fa-magnifying-glass-chart"></i>
                 <div>
                     <strong>Auto SEO Title</strong>
@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <div class="property-form-grid">
+        <div class="property-form-grid property-form-grid--three">
             <div class="property-field">
                 <label for="{{ form.state.id_for_label }}">State</label>
                 {{ form.state }}
@@ -59,9 +59,45 @@
             </div>
 
             <div class="property-field">
+                <label for="{{ form.district.id_for_label }}">District</label>
+                <div class="input-group">
+                    {{ form.district }}
+                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#districtModal" aria-label="Add district">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                {{ form.district.errors }}
+            </div>
+
+            <div class="property-field">
                 <label for="{{ form.city.id_for_label }}">City</label>
+                <div class="input-group">
                 {{ form.city }}
+                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#cityModal" aria-label="Add city">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
                 {{ form.city.errors }}
+            </div>
+        </div>
+
+        <div class="property-form-grid property-form-grid--three mt-4">
+            <div class="property-field">
+                <label for="{{ form.street.id_for_label }}">Street</label>
+                {{ form.street }}
+                {{ form.street.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.building_apartment.id_for_label }}">Building / Apartment</label>
+                {{ form.building_apartment }}
+                {{ form.building_apartment.errors }}
+            </div>
+
+            <div class="property-field">
+                <label for="{{ form.address.id_for_label }}">Address</label>
+                {{ form.address }}
+                {{ form.address.errors }}
             </div>
         </div>
     </div>
@@ -143,7 +179,7 @@
                     <i class="fa-solid fa-image"></i>
                     <div>
                         <strong>Auto Image Compression</strong>
-                        <span>Uploaded image will be optimized after save.</span>
+                        <span>Image optional hai. Upload karne par quality maintain rakhte hue lagbhag 1 MB ke andar optimize hogi.</span>
                     </div>
                 </div>
             </div>
@@ -162,6 +198,54 @@
     </div>
 </form>
 
+<div class="modal fade" id="districtModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" id="district-form" data-no-loader data-url="{% url 'dashboard_add_district' %}">
+            <div class="modal-header">
+                <h5 class="modal-title">Add district</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label" for="district-name">District name</label>
+                    <input class="form-control" id="district-name" name="name" required>
+                </div>
+                <p class="text-danger small mb-0" id="district-error"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save district</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="cityModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" id="city-form" data-no-loader data-url="{% url 'dashboard_add_city' %}">
+            <div class="modal-header">
+                <h5 class="modal-title">Add city</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label" for="city-district">District</label>
+                    <select class="form-select" id="city-district" name="district" required></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="city-name">City name</label>
+                    <input class="form-control" id="city-name" name="name" required>
+                </div>
+                <p class="text-danger small mb-0" id="city-error"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save city</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     (function () {
         const areaInput = document.getElementById("{{ form.area.id_for_label }}");
@@ -169,9 +253,15 @@
         const purposeInput = document.getElementById("{{ form.purpose.id_for_label }}");
         const typeInput = document.getElementById("{{ form.property_type.id_for_label }}");
         const stateInput = document.getElementById("{{ form.state.id_for_label }}");
+        const districtInput = document.getElementById("{{ form.district.id_for_label }}");
         const cityInput = document.getElementById("{{ form.city.id_for_label }}");
+        const streetInput = document.getElementById("{{ form.street.id_for_label }}");
+        const buildingInput = document.getElementById("{{ form.building_apartment.id_for_label }}");
         const conversionPreview = document.getElementById("area-conversion-preview");
         const seoTitlePreview = document.getElementById("seo-title-preview");
+        const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+        const districtListUrl = "{% url 'dashboard_districts' %}";
+        const cityListUrl = "{% url 'dashboard_cities' %}";
 
         function selectedText(input) {
             if (!input || input.selectedIndex < 0) {
@@ -224,7 +314,10 @@
                 selectedText(typeInput),
             ].filter(Boolean);
             const locationParts = [
+                buildingInput ? buildingInput.value.trim() : "",
+                streetInput ? streetInput.value.trim() : "",
                 selectedText(cityInput),
+                selectedText(districtInput),
                 selectedText(stateInput),
             ].filter(Boolean);
             const title = titleParts.join(" ");
@@ -235,11 +328,135 @@
                 : "Title will appear after property details are selected.";
         }
 
-        [areaInput, unitInput, purposeInput, typeInput, stateInput, cityInput].forEach(function (input) {
+        [areaInput, unitInput, purposeInput, typeInput, stateInput, districtInput, cityInput, streetInput, buildingInput].forEach(function (input) {
             if (input) {
                 input.addEventListener("input", updatePreview);
                 input.addEventListener("change", updatePreview);
             }
+        });
+
+        function addOrSelectOption(select, value, label) {
+            let option = Array.from(select.options).find(function (item) {
+                return item.value === String(value);
+            });
+            if (!option) {
+                option = new Option(label, value, true, true);
+                select.add(option);
+            }
+            select.value = String(value);
+            select.dispatchEvent(new Event("change", {bubbles: true}));
+        }
+
+        function replaceOptions(select, items, selectedValue) {
+            select.innerHTML = '<option value="">---------</option>';
+            items.forEach(function (item) {
+                select.add(new Option(item.name, item.id, false, String(item.id) === String(selectedValue || "")));
+            });
+            if (selectedValue) {
+                select.value = String(selectedValue);
+            }
+            select.dispatchEvent(new Event("change", {bubbles: true}));
+        }
+
+        async function fetchJson(url) {
+            const response = await fetch(url, {headers: {"X-Requested-With": "XMLHttpRequest"}});
+            return response.json();
+        }
+
+        function copyDistrictOptions() {
+            const modalDistrict = document.getElementById("city-district");
+            modalDistrict.innerHTML = "";
+            Array.from(districtInput.options).forEach(function (option) {
+                if (option.value) {
+                    modalDistrict.add(new Option(option.text, option.value, option.selected, option.selected));
+                }
+            });
+            if (districtInput.value) {
+                modalDistrict.value = districtInput.value;
+            }
+        }
+
+        async function postLocation(form, payload) {
+            const response = await fetch(form.dataset.url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: new URLSearchParams(payload)
+            });
+            const data = await response.json();
+            if (!response.ok || !data.ok) {
+                throw new Error(data.error || "Could not save. Please try again.");
+            }
+            return data;
+        }
+
+        document.getElementById("district-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const error = document.getElementById("district-error");
+            error.textContent = "";
+            if (!stateInput.value) {
+                error.textContent = "Select state first.";
+                return;
+            }
+            try {
+                const data = await postLocation(event.currentTarget, {
+                    state: stateInput.value,
+                    name: document.getElementById("district-name").value
+                });
+                addOrSelectOption(districtInput, data.district.id, data.district.name);
+                cityInput.innerHTML = '<option value="">---------</option>';
+                document.getElementById("district-name").value = "";
+                bootstrap.Modal.getOrCreateInstance(document.getElementById("districtModal")).hide();
+            } catch (errorMessage) {
+                error.textContent = errorMessage.message;
+            }
+        });
+
+        document.getElementById("cityModal").addEventListener("show.bs.modal", copyDistrictOptions);
+
+        document.getElementById("city-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const error = document.getElementById("city-error");
+            const modalDistrict = document.getElementById("city-district");
+            error.textContent = "";
+            if (!modalDistrict.value) {
+                error.textContent = "Add or select district first.";
+                return;
+            }
+            try {
+                const data = await postLocation(event.currentTarget, {
+                    district: modalDistrict.value,
+                    name: document.getElementById("city-name").value
+                });
+                districtInput.value = modalDistrict.value;
+                addOrSelectOption(cityInput, data.city.id, data.city.name);
+                document.getElementById("city-name").value = "";
+                bootstrap.Modal.getOrCreateInstance(document.getElementById("cityModal")).hide();
+            } catch (errorMessage) {
+                error.textContent = errorMessage.message;
+            }
+        });
+
+        stateInput.addEventListener("change", async function () {
+            cityInput.innerHTML = '<option value="">---------</option>';
+            if (!stateInput.value) {
+                districtInput.innerHTML = '<option value="">---------</option>';
+                return;
+            }
+            const data = await fetchJson(`${districtListUrl}?state=${encodeURIComponent(stateInput.value)}`);
+            replaceOptions(districtInput, data.districts || []);
+        });
+
+        districtInput.addEventListener("change", async function () {
+            if (!districtInput.value) {
+                cityInput.innerHTML = '<option value="">---------</option>';
+                return;
+            }
+            const data = await fetchJson(`${cityListUrl}?district=${encodeURIComponent(districtInput.value)}`);
+            replaceOptions(cityInput, data.cities || [], cityInput.value);
         });
 
         updatePreview();

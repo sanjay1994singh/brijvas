@@ -1,0 +1,25 @@
+{% extends 'saas/base.html' %}
+{% block title %}Subscription and Billing Policy - Vistaflo{% endblock %}
+{% block content %}
+<section class="policy-shell">
+  <div class="policy-hero">
+    <div>
+      <p class="eyebrow">Vistaflo billing</p>
+      <h1>Subscription and Billing Policy</h1>
+      <p>These billing details apply to Vistaflo property website subscriptions operated by SHRI INFOWAVE PRIVATE LIMITED.</p>
+    </div>
+    <aside class="policy-note">
+      <strong>Customer clarity</strong>
+      <p>Before payment, checkout shows plan amount, discount, paid credit, GST and final payable amount.</p>
+    </aside>
+  </div>
+  <div class="policy-grid">
+    <article class="policy-card"><h2>Plan management</h2><p>Plans, prices, discounts, GST rate, trial settings, listing limits, staff limits and features are managed from super admin.</p></article>
+    <article class="policy-card"><h2>Payment flow</h2><p>For purchase, renewal or upgrade, Vistaflo creates a Razorpay order, verifies payment signature, records billing details and activates or extends subscription.</p></article>
+    <article class="policy-card"><h2>Billing cycle</h2><p>Current plans run for 30 days after successful payment verification unless a different duration is configured later.</p></article>
+    <article class="policy-card"><h2>Plan changes</h2><p>Customers may upgrade or renew from dashboard. Last paid amount credit and GST are shown before Razorpay opens.</p></article>
+    <article class="policy-card"><h2>Invoices</h2><p>Successful payments create invoice records with plan, amount, discount, GST, order/payment reference and payment status.</p></article>
+    <article class="policy-card"><h2>Access restriction</h2><p>Expired, failed, disputed, past-due or suspended subscriptions may have restricted dashboard access until billing is resolved.</p></article>
+  </div>
+</section>
+{% endblock %}

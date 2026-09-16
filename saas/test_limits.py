@@ -12,10 +12,10 @@ class LimitAndWriteTests(TwoBusinessFixture, TestCase):
     """Additional write-path checks reuse the two-business fixture."""
 
     def test_tenant_management_moves_to_platform_host(self):
-        response = self.get('/saas/login/?next=/saas/workspaces/')
-        self.assertEqual(response.url, 'http://localhost/saas/login/?next=/saas/workspaces/')
+        response = self.get('/accounts/login/?next=/accounts/workspaces/')
+        self.assertEqual(response.url, 'http://localhost/accounts/login/?next=/accounts/workspaces/')
         self.assertEqual(self.get('/admin/').url, 'http://localhost/admin/')
-        self.assertEqual(self.post('/saas/signup/').status_code, 403)
+        self.assertEqual(self.post('/accounts/signup/').status_code, 403)
         self.assertContains(self.get('/', host='localhost'), 'Vistaflo')
 
     @override_settings(EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend', EMAIL_HOST='')
@@ -53,13 +53,13 @@ class LimitAndWriteTests(TwoBusinessFixture, TestCase):
         self.client.force_login(self.a)
         self.assertEqual(self.get('/sites/sunrise/dashboard/', host='localhost').status_code, 200)
         self.assertEqual(self.get('/sites/cedar/dashboard/', host='localhost').status_code, 403)
-        self.assertContains(self.get('/saas/', host='localhost'), 'Vistaflo')
+        self.assertContains(self.get('/', host='localhost'), 'Vistaflo')
 
     @override_settings(SAAS_USE_PATH_URLS=True, SAAS_ROOT_TENANT='brijvas')
     def test_platform_login_does_not_require_legacy_membership(self):
-        response = self.post('/saas/login/', {'username': self.a.username, 'password': 'Strong-Test-Pass-672!'}, host='localhost')
+        response = self.post('/accounts/login/', {'username': self.a.username, 'password': 'Strong-Test-Pass-672!'}, host='localhost')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/saas/workspaces/')
+        self.assertEqual(response.url, '/accounts/workspaces/')
 
     def test_storage_limit_blocks_editor_and_listing_upload(self):
         self.plan.storage_mb = 0

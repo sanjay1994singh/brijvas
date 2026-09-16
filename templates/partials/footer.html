@@ -51,6 +51,55 @@
                         </a>
                     </li>
 
+                    <li>
+                        <a href="{% url 'about' %}"
+                           class="text-white">
+                            About Us
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'privacy_policy' %}"
+                           class="text-white">
+                            Privacy Policy
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'terms_conditions' %}"
+                           class="text-white">
+                            Terms
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'refund_policy' %}"
+                           class="text-white">
+                            Refund Policy
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'billing_policy' %}"
+                           class="text-white">
+                            Billing Policy
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'grievance' %}"
+                           class="text-white">
+                            Grievance
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'disclaimer' %}"
+                           class="text-white">
+                            Disclaimer
+                        </a>
+                    </li>
+
                 </ul>
 
             </div>
@@ -87,20 +136,32 @@
                     Contact
                 </h5>
 
+                {% if site_setting.phone %}
                 <p>
                     <i class="fas fa-phone"></i>
                     <a href="tel:{{ site_setting.phone }}" class="text-white">{{ site_setting.phone }}</a>
                 </p>
+                {% endif %}
 
+                {% if site_setting.email %}
                 <p>
                     <i class="fas fa-envelope"></i>
                     <a href="mailto:{{ site_setting.email }}" class="text-white">{{ site_setting.email }}</a>
                 </p>
+                {% endif %}
 
+                {% if site_setting.address %}
                 <p>
                     <i class="fas fa-map-marker-alt"></i>
                     {{ site_setting.address }}
                 </p>
+                {% endif %}
+
+                {% if not site_setting.phone and not site_setting.email and not site_setting.address %}
+                <p class="text-white-50">
+                    Contact details will be updated soon.
+                </p>
+                {% endif %}
 
             </div>
 

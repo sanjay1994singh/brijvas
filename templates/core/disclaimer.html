@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Disclaimer | {{ site_setting.site_name|default:"Property website" }}{% endblock %}
+{% block content %}
+<section class="tenant-policy-hero">
+  <div class="container">
+    <span>{{ site_setting.site_name|default:"Property website" }}</span>
+    <h1>Disclaimer</h1>
+    <p>Property information is provided for convenience and initial discovery.</p>
+  </div>
+</section>
+<section class="tenant-policy-section">
+  <div class="container">
+    <div class="tenant-policy-grid">
+      <article><h2>No professional advice</h2><p>Website content should not be treated as legal, financial, tax or investment advice.</p></article>
+      <article><h2>Verification</h2><p>Visitors should independently verify ownership, approvals, measurements, pricing, availability and documents before any transaction.</p></article>
+      <article><h2>Third-party content</h2><p>Some listings or messages may be submitted by users or property representatives. We cannot guarantee every detail.</p></article>
+      <article><h2>Contact</h2><p>For clarification, contact {{ site_setting.site_name|default:"our team" }}{% if site_setting.email %} at <a href="mailto:{{ site_setting.email }}">{{ site_setting.email }}</a>{% endif %}.</p></article>
+    </div>
+  </div>
+</section>
+{% endblock %}

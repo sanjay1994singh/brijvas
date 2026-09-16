@@ -3,7 +3,7 @@ from saas.models import TenantOwnedModel
 from django.db import models
 from django.urls import reverse
 from accounts.models import User
-from locations.models import State, City
+from locations.models import City, District, State
 from django.conf import settings
 from django_ckeditor_5.fields import CKEditor5Field
 from core.images import optimize_uploaded_image
@@ -118,12 +118,29 @@ class Property(TenantOwnedModel):
         on_delete=models.CASCADE
     )
 
+    district = models.ForeignKey(
+        District,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
     city = models.ForeignKey(
         City,
         on_delete=models.CASCADE
     )
 
     address = models.TextField(
+        blank=True
+    )
+
+    street = models.CharField(
+        max_length=160,
+        blank=True
+    )
+
+    building_apartment = models.CharField(
+        max_length=160,
         blank=True
     )
 
@@ -134,7 +151,9 @@ class Property(TenantOwnedModel):
 
     price = models.DecimalField(
         max_digits=15,
-        decimal_places=2
+        decimal_places=2,
+        null=True,
+        blank=True
     )
 
     area = models.DecimalField(
@@ -206,7 +225,8 @@ class Property(TenantOwnedModel):
     )
 
     featured_image = models.ImageField(
-        upload_to=tenant_upload_path
+        upload_to=tenant_upload_path,
+        blank=True
     )
 
     latitude = models.DecimalField(
@@ -368,7 +388,10 @@ class Property(TenantOwnedModel):
         return ", ".join(
             str(part)
             for part in [
+                self.building_apartment,
+                self.street,
                 getattr(self.city, "name", ""),
+                getattr(self.district, "name", ""),
                 getattr(self.state, "name", ""),
             ]
             if part
@@ -444,8 +467,10 @@ class Property(TenantOwnedModel):
         super().save(*args, **kwargs)
         optimize_uploaded_image(
             self.featured_image,
-            max_size=(1600, 1200),
-            target_kb=450
+            max_size=(1800, 1350),
+            quality=88,
+            min_quality=78,
+            target_kb=1024
         )
 
     def get_absolute_url(self):

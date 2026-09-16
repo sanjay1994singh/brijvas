@@ -43,6 +43,26 @@ urlpatterns = [
         views.terms_conditions,
         name="terms_conditions"
     ),
+    path(
+        "refund-policy/",
+        views.refund_policy,
+        name="refund_policy"
+    ),
+    path(
+        "billing-policy/",
+        views.billing_policy,
+        name="billing_policy"
+    ),
+    path(
+        "grievance/",
+        views.grievance,
+        name="grievance"
+    ),
+    path(
+        "disclaimer/",
+        views.disclaimer,
+        name="disclaimer"
+    ),
 
     path(
         "robots.txt",

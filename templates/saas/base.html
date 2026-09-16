@@ -1,7 +1,98 @@
-{% load static %}<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{% block title %}Vistaflo{% endblock %}</title><link rel="stylesheet" href="{% static 'saas/studio.css' %}"></head>
-<body><header class="top"><a class="brand" href="{% url 'saas_home' %}"><span class="mark">V</span> Vistaflo</a><nav>{% if user.is_authenticated %}<a href="{% url 'saas_workspaces' %}">My businesses</a><a href="{% url 'logout' %}">Sign out</a>{% else %}<a href="{% url 'saas_login' %}">Sign in</a><a class="button small" href="{% url 'saas_signup' %}">Start free</a>{% endif %}</nav></header>
-<main class="shell">{% for message in messages %}<div class="notice" role="status">{{ message }}</div>{% endfor %}
-{% if business %}<div class="business-nav"><a href="{% url 'saas_business' business.slug %}">{{ business.name }}</a><a href="{% url 'saas_branding' business.slug %}">Website</a><a href="{% url 'saas_listings' business.slug %}">Listings</a><a href="{% url 'saas_leads' business.slug %}">Enquiries</a><a href="{% url 'saas_members' business.slug %}">People</a><a href="{% url 'saas_domains' business.slug %}">Domains</a><a href="{{ business.public_url }}" target="_blank" rel="noopener">View site ↗</a></div>{% endif %}
-{% block content %}{% endblock %}</main><footer class="foot">Vistaflo · Your business. Your website.</footer></body></html>
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}{% if business %}{{ business.name }}{% else %}Vistaflo{% endif %}{% endblock %}</title>
+  {% if not business %}
+  <meta name="google-site-verification" content="KeuqKK-Aroa6wvPiwoB7TrJHvWxBviDiQtdbsEglk-Q">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BGYWYPG96Y"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-BGYWYPG96Y');
+  </script>
+  {% endif %}
+  <link rel="icon" type="image/svg+xml" href="{% static 'brand/favicon.svg' %}">
+  <link rel="apple-touch-icon" href="{% static 'brand/vistaflo-icon.svg' %}">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'brand/vistaflo-banner.svg' %}">
+  <link rel="stylesheet" href="{% static 'studio/main.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="{% if business %}{{ business.public_url }}{% else %}{% url 'home' %}{% endif %}">
+      {% if business %}
+        <span class="mark">{{ business.name|first|upper }}</span>
+        <span>{{ business.name }}</span>
+      {% else %}
+        <img class="brand-icon" src="{% static 'brand/vistaflo-icon.svg' %}" alt="">
+        <span class="brand-word">Vistaflo</span>
+      {% endif %}
+    </a>
+    <nav aria-label="Primary navigation">
+      {% if user.is_authenticated %}
+        {% if business %}
+          <a href="{% url 'dashboard' %}">Dashboard</a>
+        {% else %}
+          <a href="{% url 'saas_workspaces' %}">My businesses</a>
+        {% endif %}
+        <a href="{% url 'logout' %}">Sign out</a>
+      {% else %}
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'about' %}">About</a>
+        <a href="{% url 'contact' %}">Contact</a>
+        <a href="{% url 'home' %}#pricing">Plans</a>
+        <a href="{% url 'saas_login' %}">Sign in</a>
+        <a class="button small" href="{% url 'saas_signup' %}">Start free</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="shell">
+    {% for message in messages %}
+      <div class="notice" role="status">{{ message }}</div>
+    {% endfor %}
+
+    {% if business %}
+      <div class="business-nav" aria-label="Workspace navigation">
+        <a href="{% url 'saas_business' business.slug %}">{{ business.name }}</a>
+        <a href="{% url 'saas_branding' business.slug %}">Website</a>
+        <a href="{% url 'saas_listings' business.slug %}">Listings</a>
+        <a href="{% url 'saas_leads' business.slug %}">Enquiries</a>
+        <a href="{% url 'saas_members' business.slug %}">People</a>
+        <a href="{% url 'saas_domains' business.slug %}">Domains</a>
+        <a href="{{ business.public_url }}" target="_blank" rel="noopener">View site</a>
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if business %}
+    <footer class="business-footer">{{ business.name }} · Website control panel.</footer>
+  {% else %}
+    <footer class="platform-footer">
+      <div class="platform-footer-inner">
+        <div>
+          <strong>Vistaflo</strong>
+          <small>Operated by SHRI INFOWAVE PRIVATE LIMITED</small>
+          <small>CIN: U62012UW2026PTC257361</small>
+        </div>
+        <nav class="platform-footer-links" aria-label="Footer navigation">
+          <a href="{% url 'blog_list' %}">Blog</a>
+          <a href="{% url 'about' %}">About Us</a>
+          <a href="{% url 'contact' %}">Contact Us</a>
+          <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+          <a href="{% url 'terms_conditions' %}">Terms</a>
+          <a href="{% url 'refund_policy' %}">Refund Policy</a>
+          <a href="{% url 'billing_policy' %}">Billing Policy</a>
+          <a href="{% url 'grievance' %}">Grievance</a>
+        </nav>
+      </div>
+    </footer>
+  {% endif %}
+</body>
+</html>

@@ -1,0 +1,139 @@
+{% extends 'saas/base.html' %}
+{% block title %}Invoice PNX-{{ order.created_at|date:"Ymd" }}-{{ order.pk|stringformat:"05d" }}{% endblock %}
+{% block content %}
+<style>
+    .invoice-page { max-width: 794px; margin: 0 auto; color: #111; font-family: Arial, Helvetica, sans-serif; }
+    .invoice-sheet { background: #fff; min-height: 1123px; padding: 86px 72px; }
+    .invoice-top { display: grid; grid-template-columns: 1fr 250px; gap: 30px; align-items: start; }
+    .invoice-brand { font-weight: 900; font-size: 26px; line-height: 1; margin-bottom: 8px; }
+    .seller-name { font-size: 11px; font-weight: 500; margin: 3px 0; line-height: 1.35; }
+    .seller-name strong { font-weight: 900; }
+    .muted-line { color: #111; margin: 3px 0; line-height: 1.35; font-size: 11px; }
+    .invoice-title { text-align: right; font-size: 36px; line-height: 1; font-weight: 900; letter-spacing: 0; margin-bottom: 20px; }
+    .invoice-meta { display: grid; gap: 5px; font-size: 12px; text-align: right; }
+    .status-paid { font-weight: 900; }
+    .thick-rule { border-top: 2px solid #111; margin: 52px 0 20px; }
+    .invoice-section { margin-top: 22px; }
+    .section-label { font-size: 11px; font-weight: 900; color: #111; text-transform: uppercase; margin-bottom: 4px; }
+    .invoice-table { width: 100%; border-collapse: collapse; border-top: 2px solid #111; margin-top: 34px; }
+    .invoice-table th { font-size: 10px; text-transform: uppercase; font-weight: 900; padding: 8px 0; border-bottom: 1px solid #111; }
+    .invoice-table td { padding: 18px 0; font-size: 11px; vertical-align: top; }
+    .invoice-table th:nth-child(1), .invoice-table td:nth-child(1) { width: 34px; text-align: left; }
+    .invoice-table th:nth-child(3), .invoice-table td:nth-child(3) { width: 48px; text-align: left; }
+    .invoice-table th:nth-child(4), .invoice-table td:nth-child(4) { width: 80px; text-align: left; }
+    .invoice-table th:nth-child(5), .invoice-table td:nth-child(5) { width: 90px; text-align: right; }
+    .item-title { font-weight: 900; margin-bottom: 5px; }
+    .item-sub { margin: 4px 0; }
+    .after-items-rule { border-top: 1px solid #cfcfcf; margin: 6px 0 34px; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 285px; gap: 54px; align-items: start; }
+    .payment-block { font-size: 11px; line-height: 1.35; }
+    .payment-block p { margin: 4px 0 16px; }
+    .totals { font-size: 11px; }
+    .total-row { display: flex; justify-content: space-between; gap: 20px; padding: 6px 0; }
+    .grand-total { border-top: 2px solid #111; border-bottom: 1px solid #111; font-weight: 900; margin-top: 4px; padding: 8px 0; }
+    .thanks { margin-top: 72px; color: #111; border-top: 1px solid #cfcfcf; padding-top: 18px; font-size: 11px; }
+    .invoice-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+    @media print {
+        .top, .invoice-actions, footer { display: none !important; }
+        body { background: #fff; }
+        .invoice-page { max-width: none; margin: 0; }
+        .invoice-sheet { min-height: auto; padding: 0; }
+    }
+    @media (max-width: 760px) {
+        .invoice-sheet { padding: 34px 22px; min-height: auto; }
+        .invoice-top, .summary-grid { grid-template-columns: 1fr; gap: 22px; }
+        .invoice-title { text-align: left; }
+        .invoice-meta { text-align: left; }
+    }
+</style>
+
+<section class="invoice-page">
+    <div class="invoice-sheet">
+        <header class="invoice-top">
+            <div>
+                <div class="invoice-brand">Vistaflo</div>
+                <p class="seller-name">{{ billing_setting.business_name }}</p>
+                <p class="muted-line">{{ billing_setting.business_address }}</p>
+                {% if billing_setting.cin %}<p class="muted-line">CIN: {{ billing_setting.cin }}</p>{% endif %}
+                {% if billing_setting.pan %}<p class="muted-line">PAN: {{ billing_setting.pan }}</p>{% endif %}
+                {% if billing_setting.support_email %}<p class="muted-line">{{ billing_setting.support_email }}</p>{% endif %}
+                {% if billing_setting.whatsapp_number %}<p class="muted-line">WhatsApp: {{ billing_setting.whatsapp_number }}</p>{% endif %}
+            </div>
+            <div>
+                <div class="invoice-title">INVOICE</div>
+                <div class="invoice-meta">
+                    <div><strong>INVOICE NO:</strong> PNX-{{ order.created_at|date:"Ymd" }}-{{ order.pk|stringformat:"05d" }}</div>
+                    <div><strong>ISSUE DATE:</strong> {{ order.created_at|date:"d M Y, h:i A" }}</div>
+                    <div><strong>STATUS:</strong> <span class="status-paid">{{ order.get_status_display|upper }}</span></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="thick-rule"></div>
+
+        <section class="invoice-section">
+            <div class="section-label">Billed to</div>
+            <p class="seller-name"><strong>{{ business.owner.get_full_name|default:business.owner.username }}</strong></p>
+            <p class="muted-line">Channel: {{ business.name }}</p>
+            <p class="muted-line">-</p>
+            {% if business.owner.phone %}<p class="muted-line">Mobile: {{ business.owner.phone }}</p>{% endif %}
+        </section>
+
+        <section class="invoice-section">
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th style="width: 58px;">#</th>
+                        <th>Description</th>
+                        <th style="width: 80px;">Qty</th>
+                        <th style="width: 130px;">Rate</th>
+                        <th style="width: 130px;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>01</td>
+                        <td>
+                            <strong>{{ order.plan.name }}</strong><br>
+                            Website subscription - 1 month<br>
+                            {% if order.paid_at %}<span class="muted-line">Period: {{ order.paid_at|date:"d M Y" }} to {{ business.subscription.expires_at|date:"d M Y" }}</span>{% endif %}
+                        </td>
+                        <td>1</td>
+                        <td>Rs {{ order.subtotal_rupees|floatformat:2 }}</td>
+                        <td>Rs {{ order.subtotal_rupees|floatformat:2 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="after-items-rule"></div>
+
+        <section class="invoice-section summary-grid">
+            <div class="payment-block">
+                <div class="section-label">Payment details</div>
+                <p class="muted-line">Reference</p>
+                <p><strong>{{ order.provider_payment|default:order.provider_order }}</strong></p>
+                <div class="section-label">Support</div>
+                <p>For billing corrections, contact support with your invoice number and payment reference.</p>
+            </div>
+            <div class="totals">
+                <div class="total-row"><span>Subtotal</span><strong>Rs {{ order.subtotal_rupees|floatformat:2 }}</strong></div>
+                {% if order.discount_amount %}<div class="total-row"><span>Discount / credit</span><strong>Rs {{ order.discount_rupees|floatformat:2 }}</strong></div>{% endif %}
+                {% if order.gst_amount %}<div class="total-row"><span>GST @ {{ order.gst_percent }}%</span><strong>Rs {{ order.gst_rupees|floatformat:2 }}</strong></div>{% endif %}
+                <div class="total-row grand-total"><span>Total</span><strong>Rs {{ order.amount_rupees|floatformat:2 }}</strong></div>
+                <div class="total-row"><span>Payment status</span><strong>{{ order.get_status_display|upper }}</strong></div>
+            </div>
+        </section>
+
+        <p class="thanks">Thank you for choosing Vistaflo. This invoice is generated electronically.</p>
+    </div>
+
+    {% if not download %}
+    <div class="invoice-actions">
+        <a class="button secondary" href="{% url 'saas_business' business.slug %}">Back</a>
+        <a class="button" href="{% url 'saas_invoice_download' business.slug order.uuid %}" download data-no-loader>Download invoice</a>
+        <button class="button secondary" onclick="window.print()">Print</button>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

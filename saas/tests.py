@@ -64,7 +64,7 @@ class TwoBusinessFixture:
 class SaasTests(TwoBusinessFixture, TestCase):
     def test_platform_and_all_customer_screens_render(self):
         self.assertEqual(self.get('/', 'localhost').status_code, 200)
-        self.assertEqual(self.get('/saas/signup/', 'localhost').status_code, 200)
+        self.assertEqual(self.get('/accounts/signup/', 'localhost').status_code, 200)
         for path in ['/', '/properties/', '/blog/', '/about/', '/contact/', '/accounts/login/', '/accounts/register/', '/sitemap.xml', '/robots.txt']:
             with self.subTest(path=path):
                 self.assertEqual(self.get(path).status_code, 200)
@@ -130,7 +130,7 @@ class SaasTests(TwoBusinessFixture, TestCase):
             self.pa.save()
 
     def test_signup_provisions_complete_independent_site(self):
-        result = self.post('/saas/signup/', {'business_name': 'New Realty', 'site_slug': 'new-realty', 'username': 'newowner', 'email': 'new@example.test', 'phone': '', 'plan': self.plan.pk, 'password1': 'Distant-Orange-7284!', 'password2': 'Distant-Orange-7284!'}, host='localhost')
+        result = self.post('/accounts/signup/', {'business_name': 'New Realty', 'site_slug': 'new-realty', 'username': 'newowner', 'email': 'new@example.test', 'phone': '', 'plan': self.plan.pk, 'password1': 'Distant-Orange-7284!', 'password2': 'Distant-Orange-7284!'}, host='localhost')
         self.assertEqual(result.status_code, 302)
         tenant = Tenant.objects.get(slug='newrealty')
         self.assertTrue(tenant.memberships.get().can_manage)
@@ -248,5 +248,5 @@ class SaasTests(TwoBusinessFixture, TestCase):
 
     @override_settings(RAZORPAY_WEBHOOK_SECRET='webhook-secret')
     def test_webhook_requires_signature(self):
-        response = self.post('/saas/webhook/razorpay/', host='localhost')
+        response = self.post('/billing/webhook/razorpay/', host='localhost')
         self.assertEqual(response.status_code, 400)

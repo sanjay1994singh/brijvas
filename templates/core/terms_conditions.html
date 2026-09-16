@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Terms and Conditions | {{ site_setting.site_name|default:"Property website" }}{% endblock %}
+{% block content %}
+<section class="tenant-policy-hero">
+  <div class="container">
+    <span>{{ site_setting.site_name|default:"Property website" }}</span>
+    <h1>Terms and Conditions</h1>
+    <p>Use this website for genuine property discovery, enquiries and listing activity.</p>
+  </div>
+</section>
+<section class="tenant-policy-section">
+  <div class="container">
+    <div class="tenant-policy-grid">
+      <article><h2>Property information</h2><p>Prices, availability, descriptions and images are for general information and may change. Please confirm details before any decision.</p></article>
+      <article><h2>User responsibilities</h2><p>Users must provide accurate information and must not submit misleading, unlawful or unauthorized property content.</p></article>
+      <article><h2>Enquiries</h2><p>Submitting an enquiry does not create a binding sale, rent, booking or agency agreement unless confirmed separately in writing.</p></article>
+      <article><h2>Contact</h2><p>For questions about these terms, contact {{ site_setting.site_name|default:"our team" }}{% if site_setting.email %} at <a href="mailto:{{ site_setting.email }}">{{ site_setting.email }}</a>{% endif %}.</p></article>
+    </div>
+  </div>
+</section>
+{% endblock %}

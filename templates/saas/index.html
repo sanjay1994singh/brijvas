@@ -1,4 +1,155 @@
-{% extends 'saas/base.html' %}{% block content %}
-<section class="hero"><div><span class="eyebrow">BUILT FOR REAL ESTATE BUSINESSES</span><h1>Your properties.<br>Your brand.<br><em>Your own website.</em></h1><p>A ready-to-use property website with listings, enquiries and a workspace for your team. Set up your business and start sharing.</p><div class="actions"><a class="button" href="{% url 'saas_signup' %}">Launch my website →</a><span>{{ trial_days }}-day trial · No card required</span></div></div><div class="preview"><div class="preview-bar"><i></i><i></i><i></i><span>your-business · your website</span></div><div class="mini-hero"><small>YOUR REAL ESTATE BRAND</small><h2>A new address.<br>A new beginning.</h2><span class="mini-search">City, neighbourhood or property type ⌕</span></div><div class="mini-grid"><div><div class="building b1"></div><b>City residences</b><small>Homes for every chapter</small></div><div><div class="building b2"></div><b>Open possibilities</b><small>Land, plots and more</small></div></div><div class="float-card">✓ Your website is ready<span>Listings · Enquiries · Team</span></div></div></section>
-<div class="value-grid"><article><span>01</span><h3>Make it yours</h3><p>Add your logo, contact information and business story. Share your own website address.</p></article><article><span>02</span><h3>Bring listings together</h3><p>Organise properties, review submissions and keep your public catalogue up to date.</p></article><article><span>03</span><h3>Work as a team</h3><p>Give agents access and keep property enquiries with the business they belong to.</p></article></div>
-<section class="section"><span class="eyebrow">ROOM TO GROW</span><h2>A workspace that fits your business</h2><div class="cards">{% for plan in plans %}<article class="card"><h3>{{ plan.name }}</h3><p class="price">{% if plan.monthly_amount %}₹{{ plan.price|floatformat:0 }}<small> / 30 days</small>{% else %}Start with a trial{% endif %}</p><ul><li>{{ plan.listing_limit }} property listings</li><li>{{ plan.staff_limit }} staff seats</li><li>{{ plan.storage_mb }} MB media storage</li><li>{% if plan.custom_domain %}Custom domain support{% else %}Your own platform website address{% endif %}</li></ul><a class="button secondary" href="{% url 'saas_signup' %}">Choose {{ plan.name }}</a></article>{% empty %}<p>Plans are being configured. Please contact the platform administrator.</p>{% endfor %}</div></section>{% endblock %}
+{% extends 'saas/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="vf-hero">
+  <div class="vf-hero-copy">
+    <p class="eyebrow">Property website platform</p>
+    <h1>Apni property business website 3 easy steps me live karein.</h1>
+    <p class="vf-lead">Vistaflo real estate agents, builders aur property consultants ke liye complete website, listings, enquiries, domain, payment, invoice aur support system ek dashboard me deta hai.</p>
+    <div class="actions">
+      <a class="button" href="{% url 'saas_signup' %}">Website banana shuru karein</a>
+      <a class="button secondary" href="#pricing">Plans dekhein</a>
+    </div>
+    <div class="vf-quick-trust" aria-label="Platform trust points">
+      <span>Razorpay payment</span>
+      <span>GST invoice</span>
+      <span>WhatsApp update</span>
+    </div>
+  </div>
+
+  <div class="vf-phone-preview" aria-label="Vistaflo website preview">
+    <div class="vf-phone-top">
+      <span></span><span></span><span></span>
+      <small>yourbrand.live-app.in</small>
+    </div>
+    <div class="vf-site-preview">
+      <div>
+        <b>Your Property Brand</b>
+        <small>Plots, flats, villas and commercial listings</small>
+      </div>
+      <button type="button">Enquiry</button>
+    </div>
+    <div class="vf-preview-search">Search city, area or property type</div>
+    <div class="vf-listing-mini">
+      <span></span>
+      <div><b>3 BHK Apartment</b><small>Sample City · Sale</small></div>
+      <strong>₹45L</strong>
+    </div>
+    <div class="vf-listing-mini">
+      <span></span>
+      <div><b>Commercial Plot</b><small>Sample Area · Sale</small></div>
+      <strong>Call</strong>
+    </div>
+  </div>
+</section>
+
+<section class="vf-steps" aria-label="How Vistaflo works">
+  <article>
+    <strong>1</strong>
+    <h3>Business detail bharein</h3>
+    <p>Brand name, email, mobile, state aur apna password set karein.</p>
+  </article>
+  <article>
+    <strong>2</strong>
+    <h3>Plan choose karein</h3>
+    <p>Starter, Agency ya Business plan. Trial super admin se control hota hai.</p>
+  </article>
+  <article>
+    <strong>3</strong>
+    <h3>Website manage karein</h3>
+    <p>Properties, team, enquiries, domain, analytics aur billing dashboard se handle karein.</p>
+  </article>
+</section>
+
+<section class="vf-split-section">
+  <div>
+    <p class="eyebrow">Simple for every user</p>
+    <h2>Dashboard aisa jo non-technical user bhi samajh sake.</h2>
+    <p>Har important kaam ko clear label, guided action aur readable cards me rakha gaya hai. Owner ko pata rahega payment pending hai ya active, listing kitni add ho sakti hai, invoice kahan milegi aur domain setup ka status kya hai.</p>
+    <div class="vf-check-list">
+      <span>Property add/edit/publish control</span>
+      <span>State, district, city mapping</span>
+      <span>Team member approval</span>
+      <span>Payment history and invoice download</span>
+    </div>
+  </div>
+  <div class="vf-dashboard-preview">
+    <div class="vf-dashboard-head">
+      <b>Business dashboard</b>
+      <small>Active plan · Agency</small>
+    </div>
+    <div class="vf-dashboard-grid">
+      <div><small>Listings</small><strong>25</strong></div>
+      <div><small>Enquiries</small><strong>18</strong></div>
+      <div><small>Staff</small><strong>3</strong></div>
+      <div><small>Invoice</small><strong>PDF</strong></div>
+    </div>
+    <div class="vf-dashboard-row"><span>Domain setup</span><b>Ready</b></div>
+    <div class="vf-dashboard-row"><span>Google Analytics</span><b>Connected</b></div>
+    <div class="vf-dashboard-row"><span>Next payment</span><b>30 days</b></div>
+  </div>
+</section>
+
+<section class="section">
+  <p class="eyebrow">What you get</p>
+  <h2>Property business ke liye complete system.</h2>
+  <div class="vf-feature-grid">
+    <article>
+      <span>Site</span>
+      <h3>Branded website</h3>
+      <p>Logo, business name, contact, about, social links, Google verification and custom domain support.</p>
+    </article>
+    <article>
+      <span>List</span>
+      <h3>Property catalogue</h3>
+      <p>Sale/rent properties, images, amenities, address, location and SEO-friendly detail pages.</p>
+    </article>
+    <article>
+      <span>Lead</span>
+      <h3>Enquiry tracking</h3>
+      <p>Website contact messages and property enquiries owner dashboard me safely store hote hain.</p>
+    </article>
+    <article>
+      <span>Pay</span>
+      <h3>Billing and GST</h3>
+      <p>Razorpay checkout, discount, GST, upgrade credit, invoice view/download and WhatsApp success message.</p>
+    </article>
+  </div>
+</section>
+
+<section class="vf-trust-panel">
+  <div>
+    <p class="eyebrow">Operated by</p>
+    <h2>SHRI INFOWAVE PRIVATE LIMITED</h2>
+    <p>CIN: U62012UW2026PTC257361. Platform me policy pages, purchase agreement, payment record, invoice aur support detail clearly available hai.</p>
+  </div>
+  <div class="vf-trust-items">
+    <span>Privacy, Terms, Refund and Billing Policy</span>
+    <span>Plan purchase agreement before payment</span>
+    <span>GST invoice after successful payment</span>
+    <span>Grievance and support contact available</span>
+  </div>
+</section>
+
+<section class="section vf-brand-banner" aria-label="Vistaflo brand banner">
+  <img src="{% static 'brand/vistaflo-banner.svg' %}" alt="Vistaflo property website platform banner">
+</section>
+
+<section class="section" id="pricing">
+  <p class="eyebrow">Plans</p>
+  <h2>Business size ke according plan choose karein.</h2>
+  <div class="cards vf-pricing">
+    {% for plan in plans %}
+    <article class="card">
+      <h3>{{ plan.name }}</h3>
+      <p class="price">{% if plan.monthly_amount %}{% if plan.has_discount %}<small><s>₹{{ plan.price|floatformat:0 }}</s> {{ plan.discount_percent }}% off</small><br>₹{{ plan.discounted_price|floatformat:0 }}{% else %}₹{{ plan.price|floatformat:0 }}{% endif %}<small> / 30 days</small>{% else %}Trial available{% endif %}</p>
+      <ul>{% for feature in plan.active_features %}<li>{{ feature }}</li>{% endfor %}</ul>
+      <a class="button secondary" href="{% url 'saas_signup' %}?plan={{ plan.slug }}">Choose {{ plan.name }}</a>
+    </article>
+    {% empty %}
+    <p>Plans are being configured. Please contact support.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

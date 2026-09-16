@@ -1,1 +1,252 @@
-{% extends 'saas/base.html' %}{% block content %}<section class="form-card"><h1>Complete payment</h1><p>{{ order.plan.name }} · 30 days · ₹{{ order.plan.price|floatformat:2 }}</p><button class="button" id="pay">Pay securely</button><p id="payment-status" role="status"></p><form method="post" id="verification" action="{% url 'saas_payment_verify' business.slug %}">{% csrf_token %}<input type="hidden" name="razorpay_order_id"><input type="hidden" name="razorpay_payment_id"><input type="hidden" name="razorpay_signature"></form></section><script src="https://checkout.razorpay.com/v1/checkout.js"></script><script>document.getElementById('pay').onclick=function(){if(!window.Razorpay){document.getElementById('payment-status').textContent='Payment service could not load. Please retry.';return;}new Razorpay({key:'{{ key_id|escapejs }}',order_id:'{{ order.provider_order|escapejs }}',amount:{{ order.amount }},currency:'INR',name:'Vistaflo',handler:function(result){const form=document.getElementById('verification');for(const key of ['razorpay_order_id','razorpay_payment_id','razorpay_signature'])form.elements[key].value=result[key];form.submit();}}).open();};</script>{% endblock %}
+{% extends 'saas/base.html' %}
+
+{% block content %}
+<style>
+    .checkout-wrap {
+        max-width: 1040px;
+        margin: 56px auto;
+    }
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+        gap: 24px;
+        align-items: stretch;
+    }
+    .checkout-panel {
+        border: 1px solid #dce8df;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 16px 40px rgba(11, 42, 31, .08);
+        padding: 34px;
+    }
+    .checkout-kicker {
+        color: #0f6b52;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+    .checkout-title {
+        font-size: 42px;
+        line-height: 1.08;
+        margin: 12px 0;
+    }
+    .payable-box {
+        background: #0f6b52;
+        color: #fff;
+        border-radius: 8px;
+        padding: 24px;
+        margin: 28px 0;
+    }
+    .payable-box small {
+        color: rgba(255, 255, 255, .78);
+        display: block;
+        margin-bottom: 6px;
+    }
+    .payable-box strong {
+        display: block;
+        font-size: 44px;
+        line-height: 1;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 13px 0;
+        border-bottom: 1px solid #edf2ee;
+        color: #566860;
+    }
+    .summary-row strong {
+        color: #0b211b;
+        white-space: nowrap;
+    }
+    .summary-row.minus strong {
+        color: #0f6b52;
+    }
+    .summary-total {
+        margin-top: 8px;
+        padding-top: 18px;
+        border-top: 2px solid #0b211b;
+        font-size: 22px;
+        color: #0b211b;
+    }
+    .secure-note {
+        color: #5d6f67;
+        margin: 0;
+    }
+    .checkout-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 24px;
+    }
+    #payment-status {
+        margin-top: 14px;
+        color: #9f3a38;
+    }
+    .agreement-block {
+        display: grid;
+        gap: 12px;
+        margin-top: 22px;
+        padding: 16px;
+        border: 1px solid #dce8df;
+        border-radius: 8px;
+        background: #fbfdfc;
+    }
+    .agreement-block h2 {
+        margin: 0;
+        font-size: 18px;
+    }
+    .agreement-content {
+        max-height: 180px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid #d9e4de;
+        border-radius: 8px;
+        background: #fff;
+        color: #314840;
+        font-size: 14px;
+    }
+    .agreement-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-weight: 800;
+    }
+    .agreement-check input {
+        width: 18px;
+        min-width: 18px;
+        height: 18px;
+        margin-top: 3px;
+    }
+    @media (max-width: 900px) {
+        .checkout-grid {
+            grid-template-columns: 1fr;
+        }
+        .checkout-title {
+            font-size: 34px;
+        }
+    }
+</style>
+
+<section class="checkout-wrap">
+    <div class="checkout-grid">
+        <div class="checkout-panel">
+            <span class="checkout-kicker">Secure checkout</span>
+            <h1 class="checkout-title">Complete payment</h1>
+            <p class="secure-note">{{ order.plan.name }} plan for {{ business.name }}. Your plan will activate after Razorpay confirms the payment.</p>
+
+            <div class="payable-box">
+                <small>Final amount to pay</small>
+                <strong>₹{{ order.amount_rupees|floatformat:2 }}</strong>
+            </div>
+
+            <p class="secure-note">Includes plan discount, last paid amount adjustment, and GST. Invoice will be available after successful payment.</p>
+            <div class="agreement-block">
+                {% if purchase_agreement %}
+                    <h2>{{ purchase_agreement.title }}</h2>
+                    <div class="agreement-content">{{ purchase_agreement.content|linebreaks }}</div>
+                    <label class="agreement-check">
+                        <input type="checkbox" id="accepted_purchase_terms">
+                        <span>{{ purchase_agreement.checkbox_label }}</span>
+                    </label>
+                {% else %}
+                    <h2>Plan Purchase Agreement</h2>
+                    <div class="agreement-content">
+                        <p>Please review the payment summary before paying. Your subscription will activate only after successful Razorpay verification.</p>
+                    </div>
+                    <label class="agreement-check">
+                        <input type="checkbox" id="accepted_purchase_terms">
+                        <span>I have read and agree to the plan purchase terms.</span>
+                    </label>
+                {% endif %}
+            </div>
+            <div class="checkout-actions">
+                <button class="button" id="pay">Pay securely</button>
+                <a class="text-link" href="{% url 'dashboard_subscription' %}">Back to plans</a>
+            </div>
+            <p id="payment-status" role="status"></p>
+        </div>
+
+        <div class="checkout-panel">
+            <span class="checkout-kicker">Payment summary</span>
+            <h2>{{ order.plan.name }} · 30 days</h2>
+
+            <div class="summary-row">
+                <span>Plan amount</span>
+                <strong>₹{{ order.subtotal_rupees|floatformat:2 }}</strong>
+            </div>
+            {% if order.discount_percent %}
+            <div class="summary-row minus">
+                <span>Discount {{ order.discount_percent }}%</span>
+                <strong>-₹{{ plan_discount_rupees|floatformat:2 }}</strong>
+            </div>
+            {% endif %}
+            {% if last_paid_credit_rupees %}
+            <div class="summary-row minus">
+                <span>Last paid amount</span>
+                <strong>-₹{{ last_paid_credit_rupees|floatformat:2 }}</strong>
+            </div>
+            {% endif %}
+            <div class="summary-row">
+                <span>Amount before GST</span>
+                <strong>₹{{ order.taxable_rupees|floatformat:2 }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>GST {{ order.gst_percent }}%</span>
+                <strong>₹{{ order.gst_rupees|floatformat:2 }}</strong>
+            </div>
+            <div class="summary-row summary-total">
+                <span>Pay now</span>
+                <strong>₹{{ order.amount_rupees|floatformat:2 }}</strong>
+            </div>
+        </div>
+    </div>
+</section>
+
+<form method="post" id="verification" action="{% url 'saas_payment_verify' business.slug %}">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_order_id">
+    <input type="hidden" name="razorpay_payment_id">
+    <input type="hidden" name="razorpay_signature">
+    <input type="hidden" name="accepted_purchase_terms">
+</form>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('pay').onclick = function () {
+    const status = document.getElementById('payment-status');
+    const accepted = document.getElementById('accepted_purchase_terms');
+    if (!accepted || !accepted.checked) {
+        status.textContent = 'Please read and accept the plan purchase terms to continue.';
+        return;
+    }
+    if (!window.Razorpay) {
+        status.textContent = 'Payment service could not load. Please retry.';
+        return;
+    }
+    new Razorpay({
+        key: '{{ key_id|escapejs }}',
+        order_id: '{{ order.provider_order|escapejs }}',
+        amount: {{ order.amount }},
+        currency: 'INR',
+        name: '{{ business.name|escapejs }}',
+        description: '{{ order.plan.name|escapejs }} - 30 days',
+        prefill: {
+            name: '{{ business.name|escapejs }}',
+            email: '{{ business.owner.email|escapejs }}',
+            contact: '{{ business.owner.phone|escapejs }}'
+        },
+        handler: function (result) {
+            const form = document.getElementById('verification');
+            for (const key of ['razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature']) {
+                form.elements[key].value = result[key];
+            }
+            form.elements.accepted_purchase_terms.value = 'on';
+            form.submit();
+        }
+    }).open();
+};
+</script>
+{% endblock %}

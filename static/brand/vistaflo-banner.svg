@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 720" role="img" aria-labelledby="title desc">
+  <title id="title">Vistaflo banner</title>
+  <desc id="desc">Original abstract website dashboard and property listing banner.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8fbf8"/>
+      <stop offset=".55" stop-color="#e8f4ee"/>
+      <stop offset="1" stop-color="#d9eadf"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0f6b52"/>
+      <stop offset="1" stop-color="#244e63"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="720" fill="url(#bg)"/>
+  <circle cx="1320" cy="90" r="230" fill="#ffffff" opacity=".55"/>
+  <circle cx="180" cy="620" r="260" fill="#0f6b52" opacity=".08"/>
+  <g transform="translate(145 126)">
+    <rect width="520" height="132" rx="28" fill="#0f6b52"/>
+    <path d="M42 67 100 24l58 43" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M68 72v42h64V72" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+    <path d="M80 94c22 17 55 17 78 0" fill="none" stroke="#d9b16f" stroke-width="10" stroke-linecap="round"/>
+    <text x="196" y="70" fill="#fff" font-family="Manrope, Arial, sans-serif" font-size="48" font-weight="800">Vistaflo</text>
+    <text x="199" y="103" fill="#d9eadf" font-family="DM Sans, Arial, sans-serif" font-size="18" font-weight="700">Property website platform</text>
+  </g>
+  <g transform="translate(145 332)">
+    <text fill="#10241f" font-family="Manrope, Arial, sans-serif" font-size="70" font-weight="800">Launch property websites</text>
+    <text y="78" fill="#10241f" font-family="Manrope, Arial, sans-serif" font-size="70" font-weight="800">with listings, leads and billing.</text>
+    <text y="148" fill="#60746c" font-family="DM Sans, Arial, sans-serif" font-size="30" font-weight="600">Original platform assets for Vistaflo.</text>
+  </g>
+  <g transform="translate(940 126)">
+    <rect width="500" height="468" rx="26" fill="#fff" stroke="#cfe0d7"/>
+    <rect x="28" y="70" width="444" height="174" rx="18" fill="url(#panel)"/>
+    <circle cx="48" cy="36" r="9" fill="#bfd2c8"/>
+    <circle cx="76" cy="36" r="9" fill="#bfd2c8"/>
+    <circle cx="104" cy="36" r="9" fill="#bfd2c8"/>
+    <text x="54" y="160" fill="#fff" font-family="Manrope, Arial, sans-serif" font-size="34" font-weight="800">Your Brand Website</text>
+    <rect x="54" y="184" width="182" height="14" rx="7" fill="#fff" opacity=".55"/>
+    <rect x="28" y="268" width="444" height="56" rx="14" fill="#f3f8f5" stroke="#d9e6df"/>
+    <rect x="28" y="348" width="86" height="68" rx="14" fill="#a8c3b2"/>
+    <rect x="132" y="354" width="176" height="18" rx="9" fill="#10241f"/>
+    <rect x="132" y="384" width="116" height="14" rx="7" fill="#60746c"/>
+    <rect x="344" y="370" width="86" height="18" rx="9" fill="#0f6b52"/>
+  </g>
+</svg>

@@ -1,1 +1,89 @@
-{% extends 'base.html' %}{% load static %}{% block title %}{{ site_setting.site_name }} | {{ site_setting.tagline }}{% endblock %}{% block content %}<section class="py-5" style="background:#eef5f1"><div class="container py-5"><span class="text-uppercase">{{ site_setting.site_name }}</span><h1 class="display-3 fw-bold mt-3">{{ site_setting.tagline }}</h1><p class="lead">Explore properties for sale and rent. Find a place that feels right for you.</p><form action="{% url 'search_property' %}" class="d-flex gap-2 mt-4"><input class="form-control" name="keyword" placeholder="Search properties" aria-label="Search properties"><button class="btn btn-primary">Search</button></form></div></section><section class="container py-5"><h2>Explore by property type</h2><div class="d-flex flex-wrap gap-3 my-4">{% for category in property_types %}<a class="btn btn-outline-primary" href="{{ category.get_absolute_url }}">{{ category.name }}</a>{% endfor %}</div><h2 class="mt-5">Latest properties</h2><div class="row g-4 mt-2">{% for property in latest_properties %}<div class="col-md-4"><article class="card h-100">{% if property.featured_image %}<img class="card-img-top" style="height:220px;object-fit:cover" src="{{ property.featured_image.url }}" alt="{{ property.title }}">{% endif %}<div class="card-body"><h3 class="h5"><a href="{{ property.get_absolute_url }}">{{ property.title }}</a></h3><p>{{ property.city }} · {{ property.get_purpose_display }}</p><strong>₹{{ property.price|floatformat:0 }}</strong></div></article></div>{% empty %}<div class="col-12"><div class="p-5 rounded bg-light"><h3>Our property collection is coming soon</h3><p>Contact our team to discuss what you are looking for.</p><a href="{% url 'contact' %}" class="btn btn-primary">Get in touch</a></div></div>{% endfor %}</div></section>{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ site_setting.site_name }} | {{ site_setting.tagline }}{% endblock %}
+
+{% block content %}
+<section class="tenant-home-hero">
+  <div class="container">
+    <div class="tenant-home-grid">
+      <div>
+        <span class="tenant-kicker">{{ site_setting.site_name|default:"Property website" }}</span>
+        <h1>{{ site_setting.tagline|default:"Find your next property with trusted local guidance" }}</h1>
+        <p>Explore sale and rent properties, compare locations and send direct enquiries to the team.</p>
+        <form action="{% url 'search_property' %}" class="tenant-search-card">
+          <input name="keyword" placeholder="Search by city, area, project or property type" aria-label="Search properties">
+          <button class="btn btn-primary">Search</button>
+        </form>
+        <div class="tenant-hero-stats">
+          <span><strong>{{ total_properties|default:"0" }}</strong> Properties</span>
+          <span><strong>{{ total_cities|default:"0" }}</strong> Cities</span>
+          <span><strong>{{ total_agents|default:"0" }}</strong> Agents</span>
+        </div>
+      </div>
+      <div class="tenant-hero-card">
+        <div class="tenant-card-top">Featured property types</div>
+        {% for category in property_types|slice:":4" %}
+          <a href="{{ category.get_absolute_url }}">
+            <span>{% if category.image %}<img src="{{ category.image.url }}" alt="{{ category.name }}">{% else %}{{ category.name|first }}{% endif %}</span>
+            <strong>{{ category.name }}</strong>
+          </a>
+        {% empty %}
+          <p>Property categories will appear here soon.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tenant-section">
+  <div class="container">
+    <div class="tenant-section-head">
+      <span>Browse</span>
+      <h2>Explore by property type</h2>
+      <p>Choose the category that matches your requirement.</p>
+    </div>
+    <div class="tenant-category-row">
+      {% for category in property_types %}
+        <a href="{{ category.get_absolute_url }}">
+          {% if category.image %}<img src="{{ category.image.url }}" alt="{{ category.name }}">{% endif %}
+          <strong>{{ category.name }}</strong>
+        </a>
+      {% empty %}
+        <p>Categories are being added.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="tenant-section tenant-section-soft">
+  <div class="container">
+    <div class="tenant-section-head">
+      <span>Fresh listings</span>
+      <h2>Latest properties</h2>
+      <p>Recently added properties from {{ site_setting.site_name|default:"this website" }}.</p>
+    </div>
+    <div class="tenant-property-grid">
+      {% for property in latest_properties %}
+        {% include "properties/includes/property_card.html" %}
+      {% empty %}
+        <article class="tenant-empty-card">
+          <h3>Properties are coming soon</h3>
+          <p>Contact our team and tell us what kind of property you are looking for.</p>
+          <a class="btn btn-primary" href="{% url 'contact' %}">Contact team</a>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="tenant-cta-band">
+  <div class="container">
+    <div>
+      <span>Need personal help?</span>
+      <h2>Send your requirement and our team will guide you.</h2>
+    </div>
+    <a class="btn btn-light" href="{% url 'contact' %}">Contact now</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,1 +1,51 @@
-{% extends 'saas/base.html' %}{% block content %}<section class="form-card"><span class="eyebrow">VISTAFLO</span><h1>{{ heading }}</h1><form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.as_p }}<button class="button" type="submit">{{ button }}</button></form></section>{% endblock %}
+{% extends 'saas/base.html' %}
+{% block content %}
+<style>
+    .agreement-block { display:grid; gap:12px; margin:16px 0; padding:16px; border:1px solid var(--line); border-radius:8px; background:#fbfdfc; }
+    .agreement-block h2 { margin:0; font-size:18px; }
+    .agreement-content { max-height:220px; overflow:auto; padding:12px; border:1px solid #d9e4de; border-radius:8px; background:#fff; color:#314840; font-size:14px; }
+    .agreement-check { display:flex; align-items:flex-start; gap:10px; font-weight:800; }
+    .agreement-check input { width:18px; min-width:18px; height:18px; margin-top:3px; padding:0; }
+    .field-error { color:#9f3a38; font-size:13px; margin-top:6px; }
+</style>
+<section class="form-card">
+    <span class="eyebrow">{% if business %}{{ business.name }}{% else %}VISTAFLO{% endif %}</span>
+    <h1>{{ heading }}</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+        {% for field in form.visible_fields %}
+            {% if field.is_hidden %}
+                {{ field }}
+            {% elif field.name == 'accepted_purchase_terms' %}
+                <div class="agreement-block">
+                    {% if purchase_agreement %}
+                        <h2>{{ purchase_agreement.title }}</h2>
+                        <div class="agreement-content">{{ purchase_agreement.content|linebreaks }}</div>
+                    {% else %}
+                        <h2>Plan Purchase Agreement</h2>
+                        <div class="agreement-content">
+                            <p>Please review your selected plan, payable amount, business details, trial/payment status, and Vistaflo subscription terms before continuing.</p>
+                            <p>Your workspace is activated according to the selected plan. Paid access starts only after successful payment verification when trial is not enabled.</p>
+                        </div>
+                    {% endif %}
+                    <div class="agreement-check">
+                        {{ field }}
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    </div>
+                    {% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+                </div>
+            {% else %}
+                <p class="field-{{ field.name }}">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                    {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </p>
+            {% endif %}
+        {% endfor %}
+        {% if form.non_field_errors %}<div class="field-error">{{ form.non_field_errors }}</div>{% endif %}
+        <button class="button" type="submit">{{ button }}</button>
+    </form>
+</section>
+{% endblock %}

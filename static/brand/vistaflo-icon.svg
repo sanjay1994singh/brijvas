@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Vistaflo icon</title>
+  <desc id="desc">Original abstract property roof and flowing path icon.</desc>
+  <rect width="512" height="512" rx="112" fill="#0f6b52"/>
+  <path d="M106 244 256 126l150 118" fill="none" stroke="#f7fbf8" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M163 249v100c0 23 19 42 42 42h102c23 0 42-19 42-42V249" fill="none" stroke="#f7fbf8" stroke-width="34" stroke-linecap="round"/>
+  <path d="M186 302c37 29 99 31 140 0" fill="none" stroke="#d9b16f" stroke-width="30" stroke-linecap="round"/>
+  <path d="M220 207c18 54 53 91 105 110" fill="none" stroke="#74c8a2" stroke-width="26" stroke-linecap="round"/>
+  <circle cx="326" cy="206" r="34" fill="#f7fbf8"/>
+  <circle cx="326" cy="206" r="12" fill="#0f6b52"/>
+</svg>

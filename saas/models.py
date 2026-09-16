@@ -4,7 +4,7 @@ from urllib.parse import urlsplit
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
+from django.core.validators import MaxValueValidator, RegexValidator
 from django.db import models
 from django.utils import timezone
 
@@ -30,18 +30,86 @@ class Plan(models.Model):
     name = models.CharField(max_length=80)
     slug = models.SlugField(unique=True)
     monthly_amount = models.PositiveIntegerField(default=0, help_text='Minor units (paise). Zero disables online checkout.')
+    discount_percent = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(100)], help_text='Percentage discount applied at checkout.')
     listing_limit = models.PositiveIntegerField(default=50)
     staff_limit = models.PositiveIntegerField(default=3)
     storage_mb = models.PositiveIntegerField(default=1024)
     custom_domain = models.BooleanField(default=False)
+    trial_enabled = models.BooleanField(default=True)
+    trial_days = models.PositiveIntegerField(default=7)
     is_active = models.BooleanField(default=True)
 
     @property
     def price(self):
         return self.monthly_amount / 100
 
+    @property
+    def discounted_amount(self):
+        if not self.monthly_amount:
+            return 0
+        return max(0, self.monthly_amount - (self.monthly_amount * self.discount_percent // 100))
+
+    @property
+    def discounted_price(self):
+        return self.discounted_amount / 100
+
+    @property
+    def has_discount(self):
+        return bool(self.discount_percent and self.discounted_amount < self.monthly_amount)
+
     def __str__(self):
         return self.name
+
+    @property
+    def active_features(self):
+        configured = [feature.text for feature in self.features.filter(is_active=True).order_by('sort_order', 'id')]
+        if configured:
+            return configured
+        return [
+            f'{self.listing_limit} property listings',
+            f'{self.staff_limit} staff seats',
+            'Custom domain support',
+        ]
+
+
+class PlanFeature(models.Model):
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE, related_name='features')
+    text = models.CharField(max_length=160)
+    sort_order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['sort_order', 'id']
+
+    def __str__(self):
+        return self.text
+
+
+class BillingSetting(models.Model):
+    gst_percent = models.PositiveIntegerField(default=18, validators=[MaxValueValidator(100)])
+    business_name = models.CharField(max_length=160, default='SHRI INFOWAVE PRIVATE LIMITED')
+    business_address = models.TextField(default='101 Govind Kund Tila, Radha Niwas, Vrindaban, Mathura, Uttar Pradesh, India')
+    gstin = models.CharField(max_length=32, default='09ABUCS7544P1Z2', blank=True)
+    pan = models.CharField(max_length=20, default='ABUCS7544P', blank=True)
+    cin = models.CharField(max_length=32, default='U62012UW2026PTC257361', blank=True)
+    support_email = models.EmailField(default='shriinfowaveprivatelimited@gmail.com', blank=True)
+    whatsapp_number = models.CharField(max_length=20, default='918279408396', blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Billing setting'
+        verbose_name_plural = 'Billing settings'
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def current(cls):
+        return cls.objects.get_or_create(pk=1, defaults={'gst_percent': 18})[0]
+
+    def __str__(self):
+        return 'Billing settings'
 
 
 class Tenant(models.Model):
@@ -117,11 +185,11 @@ class Domain(models.Model):
 
     @property
     def txt_name(self):
-        return f'_property-saas.{self.hostname}'
+        return f'_vistaflo-site.{self.hostname}'
 
     @property
     def txt_value(self):
-        return f'property-saas-verification={self.token}'
+        return f'vistaflo-site-verification={self.token}'
 
 
 class BillingOrder(models.Model):
@@ -129,12 +197,149 @@ class BillingOrder(models.Model):
     tenant = models.ForeignKey(Tenant, on_delete=models.PROTECT, related_name='orders')
     plan = models.ForeignKey(Plan, on_delete=models.PROTECT)
     amount = models.PositiveIntegerField()
+    subtotal_amount = models.PositiveIntegerField(default=0)
+    discount_percent = models.PositiveIntegerField(default=0)
+    discount_amount = models.PositiveIntegerField(default=0)
+    taxable_amount = models.PositiveIntegerField(default=0)
+    gst_percent = models.PositiveIntegerField(default=18)
+    gst_amount = models.PositiveIntegerField(default=0)
     currency = models.CharField(max_length=3, default='INR')
     provider_order = models.CharField(max_length=100, unique=True, null=True, blank=True)
     provider_payment = models.CharField(max_length=100, unique=True, null=True, blank=True)
-    status = models.CharField(max_length=12, default='pending', choices=[('pending', 'Pending'), ('paid', 'Paid')])
+    status = models.CharField(max_length=12, default='pending', choices=[('pending', 'Pending'), ('paid', 'Paid'), ('failed', 'Failed')])
     created_at = models.DateTimeField(auto_now_add=True)
     paid_at = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def amount_rupees(self):
+        return self.amount / 100
+
+    @property
+    def subtotal_rupees(self):
+        return self.subtotal_amount / 100
+
+    @property
+    def discount_rupees(self):
+        return self.discount_amount / 100
+
+    @property
+    def taxable_rupees(self):
+        return self.taxable_amount / 100
+
+    @property
+    def gst_rupees(self):
+        return self.gst_amount / 100
+
+
+class WebhookEvent(models.Model):
+    provider = models.CharField(max_length=40, default='razorpay')
+    event_id = models.CharField(max_length=120)
+    event_type = models.CharField(max_length=120)
+    payload = models.JSONField(default=dict)
+    processed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['provider', 'event_id'], name='saas_unique_provider_webhook_event'),
+        ]
+
+
+class PlatformPurchaseAgreement(models.Model):
+    title = models.CharField(max_length=180, default='Plan Purchase Agreement')
+    content = models.TextField()
+    checkbox_label = models.CharField(
+        max_length=255,
+        default='I have read and agree to the plan purchase terms.',
+    )
+    is_active = models.BooleanField(default=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-is_active', '-updated_at']
+
+    def __str__(self):
+        return self.title
+
+
+class PendingSignup(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    business_name = models.CharField(max_length=160)
+    username = models.CharField(max_length=150)
+    email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=20)
+    state = models.CharField(max_length=100, blank=True)
+    password_hash = models.CharField(max_length=128, blank=True)
+    plan = models.ForeignKey(Plan, on_delete=models.PROTECT)
+    amount = models.PositiveIntegerField()
+    subtotal_amount = models.PositiveIntegerField(default=0)
+    discount_percent = models.PositiveIntegerField(default=0)
+    discount_amount = models.PositiveIntegerField(default=0)
+    taxable_amount = models.PositiveIntegerField(default=0)
+    gst_percent = models.PositiveIntegerField(default=18)
+    gst_amount = models.PositiveIntegerField(default=0)
+    currency = models.CharField(max_length=3, default='INR')
+    provider_order = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    provider_payment = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    status = models.CharField(max_length=16, default='pending', choices=[('pending', 'Pending'), ('paid', 'Paid'), ('failed', 'Failed')])
+    created_at = models.DateTimeField(auto_now_add=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def amount_rupees(self):
+        return self.amount / 100
+
+    @property
+    def subtotal_rupees(self):
+        return self.subtotal_amount / 100
+
+    @property
+    def discount_rupees(self):
+        return self.discount_amount / 100
+
+    @property
+    def taxable_rupees(self):
+        return self.taxable_amount / 100
+
+    @property
+    def gst_rupees(self):
+        return self.gst_amount / 100
+
+
+class PurchaseAgreementAcceptance(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='vistaflo_purchase_agreement_acceptances', null=True, blank=True)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name='purchase_agreement_acceptances', null=True, blank=True)
+    order = models.ForeignKey(BillingOrder, on_delete=models.CASCADE, related_name='purchase_agreement_acceptances', null=True, blank=True)
+    pending_signup = models.ForeignKey(PendingSignup, on_delete=models.CASCADE, related_name='purchase_agreement_acceptances', null=True, blank=True)
+    agreement = models.ForeignKey(PlatformPurchaseAgreement, on_delete=models.SET_NULL, null=True, blank=True, related_name='acceptances')
+    agreement_title = models.CharField(max_length=180)
+    agreement_content = models.TextField()
+    checkbox_label = models.CharField(max_length=255)
+    plan_name = models.CharField(max_length=120, blank=True)
+    amount = models.PositiveIntegerField(default=0)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+    accepted_at = models.DateTimeField(db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-accepted_at', '-created_at']
+        indexes = [
+            models.Index(fields=['user', 'accepted_at']),
+            models.Index(fields=['tenant', 'accepted_at']),
+            models.Index(fields=['order', 'accepted_at']),
+            models.Index(fields=['pending_signup', 'accepted_at']),
+        ]
+
+    @property
+    def amount_rupees(self):
+        return self.amount / 100
+
+    def __str__(self):
+        name = self.user or self.tenant or self.pending_signup or 'Customer'
+        return f'{name} accepted {self.agreement_title}'
 
 
 class AuditEvent(models.Model):

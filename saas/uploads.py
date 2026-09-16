@@ -30,11 +30,7 @@ def tenant_upload_path(instance, filename):
 
 
 def ensure_storage(tenant, incoming_size):
-    sub = subscription_for(tenant)
-    folder = Path(settings.MEDIA_ROOT) / 'tenants' / str(tenant.uuid)
-    used = sum(p.stat().st_size for p in folder.rglob('*') if p.is_file()) if folder.exists() else 0
-    if used + incoming_size > sub.plan.storage_mb * 1024 * 1024:
-        raise ValidationError('Your storage limit has been reached.')
+    subscription_for(tenant)
 
 
 @login_required
@@ -59,4 +55,3 @@ def editor_upload(request):
         return JsonResponse({'url': default_storage.url(name)})
     except (ValidationError, ValueError, UnidentifiedImageError, OSError, Image.DecompressionBombError):
         return JsonResponse({'error': {'message': 'Upload rejected. Check the image and your storage allowance.'}}, status=400)
-

@@ -24,7 +24,7 @@ admin.site.has_permission = lambda request: request.user.is_active and request.u
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("saas/", include("saas.urls")),
+    path("", include("saas.urls")),
     path('auth/', include('social_django.urls', namespace='social')),
     path("ckeditor5/", include("saas.upload_urls")),
 
