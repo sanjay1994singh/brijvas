@@ -23,7 +23,7 @@
                     {% else %}
                     <span><i class="fa-solid fa-user"></i></span>
                     {% endif %}
-                    <strong>{{ request.user.get_full_name|default:request.user.username|truncatechars:14 }}</strong>
+                    <strong class="mobile-account-name">{{ request.user.get_full_name|default:request.user.username|truncatechars:14 }}</strong>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu">
                     <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fa-solid fa-user"></i>Profile</a></li>
