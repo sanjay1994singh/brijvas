@@ -2382,7 +2382,83 @@ a{
 .tenant-property-grid{
     display:grid;
     grid-template-columns:repeat(3, minmax(0,1fr));
-    gap:24px 0;
+    gap:24px;
+    align-items:stretch;
+}
+
+.tenant-property-grid > [class*="col-"]{
+    width:100%;
+    max-width:100%;
+    flex:0 0 auto;
+    padding:0;
+    margin:0;
+}
+
+.tenant-property-grid .property-card,
+.properties-section .property-card,
+.category-property-section .property-card{
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    height:100%;
+    border-radius:12px;
+}
+
+.tenant-property-grid .property-content,
+.properties-section .property-content,
+.category-property-section .property-content{
+    display:flex;
+    flex:1;
+    flex-direction:column;
+    min-width:0;
+}
+
+.tenant-property-grid .property-image,
+.properties-section .property-image,
+.category-property-section .property-image{
+    aspect-ratio:16 / 11;
+}
+
+.tenant-property-grid .property-image img,
+.properties-section .property-image img,
+.category-property-section .property-image img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.property-info{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto auto;
+    gap:8px 12px;
+    align-items:center;
+    color:#536172;
+    font-size:14px;
+}
+
+.property-info span{
+    min-width:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.property-info span:first-child{
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+}
+
+.property-actions{
+    margin-top:auto;
+}
+
+.property-actions .btn{
+    flex:1 1 0;
+    min-width:0;
+    white-space:nowrap;
+    font-weight:700;
 }
 
 .tenant-empty-card{
@@ -2559,6 +2635,22 @@ a{
     .tenant-search-card,
     .tenant-property-grid{
         grid-template-columns:1fr;
+    }
+
+    .property-info{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .property-info span:first-child{
+        grid-column:1 / -1;
+    }
+
+    .property-actions{
+        flex-direction:column;
+    }
+
+    .property-actions .btn{
+        width:100%;
     }
 
     .tenant-home-hero{
