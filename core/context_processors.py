@@ -19,3 +19,9 @@ def property_types(request):
     return {
         "property_types": PropertyType.objects.filter(tenant__isnull=True).order_by("name")
     }
+
+
+def asset_version(request):
+    return {
+        "asset_version": settings.ASSET_VERSION,
+    }

@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import time
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -87,6 +88,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 "core.context_processors.site_settings",
                 "core.context_processors.property_types",
+                "core.context_processors.asset_version",
 
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
@@ -155,6 +157,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
+ASSET_VERSION = os.getenv("ASSET_VERSION", str(int(time.time())))
 
 MEDIA_URL = os.getenv("MEDIA_URL", "/media/")
 MEDIA_ROOT = BASE_DIR / 'media'

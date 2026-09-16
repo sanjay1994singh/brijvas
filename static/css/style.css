@@ -15,6 +15,12 @@ a{
     text-decoration:none;
 }
 
+html,
+body{
+    max-width:100%;
+    overflow-x:hidden;
+}
+
 #loader{
     position:fixed;
     inset:0;
@@ -814,8 +820,17 @@ a{
     background:linear-gradient(180deg,#f4f8fb 0%,#f8fafc 48%,#fff 100%);
 }
 
+.dashboard-section .container-fluid{
+    max-width:100%;
+    overflow:hidden;
+}
+
 .dashboard-section .row{
     --bs-gutter-x:28px;
+}
+
+.dashboard-section [class*="col-"]{
+    min-width:0;
 }
 
 .dashboard-sidebar{
@@ -1076,6 +1091,8 @@ a{
 
 .property-manage-shell{
     padding:0 0 32px;
+    max-width:100%;
+    min-width:0;
 }
 
 .property-manage-hero{
@@ -1089,6 +1106,9 @@ a{
     background:linear-gradient(135deg,#0d6efd,#153e90);
     color:#fff;
     box-shadow:0 18px 45px rgba(13,110,253,.2);
+    max-width:100%;
+    min-width:0;
+    overflow:hidden;
 }
 
 .property-manage-kicker{
@@ -1109,12 +1129,14 @@ a{
     color:#fff;
     font-size:34px;
     font-weight:800;
+    overflow-wrap:anywhere;
 }
 
 .property-manage-hero p{
     margin:8px 0 0;
     max-width:620px;
     color:#dbeafe;
+    overflow-wrap:anywhere;
 }
 
 .property-manage-icon{
@@ -1132,6 +1154,8 @@ a{
 .property-manage-form{
     display:grid;
     gap:20px;
+    max-width:100%;
+    min-width:0;
 }
 
 .property-form-section{
@@ -1140,6 +1164,9 @@ a{
     border-radius:8px;
     background:#fff;
     box-shadow:0 16px 40px rgba(15,23,42,.06);
+    max-width:100%;
+    min-width:0;
+    overflow:hidden;
 }
 
 .property-form-section__head{
@@ -1172,6 +1199,7 @@ a{
 .property-form-section__head p{
     margin:4px 0 0;
     color:#64748b;
+    overflow-wrap:anywhere;
 }
 
 .property-form-grid{
@@ -1202,11 +1230,25 @@ a{
 
 .property-field .form-control,
 .property-field .form-select{
+    width:100%;
+    max-width:100%;
+    min-width:0;
     min-height:48px;
     border:1px solid #dbe3ef;
     border-radius:8px;
     color:#0f172a;
     box-shadow:none;
+}
+
+.property-field .input-group{
+    max-width:100%;
+    min-width:0;
+    flex-wrap:nowrap;
+}
+
+.property-field .input-group .form-control,
+.property-field .input-group .form-select{
+    min-width:0;
 }
 
 .property-field textarea.form-control{
@@ -1279,6 +1321,11 @@ a{
     border:1px solid #dbe3ef;
     border-radius:8px;
     background:#fff;
+}
+
+.property-editor-wrap .ck,
+.property-editor-wrap .django-ckeditor-widget{
+    max-width:100%;
 }
 
 .property-editor-wrap .ck-editor__editable{
@@ -1525,10 +1572,11 @@ a{
     .property-manage-hero{
         align-items:flex-start;
         padding:22px;
+        width:100%;
     }
 
     .property-manage-hero h1{
-        font-size:28px;
+        font-size:clamp(26px,10vw,34px);
     }
 
     .property-manage-hero p{
@@ -1540,7 +1588,7 @@ a{
     }
 
     .property-form-section{
-        padding:18px;
+        padding:16px;
     }
 
     .property-form-section__head{
@@ -1572,7 +1620,9 @@ a{
     }
 
     .property-submit-bar{
+        position:static;
         flex-direction:column-reverse;
+        margin-bottom:18px;
     }
 
     .property-submit-bar .btn{
