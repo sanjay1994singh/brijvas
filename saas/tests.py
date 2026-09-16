@@ -142,7 +142,7 @@ class SaasTests(TwoBusinessFixture, TestCase):
     def test_provision_failure_rolls_back_everything(self):
         user = get_user_model().objects.create_user(username='third')
         before = Tenant.objects.count()
-        with patch('properties.models.PropertyType.objects.create', side_effect=RuntimeError('seed failed')):
+        with patch('properties.models.PropertyType.objects.get_or_create', side_effect=RuntimeError('seed failed')):
             with self.assertRaises(RuntimeError):
                 provision(owner=user, name='Failure', slug='failure', plan=self.plan)
         self.assertEqual(Tenant.objects.count(), before)

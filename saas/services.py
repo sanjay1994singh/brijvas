@@ -83,7 +83,11 @@ def provision(*, owner, name, plan, slug=None):
     SiteSetting.objects.create(tenant=tenant, site_name=name, email=owner.email, phone=owner.phone, whatsapp=whatsapp, state=owner.state,
                                tagline='Find your next property', about_text=f'Welcome to {name}. Contact our team for property enquiries and site visits.')
     for title in ('Plot', 'Flat', 'Villa', 'Farm House', 'Commercial'):
-        PropertyType.objects.create(tenant=tenant, name=title)
+        PropertyType.objects.get_or_create(
+            tenant=tenant,
+            slug=title.lower().replace(' ', '-'),
+            defaults={'name': title},
+        )
     AuditEvent.objects.create(tenant=tenant, actor=owner, action='workspace.created')
     if getattr(settings, 'SAAS_AUTO_DOMAINS', False):
         Domain.objects.create(tenant=tenant, hostname=f'{slug}.{settings.SAAS_CUSTOMER_DOMAIN_ROOT}',

@@ -66,10 +66,18 @@ class PropertyTypeAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "slug",
+        "tenant",
+    )
+
+    list_filter = (
+        "tenant",
     )
 
     search_fields = (
         "name",
+        "slug",
+        "tenant__name",
+        "tenant__slug",
     )
 
 
