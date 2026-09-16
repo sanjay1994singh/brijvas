@@ -20,9 +20,23 @@ My Properties
 
             <div class="col-lg-9">
 
-                <div class="card border-0 shadow-sm">
+                <div class="dashboard-page-head">
+                    <div>
+                        <span>Listing manager</span>
+                        <h1>My Properties</h1>
+                        <p>Update listings, check views and keep your property catalogue fresh.</p>
+                    </div>
+                    {% if can_manage_listings %}
+                    <a class="btn btn-primary" href="{% url 'add_property' %}">
+                        <i class="fa-solid fa-plus"></i>
+                        Add property
+                    </a>
+                    {% endif %}
+                </div>
 
-                    <div class="card-header">
+                <div class="dashboard-panel">
+
+                    <div class="dashboard-panel-head">
 
                         My Properties
 
@@ -30,7 +44,8 @@ My Properties
 
                     <div class="card-body">
 
-                        <table class="table">
+                        <div class="dashboard-table-wrap">
+                        <table class="table align-middle dashboard-table">
 
                             <thead>
 
@@ -51,7 +66,17 @@ My Properties
 
                             <tr>
 
-                                <td>{{ property.title }}</td>
+                                <td>
+                                    <div class="dashboard-property-cell">
+                                        {% if property.featured_image %}
+                                        <img src="{{ property.featured_image.url }}" alt="{{ property.title }}">
+                                        {% endif %}
+                                        <div>
+                                            <strong>{{ property.title }}</strong>
+                                            <span>{% if property.city %}{{ property.city }}{% else %}Location not set{% endif %}</span>
+                                        </div>
+                                    </div>
+                                </td>
 
                                 <td>{% if property.price %}₹ {{ property.price }}{% else %}Price on request{% endif %}</td>
 
@@ -59,6 +84,7 @@ My Properties
 
                                 <td>
 
+                                    <div class="dashboard-actions">
                                     <a href="{% url 'edit_property' property.id %}"
                                        class="btn btn-sm btn-primary">
 
@@ -67,16 +93,24 @@ My Properties
                                     </a>
 
                                     <form method="post" action="{% url 'delete_property' property.id %}">{% csrf_token %}<button class="btn btn-sm btn-danger" onclick="return confirm('Delete this property?')">Delete</button></form>
+                                    </div>
 
                                 </td>
 
                             </tr>
 
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="dashboard-empty-row">
+                                    No properties added yet.
+                                </td>
+                            </tr>
                             {% endfor %}
 
                             </tbody>
 
                         </table>
+                        </div>
 
                     </div>
 

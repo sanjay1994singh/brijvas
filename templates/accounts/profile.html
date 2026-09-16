@@ -68,7 +68,7 @@ My Profile
 
                 <!-- Profile Banner -->
 
-                <div class="profile-banner mb-4">
+                <div class="profile-banner dashboard-profile-banner mb-4">
 
                     <div class="row align-items-center">
 
@@ -109,6 +109,8 @@ My Profile
                                         {{ request.user.user_type|title }}
 
                                     </span>
+
+                                    <p class="profile-photo-hint mb-0">Profile photo can be updated from the form below.</p>
 
                                 </div>
 
@@ -154,7 +156,7 @@ My Profile
 
                 <!-- Profile Form Card -->
 
-                <div class="profile-edit-card">
+                <div class="profile-edit-card dashboard-panel">
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
 
@@ -303,7 +305,7 @@ My Profile
 
                         </div>
 
-                        <div class="mb-4">
+                        <div class="profile-photo-editor mb-4">
 
                             <label class="form-label">
 
@@ -311,7 +313,20 @@ My Profile
 
                             </label>
 
-                            {{ form.profile_image }}
+                            <div class="profile-photo-editor__body">
+                                {% if request.user.profile_image %}
+                                <img src="{{ request.user.profile_image.url }}" alt="{{ request.user.username }}">
+                                {% else %}
+                                <span><i class="fa-solid fa-user"></i></span>
+                                {% endif %}
+                                <div>
+                                    {{ form.profile_image }}
+                                    <small class="text-muted d-block mt-2">
+                                        Upload JPG, PNG or WebP. Image will be optimized automatically.
+                                    </small>
+                                    {{ form.profile_image.errors }}
+                                </div>
+                            </div>
 
                         </div>
 

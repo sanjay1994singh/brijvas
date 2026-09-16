@@ -17,6 +17,7 @@ from django.conf import settings
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth import get_user_model
 from .phone_utils import indian_mobile_last10, normalize_indian_mobile
+from core.images import optimize_uploaded_image
 
 
 def login_candidates(identifier):
@@ -264,7 +265,15 @@ def profile(request):
         )
 
         if form.is_valid():
-            form.save()
+            user = form.save()
+            if user.profile_image:
+                optimize_uploaded_image(
+                    user.profile_image,
+                    max_size=(600, 600),
+                    target_kb=300,
+                    quality=88,
+                    min_quality=76,
+                )
             messages.success(
                 request,
                 "Profile updated successfully."

@@ -2,7 +2,8 @@
 
     <div class="sidebar-header">
 
-        <h4>PropertyHub</h4>
+        <span>{{ site_setting.site_name|default:request.tenant.name|default:"Property Dashboard" }}</span>
+        <h4>Workspace</h4>
 
     </div>
 
@@ -72,4 +73,9 @@
 
 </div>
 
-{% if can_manage_business %}<a class="btn btn-outline-primary m-2" href="{% url 'saas_business' request.tenant.slug %}">Business settings</a>{% endif %}
+{% if can_manage_business %}
+<a class="dashboard-business-link" href="{% url 'saas_business' request.tenant.slug %}">
+    <i class="fa-solid fa-gear"></i>
+    Business settings
+</a>
+{% endif %}
