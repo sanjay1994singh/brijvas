@@ -1,9 +1,21 @@
+<button class="dashboard-menu-button" type="button" data-dashboard-menu-open>
+    <i class="fa-solid fa-bars"></i>
+    Dashboard menu
+</button>
+
+<div class="dashboard-drawer-backdrop" data-dashboard-menu-close></div>
+
 <div class="dashboard-sidebar">
 
     <div class="sidebar-header">
 
-        <span>{{ site_setting.site_name|default:request.tenant.name|default:"Property Dashboard" }}</span>
-        <h4>Workspace</h4>
+        <div>
+            <span>{{ site_setting.site_name|default:request.tenant.name|default:"Property Dashboard" }}</span>
+            <h4>Workspace</h4>
+        </div>
+        <button class="dashboard-menu-close" type="button" data-dashboard-menu-close aria-label="Close dashboard menu">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
 
     </div>
 
@@ -71,11 +83,39 @@
 
     </ul>
 
-</div>
-
 {% if can_manage_business %}
 <a class="dashboard-business-link" href="{% url 'saas_business' request.tenant.slug %}">
     <i class="fa-solid fa-gear"></i>
     Business settings
 </a>
 {% endif %}
+
+</div>
+
+<script>
+    (function () {
+        const openButton = document.querySelector("[data-dashboard-menu-open]");
+        const closeButtons = document.querySelectorAll("[data-dashboard-menu-close]");
+        if (!openButton) {
+            return;
+        }
+
+        function closeMenu() {
+            document.body.classList.remove("dashboard-menu-is-open");
+        }
+
+        openButton.addEventListener("click", function () {
+            document.body.classList.add("dashboard-menu-is-open");
+        });
+
+        closeButtons.forEach(function (button) {
+            button.addEventListener("click", closeMenu);
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                closeMenu();
+            }
+        });
+    }());
+</script>

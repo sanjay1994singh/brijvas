@@ -10,6 +10,36 @@
 
         </a>
 
+        <div class="mobile-navbar-actions">
+            {% if request.user.is_authenticated %}
+            <div class="dropdown user-menu">
+                <button class="btn user-menu-toggle dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    {% if request.user.profile_image %}
+                    <img src="{{ request.user.profile_image.url }}"
+                         alt="{{ request.user.get_full_name|default:request.user.username }}">
+                    {% else %}
+                    <span><i class="fa-solid fa-user"></i></span>
+                    {% endif %}
+                    <strong>{{ request.user.get_full_name|default:request.user.username|truncatechars:14 }}</strong>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fa-solid fa-user"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="fa-solid fa-gauge"></i>Dashboard</a></li>
+                    {% if can_manage_listings %}
+                    <li><a class="dropdown-item" href="{% url 'add_property' %}"><i class="fa-solid fa-plus"></i>Post Property</a></li>
+                    {% endif %}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></li>
+                </ul>
+            </div>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-navbar">Login</a>
+            {% endif %}
+        </div>
+
         <button class="navbar-toggler"
                 type="button"
                 data-bs-toggle="collapse"
@@ -173,6 +203,22 @@
 
         </div>
 
+    </div>
+
+    <div class="mobile-public-nav" aria-label="Main menu">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'about' %}">About</a>
+        <div class="dropdown">
+            <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Buy</a>
+            <ul class="dropdown-menu">
+                {% for type in property_types %}
+                <li><a class="dropdown-item" href="{% url 'category_properties' type.slug %}">{{ type.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <a href="{% url 'property_list' %}">Properties</a>
+        <a href="{% url 'blog_list' %}">Blog</a>
+        <a href="{% url 'contact' %}">Contact</a>
     </div>
 
 </nav>
