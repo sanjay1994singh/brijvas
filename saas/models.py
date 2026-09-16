@@ -352,12 +352,13 @@ class AuditEvent(models.Model):
 
 class TenantOwnedModel(models.Model):
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
+    allow_global_tenant = False
 
     class Meta:
         abstract = True
 
     def save(self, *args, **kwargs):
-        if not self.tenant_id:
+        if not self.tenant_id and not self.allow_global_tenant:
             raise ValidationError('A business workspace is required.')
         for field in ('user', 'author'):
             if hasattr(self, f'{field}_id') and getattr(self, f'{field}_id'):
@@ -365,7 +366,8 @@ class TenantOwnedModel(models.Model):
                     raise ValidationError('The selected account does not belong to this business.')
         for field in ('property_type', 'category'):
             if hasattr(self, f'{field}_id') and getattr(self, f'{field}_id'):
-                if getattr(self, field).tenant_id != self.tenant_id:
+                related_tenant_id = getattr(self, field).tenant_id
+                if related_tenant_id and related_tenant_id != self.tenant_id:
                     raise ValidationError('Related record belongs to a different workspace.')
         if self.pk:
             old_tenant = type(self).objects.filter(pk=self.pk).values_list('tenant_id', flat=True).first()

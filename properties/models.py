@@ -1,5 +1,5 @@
 from saas.uploads import tenant_upload_path, sanitize_html
-from saas.models import TenantOwnedModel
+from saas.models import Tenant, TenantOwnedModel
 from django.db import models
 from django.urls import reverse
 from accounts.models import User
@@ -12,6 +12,15 @@ from decimal import Decimal, ROUND_HALF_UP
 
 
 class PropertyType(TenantOwnedModel):
+    allow_global_tenant = True
+
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         constraints = [models.UniqueConstraint(fields=['tenant', 'slug'], name='propertytype_tenant_slug')]
 

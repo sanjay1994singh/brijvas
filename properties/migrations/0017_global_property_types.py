@@ -1,4 +1,5 @@
-from django.db import migrations
+import django.db.models.deletion
+from django.db import migrations, models
 
 
 DEFAULT_TYPES = ("Plot", "Flat", "Villa", "Farm House", "Commercial")
@@ -38,5 +39,15 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterField(
+            model_name="propertytype",
+            name="tenant",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="saas.tenant",
+            ),
+        ),
         migrations.RunPython(move_to_global_property_types, migrations.RunPython.noop),
     ]
