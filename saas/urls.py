@@ -4,6 +4,7 @@ from accounts.views import user_login
 
 urlpatterns = [
     path('accounts/signup/', views.signup, name='saas_signup'),
+    path('accounts/signup/plan/<int:plan_id>/', views.signup_plan_detail, name='saas_signup_plan_detail'),
     path('accounts/signup/<uuid:signup_id>/checkout/', views.pending_checkout, name='saas_pending_checkout'),
     path('accounts/signup/<uuid:signup_id>/payment/verify/', views.pending_payment_verify, name='saas_pending_payment_verify'),
     path('accounts/login/', user_login, name='saas_login'),

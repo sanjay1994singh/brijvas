@@ -11,7 +11,7 @@
 <section class="form-card">
     <span class="eyebrow">{% if business %}{{ business.name }}{% else %}VISTAFLO{% endif %}</span>
     <h1>{{ heading }}</h1>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" class="{% if signup_page %}signup-form{% endif %}">
         {% csrf_token %}
         {% for field in form.hidden_fields %}{{ field }}{% endfor %}
         {% for field in form.visible_fields %}
@@ -42,10 +42,133 @@
                     {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
                     {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
                 </p>
+                {% if signup_page and field.name == 'plan' %}
+                    <div class="signup-plan-preview" id="signup-plan-preview" data-url-template="{% url 'saas_signup_plan_detail' 0 %}">
+                        <div class="plan-preview-head">
+                            <div>
+                                <span>Selected plan</span>
+                                <strong data-plan-name>Loading...</strong>
+                            </div>
+                            <div class="plan-preview-price" data-plan-price>...</div>
+                        </div>
+                        <div class="plan-preview-grid">
+                            <div><span>Billing cycle</span><strong data-plan-cycle>...</strong></div>
+                            <div><span>Plan start</span><strong data-plan-start>...</strong></div>
+                            <div><span>Plan end</span><strong data-plan-end>...</strong></div>
+                            <div><span>Properties</span><strong data-plan-listings>...</strong></div>
+                            <div><span>Staff seats</span><strong data-plan-staff>...</strong></div>
+                            <div><span>Custom domain</span><strong data-plan-domain>...</strong></div>
+                        </div>
+                        <div class="plan-preview-breakup">
+                            <span>Subtotal: <b data-plan-subtotal>...</b></span>
+                            <span>Discount: <b data-plan-discount>...</b></span>
+                            <span>GST: <b data-plan-gst>...</b></span>
+                        </div>
+                        <ul class="plan-preview-features" data-plan-features></ul>
+                    </div>
+                {% endif %}
             {% endif %}
         {% endfor %}
         {% if form.non_field_errors %}<div class="field-error">{{ form.non_field_errors }}</div>{% endif %}
         <button class="button" type="submit">{{ button }}</button>
     </form>
 </section>
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% if signup_page %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const planSelect = document.getElementById('id_plan');
+    const preview = document.getElementById('signup-plan-preview');
+
+    if (!planSelect || !preview) {
+        return;
+    }
+
+    const urlTemplate = preview.dataset.urlTemplate;
+    const fields = {
+        name: preview.querySelector('[data-plan-name]'),
+        price: preview.querySelector('[data-plan-price]'),
+        cycle: preview.querySelector('[data-plan-cycle]'),
+        start: preview.querySelector('[data-plan-start]'),
+        end: preview.querySelector('[data-plan-end]'),
+        listings: preview.querySelector('[data-plan-listings]'),
+        staff: preview.querySelector('[data-plan-staff]'),
+        domain: preview.querySelector('[data-plan-domain]'),
+        subtotal: preview.querySelector('[data-plan-subtotal]'),
+        discount: preview.querySelector('[data-plan-discount]'),
+        gst: preview.querySelector('[data-plan-gst]'),
+        features: preview.querySelector('[data-plan-features]')
+    };
+
+    function money(value) {
+        return '₹' + Number(value || 0).toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function setLoading(isLoading) {
+        preview.classList.toggle('is-loading', isLoading);
+        if (window.AppLoader) {
+            if (isLoading) {
+                window.AppLoader.show();
+            } else {
+                window.AppLoader.hide();
+            }
+        }
+    }
+
+    function renderPlan(data) {
+        fields.name.textContent = data.name;
+        fields.price.textContent = money(data.amount_rupees);
+        fields.cycle.textContent = data.cycle;
+        fields.start.textContent = data.start;
+        fields.end.textContent = data.end;
+        fields.listings.textContent = data.listing_limit + ' listings';
+        fields.staff.textContent = data.staff_limit + ' seats';
+        fields.domain.textContent = data.custom_domain ? 'Included' : 'Not included';
+        fields.subtotal.textContent = money(data.subtotal_rupees);
+        fields.discount.textContent = money(data.discount_rupees);
+        fields.gst.textContent = money(data.gst_rupees) + ' @ ' + data.gst_percent + '%';
+        fields.features.innerHTML = '';
+        (data.features || []).forEach(function (feature) {
+            const item = document.createElement('li');
+            item.textContent = feature;
+            fields.features.appendChild(item);
+        });
+    }
+
+    async function loadPlan() {
+        if (!planSelect.value) {
+            return;
+        }
+        setLoading(true);
+        try {
+            const url = urlTemplate.replace('/0/', '/' + encodeURIComponent(planSelect.value) + '/');
+            const response = await fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-No-Loader': '1'
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Plan details could not be loaded.');
+            }
+            renderPlan(await response.json());
+        } catch (error) {
+            fields.name.textContent = 'Plan details unavailable';
+            fields.price.textContent = '';
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    planSelect.addEventListener('change', loadPlan);
+    loadPlan();
+});
+</script>
+{% endif %}
 {% endblock %}

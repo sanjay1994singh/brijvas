@@ -12,7 +12,6 @@ class SignupForm(forms.ModelForm):
     business_name = forms.CharField(max_length=160, label='Business / brand name', help_text='Your website address is created automatically from this name. Example: Sharma Realty becomes sharmarealty. If taken, a number is added.')
     email = forms.EmailField(required=False)
     phone = forms.CharField(required=True, max_length=20, label='Mobile number')
-    state = forms.ChoiceField(choices=[('', 'Select state')] + [(state, state) for state in INDIAN_STATES], required=False)
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
     confirm_password = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
     plan = forms.ModelChoiceField(queryset=Plan.objects.none(), empty_label=None)
@@ -24,7 +23,7 @@ class SignupForm(forms.ModelForm):
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'phone', 'state')
+        fields = ('email', 'phone')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,7 +32,6 @@ class SignupForm(forms.ModelForm):
             'business_name',
             'email',
             'phone',
-            'state',
             'password',
             'confirm_password',
             'plan',
@@ -67,7 +65,7 @@ class SignupForm(forms.ModelForm):
         user.username = self.cleaned_data['username']
         user.email = self.cleaned_data['email']
         user.phone = self.cleaned_data['phone']
-        user.state = self.cleaned_data['state']
+        user.state = ''
         user.country = 'India'
         user.user_type = 'owner'
         user.set_password(self.cleaned_data['password'])

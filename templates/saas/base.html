@@ -22,6 +22,7 @@
   {% block extra_head %}{% endblock %}
 </head>
 <body>
+  <div id="saas-loader" aria-label="Loading"><span></span></div>
   <header class="top">
     <a class="brand" href="{% if business %}{{ business.public_url }}{% else %}{% url 'home' %}{% endif %}">
       {% if business %}
@@ -94,5 +95,22 @@
       </div>
     </footer>
   {% endif %}
+<script>
+window.AppLoader = {
+  show: function () {
+    const loader = document.getElementById('saas-loader');
+    if (loader) loader.classList.add('is-visible');
+  },
+  hide: function () {
+    const loader = document.getElementById('saas-loader');
+    if (loader) loader.classList.remove('is-visible');
+  }
+};
+window.addEventListener('load', window.AppLoader.hide);
+window.addEventListener('pageshow', window.AppLoader.hide);
+document.addEventListener('submit', function (event) {
+  if (!event.target.matches('[data-no-loader]')) window.AppLoader.show();
+}, true);
+</script>
 </body>
 </html>

@@ -43,6 +43,31 @@ def _money(value):
     return f"Rs {value / 100:.2f}"
 
 
+def _plan_json(plan):
+    start = timezone.localdate()
+    end = start + timedelta(days=30)
+    breakup = billing.price_breakup(plan)
+    return {
+        'id': plan.pk,
+        'name': plan.name,
+        'cycle': '30 days / monthly',
+        'start': start.strftime('%d %b %Y'),
+        'end': end.strftime('%d %b %Y'),
+        'listing_limit': plan.listing_limit,
+        'staff_limit': plan.staff_limit,
+        'storage_mb': plan.storage_mb,
+        'custom_domain': plan.custom_domain,
+        'trial_enabled': plan.trial_enabled,
+        'trial_days': plan.trial_days,
+        'amount_rupees': breakup['amount'] / 100,
+        'subtotal_rupees': breakup['subtotal_amount'] / 100,
+        'discount_rupees': breakup['discount_amount'] / 100,
+        'gst_rupees': breakup['gst_amount'] / 100,
+        'gst_percent': breakup['gst_percent'],
+        'features': plan.active_features,
+    }
+
+
 def _invoice_pdf(order, tenant):
     from reportlab.lib import colors
     from reportlab.lib.pagesizes import A4
@@ -247,7 +272,7 @@ def signup(request):
                     username=form.cleaned_data['username'],
                     email=form.cleaned_data['email'],
                     phone=form.cleaned_data['phone'],
-                    state=form.cleaned_data['state'],
+                    state='',
                     password_hash=make_password(form.cleaned_data['password']),
                     plan=plan,
                     **billing.persisted_breakup(billing.price_breakup(plan)),
@@ -273,7 +298,18 @@ def signup(request):
             return redirect('saas_business', slug=tenant.slug)
         except (ValidationError, IntegrityError) as exc:
             form.add_error(None, '; '.join(exc.messages) if isinstance(exc, ValidationError) else 'This username or website address was just taken. Please choose another.')
-    return render(request, 'saas/form.html', {'form': form, 'heading': 'Launch your property website', 'button': 'Create my website', 'purchase_agreement': purchase_agreement})
+    return render(request, 'saas/form.html', {
+        'form': form,
+        'heading': 'Launch your property website',
+        'button': 'Create my website',
+        'purchase_agreement': purchase_agreement,
+        'signup_page': True,
+    })
+
+
+def signup_plan_detail(request, plan_id):
+    plan = get_object_or_404(Plan.objects.prefetch_related('features'), pk=plan_id, is_active=True)
+    return JsonResponse(_plan_json(plan))
 
 
 def pending_checkout(request, signup_id):
