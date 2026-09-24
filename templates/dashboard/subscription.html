@@ -61,7 +61,7 @@
                                     <div class="text-muted"><del>₹{{ item.subtotal_rupees|floatformat:2 }}</del> {{ item.breakup.discount_percent }}% off</div>
                                     {% endif %}
                                     <div class="display-6 fw-bold">₹{{ item.display_price_rupees|floatformat:2 }}</div>
-                                    <div class="text-muted">/ 30 days</div>
+                                    <div class="text-muted">/ month</div>
                                 </div>
                                 <ul class="list-unstyled text-muted mb-4">
                                     <li>✓ {{ item.plan.listing_limit }} property listings</li>
@@ -83,6 +83,12 @@
                                 <form class="mt-auto pt-3" method="post" action="{% url 'saas_checkout' request.tenant.slug %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="plan" value="{{ item.plan.pk }}">
+                                    <label class="form-label small text-muted" for="billing_months_{{ item.plan.pk }}">Billing duration</label>
+                                    <select class="form-select mb-3" id="billing_months_{{ item.plan.pk }}" name="billing_months">
+                                        <option value="1">1 month</option>
+                                        <option value="12">1 year</option>
+                                        <option value="24">2 years</option>
+                                    </select>
                                     <button class="btn {% if item.is_current %}btn-outline-primary{% else %}btn-primary{% endif %} w-100" {% if not item.plan.monthly_amount %}disabled{% endif %}>
                                         {% if item.is_current %}Renew plan{% elif item.is_upgrade %}Upgrade plan{% else %}Choose plan{% endif %}
                                     </button>

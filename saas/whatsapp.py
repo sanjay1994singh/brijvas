@@ -11,6 +11,8 @@ from django.core import signing
 from django.urls import reverse
 from django.utils import timezone
 
+from .billing import duration_days
+
 logger = logging.getLogger(__name__)
 WHATSAPP_INVOICE_SIGNER_SALT = 'saas.whatsapp.invoice'
 
@@ -30,6 +32,14 @@ def normalize_whatsapp_number(value):
 
 def _money(value):
     return f'Rs {value / 100:.2f}'
+
+
+def _cycle_label(months):
+    if months == 12:
+        return '1 year'
+    if months == 24:
+        return '2 years'
+    return '1 month'
 
 
 def _request_json(*, url, payload=None, headers=None, method='POST'):
@@ -143,7 +153,7 @@ def notify_payment_success(*, order):
     owner = tenant.owner
     workspace_url = tenant.public_url.rstrip('/')
     period_start = order.paid_at or order.created_at
-    period_end = period_start + timedelta(days=30)
+    period_end = period_start + timedelta(days=duration_days(order.billing_months))
     profile_url = f'{workspace_url}/accounts/profile/'
     token = signing.dumps({'order_id': order.pk}, salt=WHATSAPP_INVOICE_SIGNER_SALT)
     invoice_url = workspace_url + reverse('saas_whatsapp_invoice_pdf', kwargs={'token': token})
@@ -159,7 +169,7 @@ def notify_payment_success(*, order):
             tenant.name,
             workspace_url,
             order.plan.name,
-            '1 month',
+            _cycle_label(order.billing_months),
             period_start.strftime('%d %b %Y'),
             period_end.strftime('%d %b %Y'),
             _money(order.amount),

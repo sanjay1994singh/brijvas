@@ -35,10 +35,10 @@ class ReadOnlyAdmin(admin.ModelAdmin):
 
 @admin.register(BillingOrder)
 class BillingOrderAdmin(admin.ModelAdmin):
-    list_display = ('uuid', 'tenant', 'plan', 'status', 'amount_rupees', 'gst_percent', 'provider_order', 'provider_payment', 'created_at', 'paid_at')
+    list_display = ('uuid', 'tenant', 'plan', 'billing_months', 'status', 'amount_rupees', 'gst_percent', 'provider_order', 'provider_payment', 'created_at', 'paid_at')
     list_filter = ('status', 'plan', 'gst_percent', 'created_at', 'paid_at')
     search_fields = ('uuid', 'tenant__name', 'tenant__slug', 'provider_order', 'provider_payment')
-    readonly_fields = ('uuid', 'tenant', 'plan', 'amount', 'subtotal_amount', 'discount_percent', 'discount_amount', 'taxable_amount', 'gst_percent', 'gst_amount', 'currency', 'provider_order', 'provider_payment', 'status', 'created_at', 'paid_at')
+    readonly_fields = ('uuid', 'tenant', 'plan', 'billing_months', 'amount', 'subtotal_amount', 'discount_percent', 'discount_amount', 'taxable_amount', 'gst_percent', 'gst_amount', 'currency', 'provider_order', 'provider_payment', 'status', 'created_at', 'paid_at')
     fields = readonly_fields
 
     def has_add_permission(self, request):

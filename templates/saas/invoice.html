@@ -95,7 +95,7 @@
                         <td>01</td>
                         <td>
                             <strong>{{ order.plan.name }}</strong><br>
-                            Website subscription - 1 month<br>
+                            Website subscription - {{ cycle_label }}<br>
                             {% if order.paid_at %}<span class="muted-line">Period: {{ order.paid_at|date:"d M Y" }} to {{ business.subscription.expires_at|date:"d M Y" }}</span>{% endif %}
                         </td>
                         <td>1</td>

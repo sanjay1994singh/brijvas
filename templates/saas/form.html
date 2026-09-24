@@ -42,7 +42,7 @@
                     {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
                     {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
                 </p>
-                {% if signup_page and field.name == 'plan' %}
+                {% if signup_page and field.name == 'billing_months' %}
                     <div class="signup-plan-preview" id="signup-plan-preview" data-url-template="{% url 'saas_signup_plan_detail' 0 %}">
                         <div class="plan-preview-head">
                             <div>
@@ -81,9 +81,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const planSelect = document.getElementById('id_plan');
+    const monthsSelect = document.getElementById('id_billing_months');
     const preview = document.getElementById('signup-plan-preview');
 
-    if (!planSelect || !preview) {
+    if (!planSelect || !monthsSelect || !preview) {
         return;
     }
 
@@ -147,7 +148,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         setLoading(true);
         try {
-            const url = urlTemplate.replace('/0/', '/' + encodeURIComponent(planSelect.value) + '/');
+            const url = urlTemplate.replace('/0/', '/' + encodeURIComponent(planSelect.value) + '/')
+                + '?months=' + encodeURIComponent(monthsSelect.value || '1');
             const response = await fetch(url, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -167,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     planSelect.addEventListener('change', loadPlan);
+    monthsSelect.addEventListener('change', loadPlan);
     loadPlan();
 });
 </script>

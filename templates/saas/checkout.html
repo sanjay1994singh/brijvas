@@ -171,7 +171,7 @@
 
         <div class="checkout-panel">
             <span class="checkout-kicker">Payment summary</span>
-            <h2>{{ order.plan.name }} · 30 days</h2>
+            <h2>{{ order.plan.name }} · {{ cycle_label }}</h2>
 
             <div class="summary-row">
                 <span>Plan amount</span>
@@ -232,7 +232,7 @@ document.getElementById('pay').onclick = function () {
         amount: {{ order.amount }},
         currency: 'INR',
         name: '{{ business.name|escapejs }}',
-        description: '{{ order.plan.name|escapejs }} - 30 days',
+        description: '{{ order.plan.name|escapejs }} - {{ cycle_label|escapejs }}',
         prefill: {
             name: '{{ business.name|escapejs }}',
             email: '{{ business.owner.email|escapejs }}',

@@ -15,6 +15,11 @@ class SignupForm(forms.ModelForm):
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
     confirm_password = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
     plan = forms.ModelChoiceField(queryset=Plan.objects.none(), empty_label=None)
+    billing_months = forms.ChoiceField(
+        label='Billing cycle',
+        choices=((1, '1 month'), (12, '1 year'), (24, '2 years')),
+        initial=1,
+    )
     accepted_purchase_terms = forms.BooleanField(
         label='I have read and agree to the plan purchase terms.',
         required=True,
@@ -35,8 +40,15 @@ class SignupForm(forms.ModelForm):
             'password',
             'confirm_password',
             'plan',
+            'billing_months',
             'accepted_purchase_terms',
         ])
+
+    def clean_billing_months(self):
+        months = int(self.cleaned_data.get('billing_months') or 1)
+        if months not in (1, 12, 24):
+            raise forms.ValidationError('Select a valid billing cycle.')
+        return months
 
     def clean_email(self):
         email = (self.cleaned_data.get('email') or '').strip().lower()

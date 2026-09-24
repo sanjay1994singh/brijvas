@@ -23,7 +23,7 @@
     <div class="checkout-panel">
         <span class="eyebrow">Secure payment</span>
         <h1>Complete payment</h1>
-        <p>{{ pending.plan.name }} · 30 days</p>
+        <p>{{ pending.plan.name }} · {{ cycle_label }}</p>
 
         <div class="payable-box">
             <small>Final amount to pay</small>
@@ -107,7 +107,7 @@ document.getElementById('pay').onclick = function () {
         amount: {{ pending.amount }},
         currency: 'INR',
         name: '{{ pending.business_name|escapejs }}',
-        description: '{{ pending.plan.name|escapejs }} - 30 days',
+        description: '{{ pending.plan.name|escapejs }} - {{ cycle_label|escapejs }}',
         prefill: {
             name: '{{ pending.business_name|escapejs }}',
             email: '{{ pending.email|escapejs }}',

@@ -48,9 +48,14 @@ def _upgrade_credit(tenant, target_plan):
     }
 
 
-def price_breakup(plan, tenant=None):
+def duration_days(months):
+    return max(1, int(months or 1)) * 30
+
+
+def price_breakup(plan, tenant=None, months=1):
     settings_obj = BillingSetting.current()
-    subtotal = plan.monthly_amount
+    months = max(1, int(months or 1))
+    subtotal = plan.monthly_amount * months
     plan_discount = subtotal * plan.discount_percent // 100
     taxable_before_credit = max(0, subtotal - plan_discount)
     credit_detail = _upgrade_credit(tenant, plan)
@@ -102,12 +107,13 @@ def provider(method, path, data=None):
         raise ValidationError('Payment provider is unavailable. Please retry shortly.') from exc
 
 
-def create_order(tenant, plan):
-    breakup = price_breakup(plan, tenant=tenant)
+def create_order(tenant, plan, months=1):
+    months = max(1, int(months or 1))
+    breakup = price_breakup(plan, tenant=tenant, months=months)
     if not plan.is_active or breakup['amount'] < 100:
         raise ValidationError('Online checkout for this plan is not enabled. Contact support.')
     BillingOrder.objects.filter(tenant=tenant, status='pending').update(status='failed')
-    order = BillingOrder.objects.create(tenant=tenant, plan=plan, **persisted_breakup(breakup))
+    order = BillingOrder.objects.create(tenant=tenant, plan=plan, billing_months=months, **persisted_breakup(breakup))
     result = provider('POST', 'orders', {
         'amount': order.amount,
         'currency': order.currency,
@@ -118,6 +124,7 @@ def create_order(tenant, plan):
             'tenant_slug': tenant.slug,
             'tenant_id': str(tenant.pk),
             'plan_slug': plan.slug,
+            'billing_months': str(months),
         },
     })
     if not result.get('id') or result.get('amount') != order.amount or result.get('currency') != order.currency:
@@ -139,6 +146,7 @@ def create_pending_signup_order(pending):
             'pending_signup_uuid': str(pending.uuid),
             'username': pending.username,
             'plan_slug': pending.plan.slug,
+            'billing_months': str(pending.billing_months),
         },
     })
     if not result.get('id') or result.get('amount') != pending.amount or result.get('currency') != pending.currency:
@@ -186,7 +194,7 @@ def settle(order, payment_id):
         if not subscription.is_trial and subscription.plan_id == order.plan_id:
             start = max(start, subscription.expires_at)
         subscription.plan = order.plan
-        subscription.expires_at = start + timedelta(days=30)
+        subscription.expires_at = start + timedelta(days=duration_days(order.billing_months))
         subscription.is_trial = False
         subscription.save()
         tenant.status = 'active'
@@ -270,13 +278,14 @@ def settle_pending_signup(pending, payment_id):
         tenant = provision(owner=user, name=pending.business_name, plan=pending.plan, slug=pending.username)
         subscription = Subscription.objects.select_for_update().get(tenant=tenant)
         subscription.is_trial = False
-        subscription.expires_at = timezone.now() + timedelta(days=30)
+        subscription.expires_at = timezone.now() + timedelta(days=duration_days(pending.billing_months))
         subscription.save(update_fields=['is_trial', 'expires_at'])
         tenant.status = 'active'
         tenant.save(update_fields=['status'])
         order = BillingOrder.objects.create(
             tenant=tenant,
             plan=pending.plan,
+            billing_months=pending.billing_months,
             amount=pending.amount,
             subtotal_amount=pending.subtotal_amount,
             discount_percent=pending.discount_percent,

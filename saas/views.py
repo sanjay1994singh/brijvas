@@ -43,14 +43,32 @@ def _money(value):
     return f"Rs {value / 100:.2f}"
 
 
-def _plan_json(plan):
+def _billing_months(value):
+    try:
+        months = int(value)
+    except (TypeError, ValueError):
+        months = 1
+    return months if months in (1, 12, 24) else 1
+
+
+def _cycle_label(months):
+    if months == 12:
+        return '1 year'
+    if months == 24:
+        return '2 years'
+    return '1 month'
+
+
+def _plan_json(plan, months=1):
+    months = _billing_months(months)
     start = timezone.localdate()
-    end = start + timedelta(days=30)
-    breakup = billing.price_breakup(plan)
+    end = start + timedelta(days=billing.duration_days(months))
+    breakup = billing.price_breakup(plan, months=months)
     return {
         'id': plan.pk,
         'name': plan.name,
-        'cycle': '30 days / monthly',
+        'billing_months': months,
+        'cycle': _cycle_label(months),
         'start': start.strftime('%d %b %Y'),
         'end': end.strftime('%d %b %Y'),
         'listing_limit': plan.listing_limit,
@@ -97,7 +115,8 @@ def _invoice_pdf(order, tenant):
     issue_date = order.paid_at or order.created_at
     owner = tenant.owner
     period_start = order.paid_at or order.created_at
-    period_end = period_start + timedelta(days=30)
+    cycle_label = _cycle_label(order.billing_months)
+    period_end = period_start + timedelta(days=billing.duration_days(order.billing_months))
 
     seller_lines = [
         billing_setting.business_name,
@@ -137,7 +156,7 @@ def _invoice_pdf(order, tenant):
         [
             "01",
             Paragraph(
-                f"<b>{order.plan.name}</b><br/>Website subscription - 1 month<br/>"
+                f"<b>{order.plan.name}</b><br/>Website subscription - {cycle_label}<br/>"
                 f"Period: {period_start:%d %b %Y} to {period_end:%d %b %Y}",
                 styles["Tiny"],
             ),
@@ -266,6 +285,7 @@ def signup(request):
     if request.method == 'POST' and form.is_valid():
         try:
             plan = form.cleaned_data['plan']
+            billing_months = form.cleaned_data['billing_months']
             if not plan.trial_enabled:
                 pending = PendingSignup.objects.create(
                     business_name=form.cleaned_data['business_name'],
@@ -275,7 +295,8 @@ def signup(request):
                     state='',
                     password_hash=make_password(form.cleaned_data['password']),
                     plan=plan,
-                    **billing.persisted_breakup(billing.price_breakup(plan)),
+                    billing_months=billing_months,
+                    **billing.persisted_breakup(billing.price_breakup(plan, months=billing_months)),
                 )
                 billing.create_pending_signup_order(pending)
                 record_purchase_agreement_acceptance(
@@ -309,7 +330,7 @@ def signup(request):
 
 def signup_plan_detail(request, plan_id):
     plan = get_object_or_404(Plan.objects.prefetch_related('features'), pk=plan_id, is_active=True)
-    return JsonResponse(_plan_json(plan))
+    return JsonResponse(_plan_json(plan, request.GET.get('months')))
 
 
 def pending_checkout(request, signup_id):
@@ -328,7 +349,12 @@ def pending_checkout(request, signup_id):
             messages.error(request, '; '.join(exc.messages))
             return redirect('saas_signup')
     purchase_agreement = active_purchase_agreement()
-    return render(request, 'saas/pending_checkout.html', {'pending': pending, 'key_id': settings.RAZORPAY_KEY_ID, 'purchase_agreement': purchase_agreement})
+    return render(request, 'saas/pending_checkout.html', {
+        'pending': pending,
+        'key_id': settings.RAZORPAY_KEY_ID,
+        'purchase_agreement': purchase_agreement,
+        'cycle_label': _cycle_label(pending.billing_months),
+    })
 
 
 @require_POST
@@ -415,6 +441,11 @@ def business(request, tenant):
         'plans': Plan.objects.filter(is_active=True),
         'payments_enabled': payments_enabled,
         'payment_available': payment_available,
+        'billing_cycles': (
+            (1, '1 month'),
+            (12, '1 year'),
+            (24, '2 years'),
+        ),
     })
 
 
@@ -554,8 +585,9 @@ def verify_domain(request, tenant, pk):
 @require_POST
 def checkout(request, tenant):
     plan = get_object_or_404(Plan, pk=request.POST.get('plan'), is_active=True)
+    billing_months = _billing_months(request.POST.get('billing_months'))
     try:
-        order = billing.create_order(tenant, plan)
+        order = billing.create_order(tenant, plan, months=billing_months)
     except ValidationError as exc:
         messages.error(request, '; '.join(exc.messages))
         return redirect('saas_business', slug=tenant.slug)
@@ -569,6 +601,7 @@ def checkout(request, tenant):
         'purchase_agreement': purchase_agreement,
         'plan_discount_rupees': plan_discount / 100,
         'last_paid_credit_rupees': last_paid_credit / 100,
+        'cycle_label': _cycle_label(order.billing_months),
     })
 
 
@@ -599,7 +632,12 @@ def payment_verify(request, tenant):
 @business_admin
 def invoice(request, tenant, order_uuid):
     order = get_object_or_404(BillingOrder.objects.select_related('plan', 'tenant', 'tenant__owner'), uuid=order_uuid, tenant=tenant, status='paid')
-    return render(request, 'saas/invoice.html', {'business': tenant, 'order': order, 'billing_setting': billing.BillingSetting.current()})
+    return render(request, 'saas/invoice.html', {
+        'business': tenant,
+        'order': order,
+        'billing_setting': billing.BillingSetting.current(),
+        'cycle_label': _cycle_label(order.billing_months),
+    })
 
 
 @business_admin

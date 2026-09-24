@@ -87,7 +87,7 @@
     </div>
     <div class="vf-dashboard-row"><span>Domain setup</span><b>Ready</b></div>
     <div class="vf-dashboard-row"><span>Google Analytics</span><b>Connected</b></div>
-    <div class="vf-dashboard-row"><span>Next payment</span><b>30 days</b></div>
+    <div class="vf-dashboard-row"><span>Billing</span><b>1 month / 1 year / 2 years</b></div>
   </div>
 </section>
 
@@ -143,7 +143,7 @@
     {% for plan in plans %}
     <article class="card">
       <h3>{{ plan.name }}</h3>
-      <p class="price">{% if plan.monthly_amount %}{% if plan.has_discount %}<small><s>₹{{ plan.price|floatformat:0 }}</s> {{ plan.discount_percent }}% off</small><br>₹{{ plan.discounted_price|floatformat:0 }}{% else %}₹{{ plan.price|floatformat:0 }}{% endif %}<small> / 30 days</small>{% else %}Trial available{% endif %}</p>
+      <p class="price">{% if plan.monthly_amount %}{% if plan.has_discount %}<small><s>₹{{ plan.price|floatformat:0 }}</s> {{ plan.discount_percent }}% off</small><br>₹{{ plan.discounted_price|floatformat:0 }}{% else %}₹{{ plan.price|floatformat:0 }}{% endif %}<small> / month</small>{% else %}Trial available{% endif %}</p>
       <ul>{% for feature in plan.active_features %}<li>{{ feature }}</li>{% endfor %}</ul>
       <a class="button secondary" href="{% url 'saas_signup' %}?plan={{ plan.slug }}">Choose {{ plan.name }}</a>
     </article>
