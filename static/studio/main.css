@@ -337,7 +337,13 @@ p { color: var(--muted); }
 .form-card form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 20px; }
 .form-card form > p, .form-card form > div { margin: 0; }
 .form-card form > p:first-of-type, .form-card form > button, .form-card form > .errorlist, .form-card .agreement-block { grid-column: 1 / -1; }
-.form-card .signup-form > p:first-of-type { grid-column: auto; }
+.form-card .signup-form > p:first-of-type { grid-column: 1 / -1; }
+.form-card .signup-form > .field-email { grid-column: 1; grid-row: 2; }
+.form-card .signup-form > .field-phone { grid-column: 2; grid-row: 2; }
+.form-card .signup-form > .field-password { grid-column: 1; grid-row: 3; }
+.form-card .signup-form > .field-confirm_password { grid-column: 2; grid-row: 3; }
+.form-card .signup-form > .field-plan { grid-column: 1; grid-row: 4; }
+.form-card .signup-form > .field-billing_months { grid-column: 2; grid-row: 4; }
 
 .signup-card {
   max-width: 980px;
@@ -1265,6 +1271,15 @@ code {
   .two-col, .contact-grid { grid-template-columns: 1fr; }
   .form-card form { grid-template-columns: 1fr; }
   .form-card .signup-form > p:first-of-type { grid-column: 1 / -1; }
+  .form-card .signup-form > .field-email,
+  .form-card .signup-form > .field-phone,
+  .form-card .signup-form > .field-password,
+  .form-card .signup-form > .field-confirm_password,
+  .form-card .signup-form > .field-plan,
+  .form-card .signup-form > .field-billing_months {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
   .signup-card-hero { grid-template-columns: 1fr; align-items: start; }
   .signup-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); min-width: 0; }
   .signup-steps span { text-align: center; white-space: normal; }
