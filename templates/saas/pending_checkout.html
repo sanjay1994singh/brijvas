@@ -11,11 +11,7 @@
     .payable-box { background:var(--green); color:#fff; border-radius:8px; padding:22px; margin:24px 0; }
     .payable-box small { display:block; color:rgba(255,255,255,.78); margin-bottom:6px; }
     .payable-box strong { display:block; font-size:42px; line-height:1; }
-    .agreement-block { display:grid; gap:12px; margin-top:22px; padding:16px; border:1px solid var(--line); border-radius:8px; background:#fbfdfc; }
-    .agreement-block h2 { margin:0; font-size:18px; }
-    .agreement-content { max-height:180px; overflow:auto; padding:12px; border:1px solid #d9e4de; border-radius:8px; background:#fff; color:#314840; font-size:14px; }
-    .agreement-check { display:flex; align-items:flex-start; gap:10px; font-weight:800; }
-    .agreement-check input { width:18px; min-width:18px; height:18px; margin-top:3px; }
+    .payment-note { margin:22px 0 0; padding:14px 16px; border:1px solid #d9e8e0; border-radius:8px; background:#f7fbf8; color:#48645a; font-weight:700; }
     #payment-status { margin-top:14px; color:#9f3a38; }
 </style>
 
@@ -53,27 +49,7 @@
             <strong>₹{{ pending.amount_rupees|floatformat:2 }}</strong>
         </div>
 
-        <p>Your website and account will be created only after payment is verified.</p>
-
-        <div class="agreement-block">
-            {% if purchase_agreement %}
-                <h2>{{ purchase_agreement.title }}</h2>
-                <div class="agreement-content">{{ purchase_agreement.content|linebreaks }}</div>
-                <label class="agreement-check">
-                    <input type="checkbox" id="accepted_purchase_terms">
-                    <span>{{ purchase_agreement.checkbox_label }}</span>
-                </label>
-            {% else %}
-                <h2>Plan Purchase Agreement</h2>
-                <div class="agreement-content">
-                    <p>Please review the selected plan, billing amount, GST, and business details before paying. Your workspace is created only after successful payment verification.</p>
-                </div>
-                <label class="agreement-check">
-                    <input type="checkbox" id="accepted_purchase_terms">
-                    <span>I have read and agree to the plan purchase terms.</span>
-                </label>
-            {% endif %}
-        </div>
+        <p class="payment-note">Plan purchase agreement signup form par accept ho chuka hai. Payment verify hone ke baad website aur account create hoga.</p>
 
         <button class="button" id="pay">Pay securely</button>
         <p id="payment-status" role="status"></p>
@@ -92,11 +68,6 @@
 <script>
 document.getElementById('pay').onclick = function () {
     const status = document.getElementById('payment-status');
-    const accepted = document.getElementById('accepted_purchase_terms');
-    if (!accepted || !accepted.checked) {
-        status.textContent = 'Please read and accept the plan purchase terms to continue.';
-        return;
-    }
     if (!window.Razorpay) {
         status.textContent = 'Payment service could not load. Please retry.';
         return;
