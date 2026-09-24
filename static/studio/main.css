@@ -339,14 +339,111 @@ p { color: var(--muted); }
 .form-card form > p:first-of-type, .form-card form > button, .form-card form > .errorlist, .form-card .agreement-block { grid-column: 1 / -1; }
 .form-card .signup-form > p:first-of-type { grid-column: auto; }
 
+.signup-card {
+  max-width: 980px;
+  overflow: hidden;
+  padding: 0;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(145deg, rgba(18, 104, 79, 0.35), rgba(178, 122, 45, 0.22)) border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 22px 60px rgba(16, 36, 31, 0.13);
+}
+
+.signup-card-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: end;
+  padding: clamp(24px, 4vw, 38px);
+  background:
+    radial-gradient(circle at 85% 18%, rgba(178, 122, 45, 0.14), transparent 24rem),
+    linear-gradient(135deg, #f2faf6, #ffffff 58%);
+  border-bottom: 1px solid #dfece5;
+}
+
+.signup-card-hero h1 {
+  max-width: 620px;
+  margin: 8px 0 8px;
+  font-size: clamp(34px, 4.5vw, 52px);
+}
+
+.signup-card-hero p {
+  max-width: 650px;
+  margin: 0;
+  font-size: 17px;
+}
+
+.signup-steps {
+  display: grid;
+  gap: 8px;
+  min-width: 132px;
+}
+
+.signup-steps span {
+  border: 1px solid #d7e7df;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #31544a;
+  padding: 8px 13px;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.signup-card .signup-form {
+  padding: clamp(22px, 4vw, 38px);
+  background: linear-gradient(180deg, #fff, #fbfdfc);
+}
+
+.signup-card .signup-form > p {
+  display: grid;
+  gap: 7px;
+}
+
+.signup-card .signup-form label {
+  color: #17342c;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.signup-card .signup-form small {
+  color: #668078;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.signup-card .signup-form input,
+.signup-card .signup-form select,
+.signup-card .signup-form textarea {
+  background: #fff;
+  border-color: #cfe0d8;
+  box-shadow: inset 0 1px 0 rgba(16, 36, 31, 0.03);
+}
+
+.signup-card .signup-form input:focus,
+.signup-card .signup-form select:focus,
+.signup-card .signup-form textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 4px rgba(18, 104, 79, 0.11);
+  outline: none;
+}
+
+.signup-card .signup-form > button {
+  min-height: 52px;
+  font-size: 15px;
+}
+
 .signup-plan-preview {
   grid-column: 1 / -1;
   display: grid;
   gap: 18px;
-  border: 1px solid #dce8e2;
+  border: 1px solid #cce0d7;
   border-radius: 8px;
-  background: #eef8f3;
-  padding: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(18, 104, 79, 0.08), transparent 18rem),
+    #eef8f3;
+  padding: 26px;
   box-shadow: 0 12px 28px rgba(18, 83, 65, 0.07);
   transition: opacity 0.2s ease;
 }
@@ -391,7 +488,7 @@ p { color: var(--muted); }
   display: inline;
   margin: 0;
   color: #062f27;
-  font-size: 40px;
+  font-size: 42px;
   letter-spacing: 0;
 }
 
@@ -436,8 +533,8 @@ p { color: var(--muted); }
 .plan-preview-breakup {
   display: grid;
   gap: 0;
-  border-top: 1px solid #d5e5dc;
-  border-bottom: 1px solid #d5e5dc;
+  border-top: 1px solid #cddfd7;
+  border-bottom: 1px solid #cddfd7;
 }
 
 .plan-preview-breakup div {
@@ -445,7 +542,7 @@ p { color: var(--muted); }
   justify-content: space-between;
   gap: 18px;
   padding: 13px 0;
-  border-bottom: 1px solid #d5e5dc;
+  border-bottom: 1px solid #cddfd7;
   align-items: center;
 }
 
@@ -1168,6 +1265,9 @@ code {
   .two-col, .contact-grid { grid-template-columns: 1fr; }
   .form-card form { grid-template-columns: 1fr; }
   .form-card .signup-form > p:first-of-type { grid-column: 1 / -1; }
+  .signup-card-hero { grid-template-columns: 1fr; align-items: start; }
+  .signup-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); min-width: 0; }
+  .signup-steps span { text-align: center; white-space: normal; }
   .plan-preview-head { flex-direction: column; }
   .plan-preview-price { width: 100%; text-align: left; white-space: normal; }
   .plan-preview-grid, .plan-preview-features { grid-template-columns: 1fr; }
@@ -1181,6 +1281,10 @@ code {
   .top nav { gap: 12px; }
   .brand { font-size: 19px; }
   .mark { width: 38px; height: 38px; }
+  .signup-card { margin: 28px auto; }
+  .signup-card-hero,
+  .signup-card .signup-form { padding: 20px; }
+  .signup-steps { grid-template-columns: 1fr; }
   .value-grid, .stats, .mini-grid, .vf-steps, .vf-feature-grid, .vf-dashboard-grid, .policy-grid { grid-template-columns: 1fr; }
   .vf-site-preview { align-items: flex-start; flex-direction: column; min-height: 220px; }
   .vf-listing-mini { grid-template-columns: 46px minmax(0, 1fr); }

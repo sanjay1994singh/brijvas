@@ -8,9 +8,24 @@
     .agreement-check input { width:18px; min-width:18px; height:18px; margin-top:3px; padding:0; }
     .field-error { color:#9f3a38; font-size:13px; margin-top:6px; }
 </style>
-<section class="form-card">
-    <span class="eyebrow">{% if business %}{{ business.name }}{% else %}VISTAFLO{% endif %}</span>
-    <h1>{{ heading }}</h1>
+<section class="form-card{% if signup_page %} signup-card{% endif %}">
+    {% if signup_page %}
+        <div class="signup-card-hero">
+            <div>
+                <span class="eyebrow">VISTAFLO</span>
+                <h1>{{ heading }}</h1>
+                <p>Business name, plan, billing cycle aur payment details ek hi place par clearly review karein.</p>
+            </div>
+            <div class="signup-steps" aria-label="Signup steps">
+                <span>1 Details</span>
+                <span>2 Plan</span>
+                <span>3 Payment</span>
+            </div>
+        </div>
+    {% else %}
+        <span class="eyebrow">{% if business %}{{ business.name }}{% else %}VISTAFLO{% endif %}</span>
+        <h1>{{ heading }}</h1>
+    {% endif %}
     <form method="post" enctype="multipart/form-data" class="{% if signup_page %}signup-form{% endif %}">
         {% csrf_token %}
         {% for field in form.hidden_fields %}{{ field }}{% endfor %}
@@ -135,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderPlan(data) {
         fields.name.textContent = data.name;
-        fields.price.textContent = money(data.amount_rupees);
+        fields.price.textContent = money(data.taxable_rupees);
         fields.cycle.textContent = data.cycle;
         fields.priceNote.textContent = 'after discount for ' + data.cycle;
         fields.start.textContent = data.start;
