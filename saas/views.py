@@ -79,9 +79,11 @@ def _plan_json(plan, months=1):
         'trial_days': plan.trial_days,
         'amount_rupees': breakup['amount'] / 100,
         'subtotal_rupees': breakup['subtotal_amount'] / 100,
+        'taxable_rupees': breakup['taxable_amount'] / 100,
         'discount_rupees': breakup['discount_amount'] / 100,
         'gst_rupees': breakup['gst_amount'] / 100,
         'gst_percent': breakup['gst_percent'],
+        'discount_percent': breakup['discount_percent'],
         'features': plan.active_features,
     }
 

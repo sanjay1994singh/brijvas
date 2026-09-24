@@ -46,24 +46,29 @@
                     <div class="signup-plan-preview" id="signup-plan-preview" data-url-template="{% url 'saas_signup_plan_detail' 0 %}">
                         <div class="plan-preview-head">
                             <div>
-                                <span>Selected plan</span>
+                                <span>Your selected plan</span>
                                 <strong data-plan-name>Loading...</strong>
                             </div>
-                            <div class="plan-preview-price" data-plan-price>...</div>
+                            <div class="plan-preview-price"><strong data-plan-price>...</strong> <span data-plan-price-note>after discount</span></div>
                         </div>
+                        <div class="plan-preview-dates">
+                            <span>Billing cycle: <b data-plan-cycle>...</b></span>
+                            <span>Valid: <b data-plan-start>...</b> to <b data-plan-end>...</b></span>
+                        </div>
+                        <div class="plan-preview-breakup" aria-label="Plan payment summary">
+                            <div><span>Plan amount</span><strong data-plan-subtotal>...</strong></div>
+                            <div><span data-plan-discount-label>Offer discount</span><strong class="discount-value" data-plan-discount>...</strong></div>
+                            <div><span>Taxable value</span><strong data-plan-taxable>...</strong></div>
+                            <div><span data-plan-gst-label>GST</span><strong data-plan-gst>...</strong></div>
+                            <div class="plan-preview-total"><span>Final amount after GST and discount</span><strong data-plan-final>...</strong></div>
+                        </div>
+                        <p class="plan-preview-note">Total payable includes GST for the selected duration. Plan limits below apply as per selected plan.</p>
                         <div class="plan-preview-grid">
-                            <div><span>Billing cycle</span><strong data-plan-cycle>...</strong></div>
-                            <div><span>Plan start</span><strong data-plan-start>...</strong></div>
-                            <div><span>Plan end</span><strong data-plan-end>...</strong></div>
                             <div><span>Properties</span><strong data-plan-listings>...</strong></div>
                             <div><span>Staff seats</span><strong data-plan-staff>...</strong></div>
                             <div><span>Custom domain</span><strong data-plan-domain>...</strong></div>
                         </div>
-                        <div class="plan-preview-breakup">
-                            <span>Subtotal: <b data-plan-subtotal>...</b></span>
-                            <span>Discount: <b data-plan-discount>...</b></span>
-                            <span>GST: <b data-plan-gst>...</b></span>
-                        </div>
+                        <strong class="plan-preview-includes"><span data-plan-includes-name>Selected plan</span> includes</strong>
                         <ul class="plan-preview-features" data-plan-features></ul>
                     </div>
                 {% endif %}
@@ -92,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const fields = {
         name: preview.querySelector('[data-plan-name]'),
         price: preview.querySelector('[data-plan-price]'),
+        priceNote: preview.querySelector('[data-plan-price-note]'),
         cycle: preview.querySelector('[data-plan-cycle]'),
         start: preview.querySelector('[data-plan-start]'),
         end: preview.querySelector('[data-plan-end]'),
@@ -99,14 +105,19 @@ document.addEventListener('DOMContentLoaded', function () {
         staff: preview.querySelector('[data-plan-staff]'),
         domain: preview.querySelector('[data-plan-domain]'),
         subtotal: preview.querySelector('[data-plan-subtotal]'),
+        taxable: preview.querySelector('[data-plan-taxable]'),
         discount: preview.querySelector('[data-plan-discount]'),
+        discountLabel: preview.querySelector('[data-plan-discount-label]'),
         gst: preview.querySelector('[data-plan-gst]'),
+        gstLabel: preview.querySelector('[data-plan-gst-label]'),
+        final: preview.querySelector('[data-plan-final]'),
+        includesName: preview.querySelector('[data-plan-includes-name]'),
         features: preview.querySelector('[data-plan-features]')
     };
 
     function money(value) {
         return '₹' + Number(value || 0).toLocaleString('en-IN', {
-            minimumFractionDigits: 2,
+            minimumFractionDigits: 0,
             maximumFractionDigits: 2
         });
     }
@@ -126,14 +137,20 @@ document.addEventListener('DOMContentLoaded', function () {
         fields.name.textContent = data.name;
         fields.price.textContent = money(data.amount_rupees);
         fields.cycle.textContent = data.cycle;
+        fields.priceNote.textContent = 'after discount for ' + data.cycle;
         fields.start.textContent = data.start;
         fields.end.textContent = data.end;
+        fields.includesName.textContent = data.name;
         fields.listings.textContent = data.listing_limit + ' listings';
         fields.staff.textContent = data.staff_limit + ' seats';
         fields.domain.textContent = data.custom_domain ? 'Included' : 'Not included';
         fields.subtotal.textContent = money(data.subtotal_rupees);
-        fields.discount.textContent = money(data.discount_rupees);
-        fields.gst.textContent = money(data.gst_rupees) + ' @ ' + data.gst_percent + '%';
+        fields.discountLabel.textContent = data.discount_percent ? data.discount_percent + '% offer discount' : 'Offer discount';
+        fields.discount.textContent = '-' + money(data.discount_rupees);
+        fields.taxable.textContent = money(data.taxable_rupees);
+        fields.gstLabel.textContent = 'GST @ ' + data.gst_percent + '%';
+        fields.gst.textContent = money(data.gst_rupees);
+        fields.final.textContent = money(data.amount_rupees);
         fields.features.innerHTML = '';
         (data.features || []).forEach(function (feature) {
             const item = document.createElement('li');
