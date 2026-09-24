@@ -10,7 +10,7 @@ from .services import allocate_business_slug, validate_domain_for_tenant
 
 class SignupForm(forms.ModelForm):
     business_name = forms.CharField(max_length=160, label='Business / brand name', help_text='Your website address is created automatically from this name. Example: Sharma Realty becomes sharmarealty. If taken, a number is added.')
-    email = forms.EmailField(required=False)
+    email = forms.EmailField(required=False, label='Email (optional)')
     phone = forms.CharField(required=True, max_length=20, label='Mobile number')
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
     confirm_password = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
