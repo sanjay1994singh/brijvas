@@ -23,13 +23,14 @@
     <text x="196" y="70" fill="#fff" font-family="Manrope, Arial, sans-serif" font-size="48" font-weight="800">Vistaflo</text>
     <text x="199" y="103" fill="#d9eadf" font-family="DM Sans, Arial, sans-serif" font-size="18" font-weight="700">Property website platform</text>
   </g>
-  <g transform="translate(145 326)">
-    <text fill="#10241f" font-family="Manrope, Arial, sans-serif" font-size="64" font-weight="800">
-      <tspan x="0" y="0">Launch property websites</tspan>
-      <tspan x="0" y="72">with listings, leads</tspan>
-      <tspan x="0" y="144">and billing.</tspan>
+  <g transform="translate(145 316)">
+    <text fill="#10241f" font-family="Manrope, Arial, sans-serif" font-size="60" font-weight="800">
+      <tspan x="0" y="0">Launch property</tspan>
+      <tspan x="0" y="68">websites with</tspan>
+      <tspan x="0" y="136">listings, leads</tspan>
+      <tspan x="0" y="204">and billing.</tspan>
     </text>
-    <text y="220" fill="#60746c" font-family="DM Sans, Arial, sans-serif" font-size="30" font-weight="600">Original platform assets for Vistaflo.</text>
+    <text y="278" fill="#60746c" font-family="DM Sans, Arial, sans-serif" font-size="28" font-weight="600">Original platform assets for Vistaflo.</text>
   </g>
   <g transform="translate(940 126)">
     <rect width="500" height="468" rx="26" fill="#fff" stroke="#cfe0d7"/>
