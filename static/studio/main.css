@@ -1250,10 +1250,40 @@ code {
 .vf-pricing .card {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  padding: 26px;
 }
 
 .vf-pricing .button {
   margin-top: auto;
+}
+
+.vf-pricing-section {
+  margin-top: 18px;
+}
+
+.vf-pricing-section .vf-section-lead {
+  max-width: 680px;
+  margin-top: -4px;
+}
+
+.vf-pricing {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  margin-top: 22px;
+}
+
+.vf-pricing .price {
+  margin: 16px 0 14px;
+  line-height: 1.05;
+}
+
+.vf-pricing .card ul {
+  margin: 14px 0 22px;
+}
+
+.vf-pricing .card li {
+  padding: 5px 0;
 }
 
 @media (max-width: 900px) {
@@ -1265,7 +1295,8 @@ code {
   .policy-hero,
   .vf-trust-panel { grid-template-columns: 1fr; min-height: 0; }
   .vf-steps,
-  .vf-feature-grid { grid-template-columns: 1fr 1fr; }
+  .vf-feature-grid,
+  .vf-pricing { grid-template-columns: 1fr 1fr; }
   .vf-dashboard-grid { grid-template-columns: repeat(2, 1fr); }
   .value-grid, .stats { grid-template-columns: 1fr 1fr; }
   .two-col, .contact-grid { grid-template-columns: 1fr; }
@@ -1300,7 +1331,7 @@ code {
   .signup-card-hero,
   .signup-card .signup-form { padding: 20px; }
   .signup-steps { grid-template-columns: 1fr; }
-  .value-grid, .stats, .mini-grid, .vf-steps, .vf-feature-grid, .vf-dashboard-grid, .policy-grid { grid-template-columns: 1fr; }
+  .value-grid, .stats, .mini-grid, .vf-steps, .vf-feature-grid, .vf-pricing, .vf-dashboard-grid, .policy-grid { grid-template-columns: 1fr; }
   .vf-site-preview { align-items: flex-start; flex-direction: column; min-height: 220px; }
   .vf-listing-mini { grid-template-columns: 46px minmax(0, 1fr); }
   .vf-listing-mini strong { grid-column: 2; }

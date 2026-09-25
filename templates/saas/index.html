@@ -44,6 +44,24 @@
   </div>
 </section>
 
+<section class="section vf-pricing-section" id="pricing">
+  <p class="eyebrow">Plans</p>
+  <h2>Business size ke according plan choose karein.</h2>
+  <p class="vf-section-lead">Plan select karte hi signup page par monthly, yearly ya 2 years amount, discount aur GST clear dikhega.</p>
+  <div class="cards vf-pricing">
+    {% for plan in plans %}
+    <article class="card">
+      <h3>{{ plan.name }}</h3>
+      <p class="price">{% if plan.monthly_amount %}{% if plan.has_discount %}<small><s>₹{{ plan.price|floatformat:0 }}</s> {{ plan.discount_percent }}% off</small><br>₹{{ plan.discounted_price|floatformat:0 }}{% else %}₹{{ plan.price|floatformat:0 }}{% endif %}<small> / month</small>{% else %}Trial available{% endif %}</p>
+      <ul>{% for feature in plan.active_features %}<li>{{ feature }}</li>{% endfor %}</ul>
+      <a class="button secondary" href="{% url 'saas_signup' %}?plan={{ plan.slug }}">Choose {{ plan.name }}</a>
+    </article>
+    {% empty %}
+    <p>Plans are being configured. Please contact support.</p>
+    {% endfor %}
+  </div>
+</section>
+
 <section class="vf-steps" aria-label="How Vistaflo works">
   <article>
     <strong>1</strong>
@@ -136,20 +154,4 @@
   <img src="{% static 'brand/vistaflo-banner.svg' %}" alt="Vistaflo property website platform banner">
 </section>
 
-<section class="section" id="pricing">
-  <p class="eyebrow">Plans</p>
-  <h2>Business size ke according plan choose karein.</h2>
-  <div class="cards vf-pricing">
-    {% for plan in plans %}
-    <article class="card">
-      <h3>{{ plan.name }}</h3>
-      <p class="price">{% if plan.monthly_amount %}{% if plan.has_discount %}<small><s>₹{{ plan.price|floatformat:0 }}</s> {{ plan.discount_percent }}% off</small><br>₹{{ plan.discounted_price|floatformat:0 }}{% else %}₹{{ plan.price|floatformat:0 }}{% endif %}<small> / month</small>{% else %}Trial available{% endif %}</p>
-      <ul>{% for feature in plan.active_features %}<li>{{ feature }}</li>{% endfor %}</ul>
-      <a class="button secondary" href="{% url 'saas_signup' %}?plan={{ plan.slug }}">Choose {{ plan.name }}</a>
-    </article>
-    {% empty %}
-    <p>Plans are being configured. Please contact support.</p>
-    {% endfor %}
-  </div>
-</section>
 {% endblock %}

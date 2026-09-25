@@ -3,6 +3,7 @@ media/
 __pycache__/
 *.py[cod]
 .env
+.idea/
 .venv/
 .dev/
 *.sqlite3
