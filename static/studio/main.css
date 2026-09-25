@@ -1025,7 +1025,8 @@ code {
   min-height: 210px;
   border-radius: 8px;
   background:
-    linear-gradient(145deg, rgba(15, 63, 50, 0.86), rgba(36, 78, 99, 0.74)),
+    linear-gradient(145deg, rgba(9, 45, 37, 0.86), rgba(17, 72, 83, 0.62)),
+    url("/static/brand/resort-property-preview.svg") center / cover no-repeat,
     linear-gradient(135deg, #d3ded7, #8fb49b);
   display: flex;
   align-items: flex-end;

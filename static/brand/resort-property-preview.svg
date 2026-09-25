@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" role="img" aria-labelledby="title desc">
+  <title id="title">Resort property banner</title>
+  <desc id="desc">Original resort style property website banner background.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#b9d9cf"/>
+      <stop offset=".55" stop-color="#d8efe7"/>
+      <stop offset="1" stop-color="#fff2d6"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#1f776f"/>
+      <stop offset="1" stop-color="#72b6a6"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="320" fill="url(#sky)"/>
+  <circle cx="735" cy="72" r="42" fill="#f6cf73" opacity=".85"/>
+  <path d="M0 178C104 132 178 142 268 166c106 29 197 20 292-12 132-44 228-37 340 12v154H0z" fill="#5e9478" opacity=".32"/>
+  <path d="M0 206c120-38 242-34 361 1s251 45 539-9v122H0z" fill="#246858" opacity=".28"/>
+  <rect x="500" y="102" width="270" height="106" rx="8" fill="#f8fbf6" opacity=".96"/>
+  <rect x="526" y="132" width="50" height="76" fill="#d7aa62"/>
+  <rect x="586" y="120" width="46" height="88" fill="#e9d3a5"/>
+  <rect x="642" y="137" width="52" height="71" fill="#cf9a51"/>
+  <rect x="706" y="118" width="38" height="90" fill="#ead8af"/>
+  <path d="M492 106h286l-46-38H538z" fill="#12684f"/>
+  <path d="M520 98l50-44 52 44zM642 98l50-44 52 44z" fill="#0c4d3a"/>
+  <g fill="#16392f" opacity=".62">
+    <rect x="540" y="150" width="18" height="22" rx="8"/>
+    <rect x="600" y="148" width="18" height="24" rx="8"/>
+    <rect x="658" y="154" width="18" height="22" rx="8"/>
+    <rect x="716" y="148" width="16" height="24" rx="8"/>
+  </g>
+  <path d="M0 246c120-24 218-22 340 0 130 23 280 25 560-18v92H0z" fill="url(#water)" opacity=".9"/>
+  <path d="M64 262c118-22 254-10 386 4 126 13 252 4 386-22" fill="none" stroke="#d9f4eb" stroke-width="6" opacity=".55"/>
+  <g fill="#0f6b52" opacity=".82">
+    <path d="M166 154c-22 42-36 76-42 104h84c-6-29-20-63-42-104z"/>
+    <rect x="160" y="214" width="12" height="74" rx="6"/>
+    <path d="M238 132c-28 52-45 94-52 126h104c-7-33-24-75-52-126z"/>
+    <rect x="231" y="210" width="14" height="82" rx="7"/>
+  </g>
+</svg>
